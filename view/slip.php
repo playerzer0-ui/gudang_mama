@@ -1,7 +1,7 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-    <form action="../controller/index.php?action=create_slip" method="post">
+    <form id="myForm" action="../controller/index.php?action=create_slip" method="post">
         <h1>SLIP <?php echo $pageState; ?></h1>
         <table>
             <!-- Your form header table here -->
@@ -86,5 +86,6 @@
         getLPB();
     };
 </script>
+<script src="../js/index.js" async defer></script>
 
 <?php include "footer.php"; ?>

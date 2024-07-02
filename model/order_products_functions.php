@@ -50,36 +50,35 @@ function getOrderProductsFromNoID($no_id, $status){
 
     switch($status){
         case "in":
-            $query = 'SELECT * FROM order_products WHERE nomor_surat_jalan = :no_id';
+            $query = 'SELECT op.nomor_surat_jalan, op.productCode, p.productName, op.qty, op.uom FROM order_products op, products p WHERE op.nomor_surat_jalan = :no_id AND op.productCode = p.productCode';
             break;
 
         case "out":
-            $query = 'SELECT * FROM order_products WHERE nomor_surat_jalan = :no_id';
+            $query = 'SELECT op.nomor_surat_jalan, op.productCode, p.productName, op.qty, op.uom FROM order_products op, products p WHERE op.nomor_surat_jalan = :no_id AND op.productCode = p.productCode';
             break;
 
         case "repack":
-            $query = 'SELECT * FROM order_products WHERE repack_no_repack = :no_id';
+            $query = 'SELECT op.repack_no_repack, op.productCode, p.productName, op.qty, op.uom FROM order_products op, products p WHERE op.repack_no_repack = :no_id AND op.productCode = p.productCode';
             break;
         
         case "moving":
-            $query = 'SELECT * FROM order_products WHERE moving_no_moving = :no_id';
+            $query = 'SELECT op.repack_no_repack, op.productCode, p.productName, op.qty, op.uom FROM order_products op, products p WHERE op.moving_no_moving = :no_id AND op.productCode = p.productCode';
             break; 
-
-        $statement = $db->prepare($query);
-        $statement->bindValue(":no_id", $no_id);
-
-        try {
-            $statement->execute();
-        }
-        catch(PDOException $ex){
-            $ex->getMessage();
-        }
-    
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-
-        return $result;
     }
+    $statement = $db->prepare($query);
+    $statement->bindValue(":no_id", $no_id);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $result;
 }
 
 function updatePriceForProducts($no_id, $productCode, $price_per_UOM){

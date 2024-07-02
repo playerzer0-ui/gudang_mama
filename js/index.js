@@ -1,5 +1,16 @@
 let rowCount = 0;
 
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('myForm');
+
+    form.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            return false;
+        }
+    });
+});
+
 function addRow() {
     rowCount++;
     const table = document.getElementById('productTable').getElementsByTagName('tbody')[0];
@@ -93,21 +104,4 @@ function getLPB(){
             console.error("Error: " + error);
         }
     });
-}
-
-function validateForm() {
-    let isValid = true;
-    const rows = document.querySelectorAll('#productTable tbody tr');
-    rows.forEach(row => {
-        const productCode = row.querySelector('input[name="kd[]"]').value;
-        const qty = row.querySelector('input[name="qty[]"]').value;
-
-        if (!productCode || !qty || isNaN(qty) || qty <= 0) {
-            alert('Please fill out all required fields correctly.');
-            isValid = false;
-            return false;
-        }
-    });
-
-    return isValid;
 }

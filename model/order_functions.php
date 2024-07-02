@@ -33,6 +33,25 @@ function create_slip_in($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $ve
     $statement->closeCursor();
 }
 
+function getOrderByNoSJ($no_sj){
+    global $db;
+
+    $query = 'SELECT * FROM orders WHERE nomor_surat_jalan = :no_sj';
+    $statement = $db->prepare($query);
+    $statement->bindValue(":no_sj", $no_sj);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetch(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $result;
+}
+
 function generateNoLPB($storageCode, $status){
     global $db;
 
