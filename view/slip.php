@@ -1,7 +1,7 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-    <form action="../controller/index.php?action=create_slip" method="post" onsubmit="return validateForm()">
+    <form action="../controller/index.php?action=create_slip" method="post">
         <h1>SLIP <?php echo $pageState; ?></h1>
         <table>
             <!-- Your form header table here -->
@@ -9,7 +9,7 @@
                 <td>PT</td>
                 <td>:</td>
                 <td colspan="2">
-                    <select name="storage" id="storage" onchange="getLPB()">
+                    <select name="storageCode" id="storageCode" onchange="getLPB()">
                         <?php foreach (getAllStorages() as $key) { ?>
                             <?php if($key["storageCode"] == "NON") { ?>
                                 <option value="<?php echo $key["storageCode"]; ?>" selected><?php echo $key["storageName"]; ?></option>
@@ -22,7 +22,7 @@
                 <td>Name Vendor</td>
                 <td>:</td>
                 <td>
-                    <select name="vendor" id="vendor">
+                    <select name="vendorCode" id="vendorCode">
                         <?php foreach (getAllVendors() as $key) { ?>
                             <?php if($key["vendorCode"] == "NON") { ?>
                                 <option value="<?php echo $key["vendorCode"]; ?>" selected><?php echo $key["vendorName"]; ?></option>
@@ -37,12 +37,12 @@
                 <td>NO. LPB</td>
                 <td>:</td>
                 <td colspan="2">
-                    <input name="no_lpb_display" type="text" id="no_lpb_display" placeholder="Otomatis dari sistem" disabled>
+                    <input name="no_lpb_display" type="text" id="no_lpb_display" placeholder="Otomatis dari sistem" readonly>
                     <input name="no_LPB" type="hidden" id="no_LPB">
                 </td>
                 <td>Tgl Penerimaan</td>
                 <td>:</td>
-                <td><input name="order_date" type="date" id="tgl_penerimaan" placeholder="di isi"></td>
+                <td><input name="order_date" type="date" id="tgl_penerimaan" placeholder="di isi" required></td>
             </tr>
             <tr class="highlight">
                 <td>No SJ</td>
@@ -50,7 +50,7 @@
                 <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" required></td>
                 <td>No PO</td>
                 <td>:</td>
-                <td><input name="no_po" type="text" id="no_po" placeholder="di isi" required></td>
+                <td><input name="purchase_order" type="text" id="purchase_order" placeholder="di isi" required></td>
             </tr>
             <tr>
                 <td>No Truk</td>

@@ -106,6 +106,32 @@ switch($action){
         $productCode = filter_input(INPUT_GET, 'productCode', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo json_encode(getProductByCode($productCode));
         break;
+
+    case "create_slip":
+        $storageCode = filter_input(INPUT_POST, "storageCode");
+        $no_LPB = filter_input(INPUT_POST, "no_LPB");
+        $no_sj = filter_input(INPUT_POST, "no_sj");
+        $no_truk = filter_input(INPUT_POST, "no_truk");
+        $vendorCode = filter_input(INPUT_POST, "vendorCode");
+        $order_date = filter_input(INPUT_POST, "order_date");
+        $purchase_order = filter_input(INPUT_POST, "purchase_order");
+        $productCodes = filter_input_array(INPUT_POST)["kd"];
+        $qtys = filter_input_array(INPUT_POST)["qty"];
+        $uoms = filter_input_array(INPUT_POST)["uom"];
+        $notes = filter_input_array(INPUT_POST)["note"];
+
+        echo "storageCode: " . $storageCode . "</br>";
+        echo "no_LPB: " . $no_LPB . "</br>";
+        echo "no_sj: " . $no_sj . "</br>";
+        echo "no_truk: " . $no_truk . "</br>";
+        echo "vendorCode: " . $vendorCode . "</br>";
+        echo "order_date: " . $order_date . "</br>";
+        echo "purchase_order: " . $purchase_order . "</br>";
+        echo "<pre>" . print_r($productCodes, true) . "</pre>";
+        echo "<pre>" . print_r($qtys, true) . "</pre>";
+        echo "<pre>" . print_r($uoms, true) . "</pre>";
+        echo "<pre>" . print_r($notes, true) . "</pre>";
+        break;
 }
 
 

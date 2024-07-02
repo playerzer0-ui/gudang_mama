@@ -1,4 +1,3 @@
-
 let rowCount = 0;
 
 function addRow() {
@@ -9,8 +8,8 @@ function addRow() {
     newRow.innerHTML = `
         <td>${rowCount}</td>
         <td><input type="text" name="kd[]" placeholder="di isi" class="productCode" required></td>
-        <td><input type="text" name="material[]" value="Terisi Otomatis" disabled></td>
-        <td><input type="text" name="qty[]" placeholder="di isi" required></td>
+        <td><input style="width: 300px;" type="text" name="material_display[]" value="Terisi Otomatis" readonly><input type="hidden" name="material[]"></td>
+        <td><input type="number" name="qty[]" placeholder="di isi" required></td>
         <td><input type="text" name="uom[]" value="" placeholder="di isi" required></td>
         <td><input type="text" name="note[]" placeholder=""></td>
         <td><button class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
@@ -54,10 +53,12 @@ function getProductDetails(input) {
         },
         success: function(data) {
             if (data) {
+                row.querySelector('input[name="material_display[]"]').value = data.productName;
                 row.querySelector('input[name="material[]"]').value = data.productName;
             } else {
                 // Clear fields if no product is found
-                row.querySelector('input[name="material[]"]').value = "Terisi Otomatis";
+                row.querySelector('input[name="material_display[]"]').value = "Terisi Otomatis";
+                row.querySelector('input[name="material[]"]').value = "";
             }
         }
     });
@@ -77,19 +78,36 @@ function deleteRow(button) {
 }
 
 function getLPB(){
-    let storageCodeEl = document.getElementById('storage').value;
+    let storageCodeEl = document.getElementById('storageCode').value;
     let noLPBEl = document.getElementById('no_lpb_display');
-    let noLPB = document.getElementById('no_LPB');
+    let noLPBHiddenEl = document.getElementById('no_LPB');
 
     $.ajax({
         type: "get",
         url: "../controller/index.php?action=generate_LPB&storageCode=" + storageCodeEl,
         success: function (response) {
             noLPBEl.value = response;
-            noLPB.value = response;
+            noLPBHiddenEl.value = response;
         },
         error: function(xhr, status, error) {
             console.error("Error: " + error);
         }
     });
+}
+
+function validateForm() {
+    let isValid = true;
+    const rows = document.querySelectorAll('#productTable tbody tr');
+    rows.forEach(row => {
+        const productCode = row.querySelector('input[name="kd[]"]').value;
+        const qty = row.querySelector('input[name="qty[]"]').value;
+
+        if (!productCode || !qty || isNaN(qty) || qty <= 0) {
+            alert('Please fill out all required fields correctly.');
+            isValid = false;
+            return false;
+        }
+    });
+
+    return isValid;
 }
