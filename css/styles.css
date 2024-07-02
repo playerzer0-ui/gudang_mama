@@ -1,0 +1,46 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.main-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.bg-white {
+    background-color: white;
+}
+
+.yellow-text {
+    background-color: yellow;
+}
+
+.form-container {
+    width: 50%;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table, th, td {
+    border: 1px solid black;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+.form-header {
+    background-color: #dff0d8;
+}
+.highlight {
+    background-color: #ffff99;
+}
