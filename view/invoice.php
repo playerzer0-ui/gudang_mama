@@ -23,7 +23,7 @@
         <tr class="highlight">
             <td>No SJ</td>
             <td>:</td>
-            <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" onchange="getDetailsFromSJ()" required></td>
+            <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
             <td>Tgl invoice</td>
             <td>:</td>
             <td><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" required></td>
@@ -53,6 +53,27 @@
         <tbody>
             <!-- Rows will be added here dynamically -->
         </tbody>
+    </table>
+
+    <table id="accountTable">
+        <tr>
+            <th>no. Faktur: </th>
+            <td><input type="text" name="no_faktur" id="no_faktur" placeholder="di isi" required></td>
+            <th>total nilai barang: </th>
+            <th><input type="number" inputmode="numeric" name="total_amount" id="total_amount" disabled></th>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>PPN (11%): </td>
+            <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" disabled></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>nilai dibayar: </td>
+            <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" disabled></td>
+        </tr>
     </table>
     <button type="submit" class="btn btn-outline-success">Submit</button>
     </form>

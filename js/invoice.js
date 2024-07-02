@@ -50,8 +50,6 @@ function getDetailsFromSJ(){
             let newRow;
             let rowCount = 1;
 
-            console.log("response: " + data[0].nomor_surat_jalan);
-
             data.forEach(item => {
                 newRow = table.insertRow();
                 newRow.innerHTML = `
@@ -60,7 +58,7 @@ function getDetailsFromSJ(){
                     <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" disabled></td>
                     <td><input type="number" value="${item.qty}" name="qty[]" disabled></td>
                     <td><input type="text" value="${item.uom}" name="uom[]" value="" disabled></td>
-                    <td><input type="number" inputmode="numeric" name="price_per_uom[]" placeholder="di isi"></td>
+                    <td><input type="number" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)"></td>
                     <td><input type="text" name="nominal[]" placeholder="di isi" readonly></td>
                 `;
             });
@@ -68,8 +66,15 @@ function getDetailsFromSJ(){
     });
 }
 
-function calculateNominal(price){
-    let amount = price.value;
+function calculateNominal(priceInput) {
+    const row = priceInput.closest('tr'); // Get the closest row to the input
+    const qty = parseFloat(row.querySelector('input[name="qty[]"]').value); // Get the quantity value
+    const price = parseFloat(priceInput.value); // Get the price value
 
-    
+    if (!isNaN(qty) && !isNaN(price)) {
+        const nominal = qty * price; // Calculate the nominal value
+        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(2); // Update the nominal field
+    } else {
+        row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
+    }
 }
