@@ -120,17 +120,13 @@ switch($action){
         $uoms = filter_input_array(INPUT_POST)["uom"];
         $notes = filter_input_array(INPUT_POST)["note"];
 
-        echo "storageCode: " . $storageCode . "</br>";
-        echo "no_LPB: " . $no_LPB . "</br>";
-        echo "no_sj: " . $no_sj . "</br>";
-        echo "no_truk: " . $no_truk . "</br>";
-        echo "vendorCode: " . $vendorCode . "</br>";
-        echo "order_date: " . $order_date . "</br>";
-        echo "purchase_order: " . $purchase_order . "</br>";
-        echo "<pre>" . print_r($productCodes, true) . "</pre>";
-        echo "<pre>" . print_r($qtys, true) . "</pre>";
-        echo "<pre>" . print_r($uoms, true) . "</pre>";
-        echo "<pre>" . print_r($notes, true) . "</pre>";
+        create_slip_in($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order, 1);
+
+        for($i = 0; $i < count($productCodes); $i++){
+            addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "in");
+        }
+
+        header("Location:../controller/index.php?action=dashboard");
         break;
 }
 

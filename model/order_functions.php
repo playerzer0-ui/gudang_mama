@@ -2,10 +2,17 @@
 
 require_once "database.php";
 
-function create_slip_in($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order){
+function create_slip_in($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order, $status){
     global $db;
 
-    $query = 'INSERT INTO orders VALUES (":nomor_surat_jalan", ":storageCode", ":no_LPB", ":no_truk", ":vendorCode", "NON", ":order_date", ":purchase_order", "1")';
+    if($status == 1){
+        $query = 'INSERT INTO orders
+        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCode, "NON", :order_date, :purchase_order, "1")';
+    }
+    else{
+        $query = 'INSERT INTO orders
+        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCode, "NON", :order_date, :purchase_order, "2")';
+    }
 
     $statement = $db->prepare($query);
     $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
