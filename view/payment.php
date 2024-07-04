@@ -7,18 +7,18 @@
         <tr class="form-header">
             <td>PT</td>
             <td>:</td>
-            <td colspan="2"><input name="storageCode" type="text" id="storageCode" placeholder="Otomatis dari sistem" disabled></td>
+            <td colspan="2"><input name="storageCode" type="text" id="storageCode" placeholder="Otomatis dari sistem" readonly></td>
             <td>Name Vendor</td>
             <td>:</td>
-            <td><input name="vendorCode" type="text" id="vendorCode" placeholder="Otomatis dari sistem" disabled></td>
+            <td><input name="vendorCode" type="text" id="vendorCode" placeholder="Otomatis dari sistem" readonly></td>
         </tr>
         <tr>
             <td>NO. LPB</td>
             <td>:</td>
-            <td colspan="2"><input name="no_LPB" type="text" id="no_LPB" placeholder="Otomatis dari sistem" disabled></td>
+            <td colspan="2"><input name="no_LPB" type="text" id="no_LPB" placeholder="Otomatis dari sistem" readonly></td>
             <td>No PO</td>
             <td>:</td>
-            <td><input name="purchase_order" type="text" id="purchase_order" placeholder="Otomatis dari sistem" disabled></td>
+            <td><input name="purchase_order" type="text" id="purchase_order" placeholder="Otomatis dari sistem" readonly></td>
         </tr>
         <tr class="highlight">
             <td>No SJ</td>
@@ -26,12 +26,12 @@
             <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
             <td>Tgl invoice</td>
             <td>:</td>
-            <td><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" disabled></td>
+            <td><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" readonly></td>
         </tr>
         <tr>
             <td>No Truk</td>
             <td>:</td>
-            <td colspan="2"><input name="no_truk" type="text" id="no_truk" placeholder="Otomatis dari sistem" disabled></td>
+            <td colspan="2"><input name="no_truk" type="text" id="no_truk" placeholder="Otomatis dari sistem" readonly></td>
         </tr>
     </table>
 

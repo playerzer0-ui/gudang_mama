@@ -54,12 +54,12 @@ function getDetailsFromSJ(){
                 newRow = table.insertRow();
                 newRow.innerHTML = `
                     <td>${rowCount}</td>
-                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode"></td>
-                    <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" disabled></td>
-                    <td><input type="number" value="${item.qty}" name="qty[]" disabled></td>
-                    <td><input type="text" value="${item.uom}" name="uom[]" value="" disabled></td>
+                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
+                    <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
+                    <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
+                    <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
                     <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
-                    <td><input type="text" name="nominal[]" placeholder="di isi" readonly></td>
+                    <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
                 `;
             });
         }
