@@ -73,7 +73,12 @@ function generateNoLPB($storageCode, $status){
 
     $statement->closeCursor();
 
-    return $no . "/LPB/" . $storageCode . "/" . date("m") . "/" . date("Y");
+    if($status == 1){
+        return $no . "/LPB/" . $storageCode . "/" . date("m") . "/" . date("Y");
+    }
+    else{
+        return $no . "/SJK/" . $storageCode . "/" . date("m") . "/" . date("Y");
+    }
 }
 
 ?>

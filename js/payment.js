@@ -16,6 +16,7 @@ function getDetailsFromSJ(){
     let no_trukEl = document.getElementById("no_truk");
     let vendorCodeEl = document.getElementById("vendorCode");
     let purchaseOrderEl = document.getElementById("purchase_order");
+    let invoice_dateEl = document.getElementById("invoice_date");
 
     $.ajax({
         type: "get",
@@ -40,6 +41,19 @@ function getDetailsFromSJ(){
         type: "get",
         url: "../controller/index.php",
         data: {
+            action: 'getInvoiceByNoSJ',
+            no_sj: no_sjEl
+        },
+        success: function (response) {
+            const data = JSON.parse(response);
+            invoice_dateEl.value = data.invoice_date;
+        }
+    });
+
+    $.ajax({
+        type: "get",
+        url: "../controller/index.php",
+        data: {
             action: 'getOrderProducts',
             status: 'in',
             no_sj: no_sjEl
@@ -54,14 +68,18 @@ function getDetailsFromSJ(){
                 newRow = table.insertRow();
                 newRow.innerHTML = `
                     <td>${rowCount}</td>
-                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode"></td>
+                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" disabled></td>
                     <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" disabled></td>
                     <td><input type="number" value="${item.qty}" name="qty[]" disabled></td>
                     <td><input type="text" value="${item.uom}" name="uom[]" value="" disabled></td>
-                    <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
-                    <td><input type="text" name="nominal[]" placeholder="di isi" readonly></td>
+                    <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" disabled></td>
+                    <td><input type="text" value="${item.price_per_UOM * item.qty}" name="nominal[]" placeholder="di isi" readonly></td>
                 `;
+
+                
             });
+
+            calculateTotalNominal();
         }
     });
 }

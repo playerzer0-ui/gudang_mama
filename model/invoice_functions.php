@@ -24,4 +24,23 @@
         $statement->closeCursor();
     }
 
+    function getInvoiceByNoSJ($nomor_surat_jalan){
+        global $db;
+
+        $query = "SELECT * FROM invoices WHERE nomor_surat_jalan = :nomor_surat_jalan";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
+    }
+
 ?>

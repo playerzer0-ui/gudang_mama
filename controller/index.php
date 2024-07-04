@@ -4,6 +4,7 @@ session_start();
 require_once "../model/user_functions.php";
 require_once "../model/storage_functions.php";
 require_once "../model/invoice_functions.php";
+require_once "../model/payment_functions.php";
 require_once "../model/vendor_functions.php";
 require_once "../model/order_functions.php";
 require_once "../model/product_functions.php";
@@ -116,7 +117,13 @@ switch($action){
 
     case "getOrderByNoSJ":
         $no_sj = filter_input(INPUT_GET, 'no_sj', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        echo json_encode(getOrderByNoSJ($no_sj));
+        $status = filter_input(INPUT_GET, 'status', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo json_encode(getOrderByNoSJ($no_sj, $status));
+        break;
+
+    case "getInvoiceByNoSJ":
+        $no_sj = filter_input(INPUT_GET, 'no_sj', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo json_encode(getInvoiceByNoSJ($no_sj));
         break;
 
     case "create_slip":
@@ -146,16 +153,25 @@ switch($action){
         $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $nominals = filter_input_array(INPUT_POST)["nominal"];
+        $productCodes = filter_input_array(INPUT_POST)["kd"];
+        $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
 
-        echo $no_sj . "</br>";
-        echo $invoice_date  . "</br>";
-        echo $no_invoice . "</br>";
-        echo $nominals  . "</br>";
-        
+        create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur);
+
+        for($i = 0; $i < count($productCodes); $i++){
+            updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+        }
+        header("Location:../controller/index.php?action=dashboard");
         break;
 
     case "create_payment":
+        $no_sj = filter_input(INPUT_POST, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        create_payment($no_sj, $payment_date, $payment_amount);
+
+        header("Location:../controller/index.php?action=dashboard");
         break;
 }
 
