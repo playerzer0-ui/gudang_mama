@@ -2,16 +2,16 @@
 
 require_once "database.php";
 
-function create_slip_in($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order, $status){
+function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCustomerCode, $order_date, $purchase_order, $status){
     global $db;
 
     if($status == 1){
         $query = 'INSERT INTO orders
-        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCode, "NON", :order_date, :purchase_order, "1")';
+        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCustomerCode, "NON", :order_date, :purchase_order, "1")';
     }
     else{
         $query = 'INSERT INTO orders
-        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCode, "NON", :order_date, :purchase_order, "2")';
+        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, "NON", :vendorCustomerCode, :order_date, :purchase_order, "2")';
     }
 
     $statement = $db->prepare($query);
@@ -19,7 +19,7 @@ function create_slip_in($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $ve
     $statement->bindValue(":storageCode", $storageCode);
     $statement->bindValue(":no_LPB", $no_LPB);
     $statement->bindValue(":no_truk", $no_truk);
-    $statement->bindValue(":vendorCode", $vendorCode);
+    $statement->bindValue(":vendorCustomerCode", $vendorCustomerCode);
     $statement->bindValue(":order_date", $order_date);
     $statement->bindValue(":purchase_order", $purchase_order);
 

@@ -3,6 +3,7 @@
 session_start();
 require_once "../model/user_functions.php";
 require_once "../model/storage_functions.php";
+require_once "../model/invoice_functions.php";
 require_once "../model/vendor_functions.php";
 require_once "../model/order_functions.php";
 require_once "../model/product_functions.php";
@@ -131,7 +132,7 @@ switch($action){
         $uoms = filter_input_array(INPUT_POST)["uom"];
         $notes = filter_input_array(INPUT_POST)["note"];
 
-        create_slip_in($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order, 1);
+        create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order, 1);
 
         for($i = 0; $i < count($productCodes); $i++){
             addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "in");
@@ -141,6 +142,17 @@ switch($action){
         break;
 
     case "create_invoice":
+        $no_sj = filter_input(INPUT_POST, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $nominals = filter_input_array(INPUT_POST)["nominal"];
+
+        echo $no_sj . "</br>";
+        echo $invoice_date  . "</br>";
+        echo $no_invoice . "</br>";
+        echo $nominals  . "</br>";
+        
         break;
 
     case "create_payment":

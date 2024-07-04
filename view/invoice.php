@@ -60,7 +60,7 @@
             <th>no. Faktur: </th>
             <td><input type="text" name="no_faktur" id="no_faktur" placeholder="di isi" required></td>
             <th>total nilai barang: </th>
-            <th><input type="number" inputmode="numeric" name="total_amount" id="total_amount" disabled></th>
+            <th><input type="number" inputmode="numeric" name="totalNominal" id="totalNominal" disabled></th>
         </tr>
         <tr>
             <td></td>

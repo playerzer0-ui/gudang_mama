@@ -77,4 +77,37 @@ function calculateNominal(priceInput) {
     } else {
         row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
     }
+
+    calculateTotalNominal();
+}
+
+function calculateTotalNominal() {
+    const nominalInputs = document.querySelectorAll('input[name="nominal[]"]'); // Get all nominal inputs
+    let total = 0;
+
+    nominalInputs.forEach(input => {
+        const nominal = parseFloat(input.value);
+        if (!isNaN(nominal)) {
+            total += nominal; // Sum up the nominal values
+        }
+    });
+
+    document.getElementById('totalNominal').value = total.toFixed(2); 
+    calculatePPN();
+    calculatePayAmount();
+}
+
+function calculatePPN(){
+    let nominal = document.getElementById('totalNominal').value;
+    let taxPPN = document.getElementById('taxPPN');
+
+    taxPPN.value = nominal * 0.11;
+}
+
+function calculatePayAmount(){
+    let nominal = document.getElementById('totalNominal').value;
+    let taxPPN = document.getElementById('taxPPN').value;
+    let amount_paid = document.getElementById('amount_paid');
+
+    amount_paid.value = parseFloat(nominal) + parseFloat(taxPPN);
 }
