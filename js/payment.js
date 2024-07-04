@@ -9,6 +9,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+function handleFormSubmit(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    var form = document.getElementById('myForm');
+    var formData = new FormData(form);
+
+    // Add a flag to indicate PDF generation
+    formData.append('generate_pdf', '1');
+
+    // Create a new tab for the PDF
+    var pdfWindow = window.open('', '_blank');
+
+    fetch('../controller/index.php?action=create_invoice', {
+        method: 'POST',
+        body: formData
+    }).then(response => response.blob())
+    .then(blob => {
+        var url = URL.createObjectURL(blob);
+        pdfWindow.location.href = url; // Load the PDF in the new tab
+
+        // Redirect to the dashboard after a short delay
+        setTimeout(() => {
+            window.location.href = '../controller/index.php?action=dashboard';
+        }, 2000); // Adjust the delay as needed
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 function getDetailsFromSJ(){
     let no_sjEl = document.getElementById("no_sj").value;
     let storageCodeEl = document.getElementById("storageCode");

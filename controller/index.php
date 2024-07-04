@@ -196,7 +196,12 @@ switch($action){
         break;
 
     case "test":
-        var_dump(getstorageByCode("APA")["storageName"]);
+        $productCodes = array("VOL", "BMW", "TOY");
+        $productNames = array("Volvo", "BMW", "Toyota");
+        $qtys = array(10, 12, 2);
+        $uoms = array("tray", "tray", "tray");
+        $price_per_uom = array(1232, 123, 123);
+        create_payment_in_pdf("Astra", "coca", "003/ssj/213/123/12", "TRUCK", "PO102", "2022-12-12", "002/12/121/12", $productCodes, $productNames, $qtys, $uoms, $price_per_uom, "12212", "2024-12-12");
 }
 
 

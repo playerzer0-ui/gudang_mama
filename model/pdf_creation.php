@@ -16,13 +16,13 @@ function create_invoice_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $pur
     $pdf->AddPage();
 
     // Set font
-    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->SetFont('Arial', 'B', 8);
 
     // Header
     $pdf->Cell(130, 10, 'INVOICE IN', 0, 1, 'C');
 
     // PT and Vendor details
-    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetFont('Arial', '', 6);
     $pdf->Cell(30, 10, 'PT', 0, 0);
     $pdf->Cell(5, 10, ':', 0, 0);
     $pdf->Cell(80, 10, $storageName, 0, 0);
@@ -56,7 +56,7 @@ function create_invoice_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $pur
 
     // Add product table
     $pdf->Ln(1);
-    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetFont('Arial', 'B', 6);
     $pdf->Cell(10, 10, 'No', 1);
     $pdf->Cell(30, 10, 'KD', 1);
     $pdf->Cell(50, 10, 'Material', 1);
@@ -66,7 +66,7 @@ function create_invoice_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $pur
     $pdf->Cell(30, 10, 'Nominal', 1);
     $pdf->Ln();
 
-    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetFont('Arial', '', 6);
     for($i = 0; $i < count($productCodes); $i++){
         $pdf->Cell(10, 10, $i + 1, 1);
         $pdf->Cell(30, 10, $productCodes[$i], 1);
@@ -101,4 +101,118 @@ function create_invoice_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $pur
     header('Content-Type: application/pdf');
     $pdf->Output('I', 'invoice.pdf');
 }
+
+function create_payment_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date) {
+    // Create instance of FPDF
+    $total_amount = 0;
+    $pdf = new FPDF('L', 'mm', 'A5');
+    $pdf->AddPage();
+
+    // Set font
+    $pdf->SetFont('Arial', 'B', 8);
+
+    // Header
+    $pdf->Cell(130, 10, 'PAYMENT IN', 0, 1, 'C');
+
+    // PT and Vendor details
+    $pdf->SetFont('Arial', '', 6);
+    $pdf->Cell(30, 7, 'PT', 0, 0);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(80, 7, $storageName, 0, 0);
+    $pdf->Cell(30, 7, 'Name Vendor', 0, 0);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(40, 7, $vendorName, 0, 1);
+
+    // Second row of details
+    $pdf->Cell(30, 7, 'NO. SJ', 0, 0);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(80, 7, $no_sj, 0, 0);
+    $pdf->Cell(30, 7, 'No PO', 0, 0);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(40, 7, $purchase_order, 0, 1);
+
+    // Third row of details
+    $pdf->Cell(30, 7, 'No Truk', 0, 0);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(80, 7, $no_truk, 0, 0);
+    $pdf->Cell(30, 7, 'Tgl Invoice', 0, 0);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(40, 7, $invoice_date, 0, 1);
+
+    // Fourth row of details
+    $pdf->Cell(30, 7, 'NO. LPB', 0, 0);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(80, 7, $no_LPB, 0, 1); // Changed to 1 to move to the next line
+
+    // Add product table
+    $pdf->Ln(1); // Adding a line break to separate from the above section
+    $pdf->SetFont('Arial', 'B', 6);
+    $pdf->Cell(10, 7, 'No', 1);
+    $pdf->Cell(20, 7, 'KD', 1);
+    $pdf->Cell(40, 7, 'Material', 1);
+    $pdf->Cell(15, 7, 'QTY', 1);
+    $pdf->Cell(15, 7, 'UOM', 1);
+    $pdf->Cell(25, 7, 'Price/uom', 1);
+    $pdf->Cell(25, 7, 'Nominal', 1);
+    $pdf->Ln();
+
+    $pdf->SetFont('Arial', '', 6);
+    for($i = 0; $i < count($productCodes); $i++) {
+        $pdf->Cell(10, 7, $i + 1, 1);
+        $pdf->Cell(20, 7, $productCodes[$i], 1);
+        $pdf->Cell(40, 7, $productNames[$i], 1);
+        $pdf->Cell(15, 7, $qtys[$i], 1);
+        $pdf->Cell(15, 7, $uoms[$i], 1);
+        $pdf->Cell(25, 7, $price_per_uom[$i], 1);
+        $pdf->Cell(25, 7, ($qtys[$i] * $price_per_uom[$i]), 1);
+        $total_amount += ($qtys[$i] * $price_per_uom[$i]);
+        $pdf->Ln();
+    }
+
+    $taxPPN = $total_amount * 0.11;
+    $pay_amount = $total_amount + $taxPPN;
+
+    // Footer
+    $pdf->Ln(1);
+    // Left side (Payment details)
+    $pdf->SetFont('Arial', 'B', 6);
+    $pdf->Cell(30, 7, 'tanggal payment', 0, 0);
+    $pdf->SetFont('Arial', '', 6);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(45, 7, $payment_date, 0, 0);
+
+    // Right side (Total, PPN, and Nilai Yg Harus Dibayar)
+    $pdf->SetFont('Arial', 'B', 6);
+    $pdf->Cell(30, 7, 'Total Nilai Barang', 0, 0);
+    $pdf->SetFont('Arial', '', 6);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(40, 7, $total_amount, 0, 1);
+
+    $pdf->SetFont('Arial', 'B', 6);
+    $pdf->Cell(30, 7, 'nilai payment', 0, 0);
+    $pdf->SetFont('Arial', '', 6);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(45, 7, $payment_amount, 0, 0);
+
+    // Right side (Total, PPN, and Nilai Yg Harus Dibayar)
+    $pdf->SetFont('Arial', 'B', 6);
+    $pdf->Cell(30, 7, 'PPN 11%', 0, 0);
+    $pdf->SetFont('Arial', '', 6);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(40, 7, $taxPPN, 0, 1);
+
+    $pdf->Cell(80, 7, '', 0, 0);
+    $pdf->SetFont('Arial', 'B', 6);
+    $pdf->Cell(30, 7, 'Nilai Yg Harus Dibayar', 0, 0);
+    $pdf->SetFont('Arial', '', 6);
+    $pdf->Cell(5, 7, ':', 0, 0);
+    $pdf->Cell(40, 7, $pay_amount, 0, 1);
+
+    // Output the PDF
+    header('Content-Type: application/pdf');
+    $pdf->Output('I', 'invoice.pdf');
+}
+
+
+
 ?>

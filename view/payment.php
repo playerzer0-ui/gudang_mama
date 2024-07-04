@@ -72,7 +72,7 @@
             <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" disabled></td>
         </tr>
     </table>
-    <button type="submit" class="btn btn-outline-success">Submit</button>
+    <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>
     </form>
 </main>
 
