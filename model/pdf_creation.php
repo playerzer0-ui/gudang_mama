@@ -68,13 +68,13 @@ function create_invoice_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $pur
 
     $pdf->SetFont('Arial', '', 6);
     for($i = 0; $i < count($productCodes); $i++){
-        $pdf->Cell(10, 10, $i + 1, 1);
-        $pdf->Cell(30, 10, $productCodes[$i], 1);
-        $pdf->Cell(50, 10, $productNames[$i], 1);
-        $pdf->Cell(20, 10, $qtys[$i], 1);
-        $pdf->Cell(20, 10, $uoms[$i], 1);
-        $pdf->Cell(30, 10, $price_per_uom[$i], 1);
-        $pdf->Cell(30, 10, ($qtys[$i] * $price_per_uom[$i]), 1);
+        $pdf->Cell(10, 7, $i + 1, 1);
+        $pdf->Cell(30, 7, $productCodes[$i], 1);
+        $pdf->Cell(50, 7, $productNames[$i], 1);
+        $pdf->Cell(20, 7, $qtys[$i], 1);
+        $pdf->Cell(20, 7, $uoms[$i], 1);
+        $pdf->Cell(30, 7, $price_per_uom[$i], 1);
+        $pdf->Cell(30, 7, ($qtys[$i] * $price_per_uom[$i]), 1);
         $total_amount += ($qtys[$i] * $price_per_uom[$i]);
         $pdf->Ln();
     }

@@ -21,7 +21,7 @@ function handleFormSubmit(event) {
     // Create a new tab for the PDF
     var pdfWindow = window.open('', '_blank');
 
-    fetch('../controller/index.php?action=create_invoice', {
+    fetch('../controller/index.php?action=create_payment', {
         method: 'POST',
         body: formData
     }).then(response => response.blob())

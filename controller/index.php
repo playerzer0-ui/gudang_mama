@@ -169,11 +169,11 @@ switch($action){
         $storageName = getstorageByCode($storageCode)["storageName"];
         $vendorName = getVendorByCode($vendorCode)["vendorName"];
 
-        create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur);
+        // create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur);
 
-        for($i = 0; $i < count($productCodes); $i++){
-            updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
-        }
+        // for($i = 0; $i < count($productCodes); $i++){
+        //     updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+        // }
 
         // Generate the PDF and return it as a response
         if (isset($_POST['generate_pdf'])) {
@@ -186,11 +186,30 @@ switch($action){
         break;
 
     case "create_payment":
+        $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $no_LPB = filter_input(INPUT_POST, "no_LPB", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_sj = filter_input(INPUT_POST, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $no_truk = filter_input(INPUT_POST, "no_truk", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $vendorCode = filter_input(INPUT_POST, "vendorCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $purchase_order = filter_input(INPUT_POST, "purchase_order", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $productCodes = filter_input_array(INPUT_POST)["kd"];
+        $productNames = filter_input_array(INPUT_POST)["material"];
+        $qtys = filter_input_array(INPUT_POST)["qty"];
+        $uoms = filter_input_array(INPUT_POST)["uom"];
+        $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
 
-        create_payment($no_sj, $payment_date, $payment_amount);
+        $storageName = getstorageByCode($storageCode)["storageName"];
+        $vendorName = getVendorByCode($vendorCode)["vendorName"];
+
+        //create_payment($no_sj, $payment_date, $payment_amount);
+
+        if (isset($_POST['generate_pdf'])){
+            create_payment_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+            exit;
+        }
 
         header("Location:../controller/index.php?action=dashboard");
         break;
@@ -202,6 +221,7 @@ switch($action){
         $uoms = array("tray", "tray", "tray");
         $price_per_uom = array(1232, 123, 123);
         create_payment_in_pdf("Astra", "coca", "003/ssj/213/123/12", "TRUCK", "PO102", "2022-12-12", "002/12/121/12", $productCodes, $productNames, $qtys, $uoms, $price_per_uom, "12212", "2024-12-12");
+        break;
 }
 
 
