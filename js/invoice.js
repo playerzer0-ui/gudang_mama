@@ -41,10 +41,26 @@ function handleFormSubmit(event) {
 function getDetailsFromSJ(){
     let no_sjEl = document.getElementById("no_sj").value;
     let storageCodeEl = document.getElementById("storageCode");
-    let no_LPBEl = document.getElementById("no_LPB");
-    let no_trukEl = document.getElementById("no_truk");
-    let vendorCodeEl = document.getElementById("vendorCode");
-    let purchaseOrderEl = document.getElementById("purchase_order");
+    let pageState = document.getElementById("pageState").value;
+    let no_LPBEl;
+    let no_trukEl;
+    let vendorCodeEl;
+    let purchaseOrderEl;
+    let customerCode;
+    let customerAddress;
+    let npwp;
+
+    if(pageState == "in"){
+        no_LPBEl = document.getElementById("no_LPB");
+        no_trukEl = document.getElementById("no_truk");
+        vendorCodeEl = document.getElementById("vendorCode");
+        purchaseOrderEl = document.getElementById("purchase_order");
+    }
+    else{
+        customerCode = document.getElementById("customerCode");
+        customerAddress = document.getElementById("customerAddress");
+        npwp = document.getElementById("npwp");
+    }
 
     $.ajax({
         type: "get",
@@ -57,11 +73,19 @@ function getDetailsFromSJ(){
             const table = document.getElementById('productTable').getElementsByTagName('tbody')[0];
             const data = JSON.parse(response);
             
-            storageCodeEl.value = data.storageCode;
-            no_LPBEl.value = data.no_LPB;
-            no_trukEl.value = data.no_truk;
-            vendorCodeEl.value = data.vendorCode;
-            purchaseOrderEl.value = data.purchase_order;
+            if(pageState == "in"){
+                storageCodeEl.value = data.storageCode;
+                no_LPBEl.value = data.no_LPB;
+                no_trukEl.value = data.no_truk;
+                vendorCodeEl.value = data.vendorCode;
+                purchaseOrderEl.value = data.purchase_order;
+            }
+            else{
+                storageCodeEl.value = data.storageCode;
+                customerCode.value = data.customerCode;
+                customerAddress.value = data.customerAddress;
+                npwp.value = data.customerNPWP;
+            }
         }
     });
 

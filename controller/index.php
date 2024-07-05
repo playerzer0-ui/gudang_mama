@@ -140,17 +140,26 @@ switch($action){
         $no_sj = filter_input(INPUT_POST, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_truk = filter_input(INPUT_POST, "no_truk", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $vendorCode = filter_input(INPUT_POST, "vendorCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $customerCode = filter_input(INPUT_POST, "customerCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $order_date = filter_input(INPUT_POST, "order_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $purchase_order = filter_input(INPUT_POST, "purchase_order", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $productCodes = filter_input_array(INPUT_POST)["kd"];
         $qtys = filter_input_array(INPUT_POST)["qty"];
         $uoms = filter_input_array(INPUT_POST)["uom"];
         $notes = filter_input_array(INPUT_POST)["note"];
+        $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order, 1);
-
-        for($i = 0; $i < count($productCodes); $i++){
-            addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "in");
+        if($pageState == "in"){
+            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order, 1);
+            for($i = 0; $i < count($productCodes); $i++){
+                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "in");
+            }
+        }
+        else{
+            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $customerCode, $order_date, $purchase_order, 2);
+            for($i = 0; $i < count($productCodes); $i++){
+                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "out");
+            }
         }
 
         header("Location:../controller/index.php?action=dashboard");
@@ -162,6 +171,9 @@ switch($action){
         $no_sj = filter_input(INPUT_POST, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_truk = filter_input(INPUT_POST, "no_truk", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $vendorCode = filter_input(INPUT_POST, "vendorCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $customerCode = filter_input(INPUT_POST, "customerCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $customerAddress = filter_input(INPUT_POST, "customerAddress", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $npwp = filter_input(INPUT_POST, "npwp", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $purchase_order = filter_input(INPUT_POST, "purchase_order", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -171,15 +183,23 @@ switch($action){
         $qtys = filter_input_array(INPUT_POST)["qty"];
         $uoms = filter_input_array(INPUT_POST)["uom"];
         $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
+        $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $storageName = getstorageByCode($storageCode)["storageName"];
-        $vendorName = getVendorByCode($vendorCode)["vendorName"];
 
-        // create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur);
+        if($pageState == "in"){
+            $vendorName = getVendorByCode($vendorCode)["vendorName"];
+        }
+        else{
+            $customerName = getCustomerByCode($customerCode)["customerName"];
+        }
 
-        // for($i = 0; $i < count($productCodes); $i++){
-        //     updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
-        // }
+
+        create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur);
+
+        for($i = 0; $i < count($productCodes); $i++){
+            updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+        }
 
         // Generate the PDF and return it as a response
         if (isset($_POST['generate_pdf'])) {

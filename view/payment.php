@@ -3,6 +3,7 @@
 <main class="main-container">
     <form id="myForm" action="../controller/index.php?action=create_payment" method="post">
     <h1>PAYMENT <?php echo $pageState; ?></h1>
+    <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
     <table>
         <tr class="form-header">
             <td>PT</td>

@@ -3,6 +3,7 @@
 <main class="main-container">
     <form id="myForm" action="../controller/index.php?action=create_invoice" target="_blank" method="post">
         <h1>INVOICE <?php echo $pageState; ?></h1>
+        <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
         <table>
             <tr class="form-header">
                 <td>PT</td>

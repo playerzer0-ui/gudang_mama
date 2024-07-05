@@ -3,6 +3,7 @@
 <main class="main-container">
     <form id="myForm" action="../controller/index.php?action=create_slip" method="post">
         <h1>SLIP <?php echo $pageState; ?></h1>
+        <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
         <table>
             <!-- Your form header table here -->
             <tr class="form-header">

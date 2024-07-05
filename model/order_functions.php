@@ -36,7 +36,9 @@ function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendo
 function getOrderByNoSJ($no_sj){
     global $db;
 
-    $query = 'SELECT * FROM orders WHERE nomor_surat_jalan = :no_sj';
+    $query = 'SELECT o.nomor_surat_jalan, o.storageCode, o.no_LPB, no_truk, o.vendorCode, o.customerCode, c.customerName, c.customerAddress, c.customerNPWP, o.order_date, o.purchase_order, o.status_mode FROM orders o, customers c
+    WHERE o.customerCode = c.customerCode
+    AND o.nomor_surat_jalan = :no_sj';
     $statement = $db->prepare($query);
     $statement->bindValue(":no_sj", $no_sj);
 
