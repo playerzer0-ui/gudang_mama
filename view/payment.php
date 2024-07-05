@@ -8,30 +8,64 @@
             <td>PT</td>
             <td>:</td>
             <td colspan="2"><input name="storageCode" type="text" id="storageCode" placeholder="Otomatis dari sistem" readonly></td>
-            <td>Name Vendor</td>
-            <td>:</td>
-            <td><input name="vendorCode" type="text" id="vendorCode" placeholder="Otomatis dari sistem" readonly></td>
+            <?php if ($pageState == "in") { ?>
+                <td>Name Vendor</td>
+                <td>:</td>
+                <td colspan="2"><input name="vendorCode" type="text" id="vendorCode" placeholder="Otomatis dari sistem" readonly></td>
+            <?php } else { ?>
+                <td>Name Customer</td>
+                <td>:</td>
+                <td colspan="2"><input name="customerCode" type="text" id="customerCode" placeholder="Otomatis dari sistem" readonly></td>
+            <?php } ?>
         </tr>
         <tr>
-            <td>NO. LPB</td>
-            <td>:</td>
-            <td colspan="2"><input name="no_LPB" type="text" id="no_LPB" placeholder="Otomatis dari sistem" readonly></td>
-            <td>No PO</td>
-            <td>:</td>
-            <td><input name="purchase_order" type="text" id="purchase_order" placeholder="Otomatis dari sistem" readonly></td>
+            <?php if ($pageState == "in") { ?>
+                <td>NO. LPB</td>
+                <td>:</td>
+                <td colspan="2"><input name="no_LPB" type="text" id="no_LPB" placeholder="Otomatis dari sistem" readonly></td>
+                <td>No PO</td>
+                <td>:</td>
+                <td colspan="2"><input name="purchase_order" type="text" id="purchase_order" placeholder="Otomatis dari sistem" readonly></td>
+            <?php } else { ?>
+                <td>No SJ</td>
+                <td>:</td>
+                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
+                <td>Alamat</td>
+                <td>:</td>
+                <td colspan="2"><input name="customerAddress" type="text" id="customerAddress" placeholder="Otomatis dari sistem" readonly></td>
+            <?php } ?>
         </tr>
         <tr class="highlight">
-            <td>No SJ</td>
-            <td>:</td>
-            <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
-            <td>Tgl invoice</td>
-            <td>:</td>
-            <td><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" readonly></td>
+            <?php if ($pageState == "in") { ?>
+                <td>No SJ</td>
+                <td>:</td>
+                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
+                <td>Tgl invoice</td>
+                <td>:</td>
+                <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" readonly></td>
+            <?php } else { ?>
+                <td>No Invoice</td>
+                <td>:</td>
+                <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="Otomatis dari sistem" readonly></td>
+                <td>NPWP</td>
+                <td>:</td>
+                <td colspan="2"><input name="npwp" type="text" id="npwp" placeholder="Otomatis dari sistem" readonly></td>
+            <?php } ?>
         </tr>
         <tr>
-            <td>No Truk</td>
-            <td>:</td>
-            <td colspan="2"><input name="no_truk" type="text" id="no_truk" placeholder="Otomatis dari sistem" readonly></td>
+            <?php if ($pageState == "in") { ?>
+                <td>No Truk</td>
+                <td>:</td>
+                <td colspan="2"><input name="no_truk" type="text" id="no_truk" placeholder="Otomatis dari sistem" readonly></td>
+                <td>No Invoice</td>
+                <td>:</td>
+                <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="Otomatis dari sistem" readonly></td>
+            <?php } else { ?>
+                <td>Tgl invoice</td>
+                <td>:</td>
+                <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" readonly></td>
+                <td colspan="4"></td>
+            <?php } ?>
         </tr>
     </table>
 

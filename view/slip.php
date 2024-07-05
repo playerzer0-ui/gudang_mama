@@ -66,7 +66,7 @@
             <?php } else { ?>
                 <td>No SJ</td>
                 <td>:</td>
-                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" required></td>
+                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" readonly></td>
             <?php } ?>
                 <td>Tgl Penerimaan</td>
                 <td>:</td>
