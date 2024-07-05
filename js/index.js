@@ -105,3 +105,19 @@ function getLPB(){
         }
     });
 }
+
+function getSJ(){
+    let storageCodeEl = document.getElementById('storageCode').value;
+    let no_sjEl = document.getElementById('no_sj');
+
+    $.ajax({
+        type: "get",
+        url: "../controller/index.php?action=generate_SJ&storageCode=" + storageCodeEl,
+        success: function (response) {
+            no_sjEl.value = response;
+        },
+        error: function(xhr, status, error) {
+            console.error("Error: " + error);
+        }
+    });
+}

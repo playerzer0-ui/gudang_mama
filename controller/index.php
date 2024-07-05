@@ -6,6 +6,7 @@ require_once "../model/storage_functions.php";
 require_once "../model/invoice_functions.php";
 require_once "../model/payment_functions.php";
 require_once "../model/vendor_functions.php";
+require_once "../model/customer_functions.php";
 require_once "../model/order_functions.php";
 require_once "../model/product_functions.php";
 require_once "../model/order_products_functions.php";
@@ -100,6 +101,11 @@ switch($action){
     case "generate_LPB":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generateNoLPB($storageCode, "1");
+        break;
+
+    case "generate_SJ":
+        $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo generateNoLPB($storageCode, "2");
         break;
     
     case 'getProductSuggestions':

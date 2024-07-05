@@ -9,7 +9,12 @@
                 <td>PT</td>
                 <td>:</td>
                 <td colspan="2">
-                    <select name="storageCode" id="storageCode" onchange="getLPB()">
+                    <?php if($pageState == "out"){ ?>
+                        <select name="storageCode" id="storageCode" onchange="getSJ()" readonly>
+                            <option value="NON" selected>none</option>
+                        </select>
+                    <?php } else{ ?>
+                        <select name="storageCode" id="storageCode" onchange="getLPB()" readonly>
                         <?php foreach (getAllStorages() as $key) { ?>
                             <?php if($key["storageCode"] == "NON") { ?>
                                 <option value="<?php echo $key["storageCode"]; ?>" selected><?php echo $key["storageName"]; ?></option>
@@ -17,8 +22,10 @@
                                 <option value="<?php echo $key["storageCode"]; ?>"><?php echo $key["storageName"]; ?></option>
                             <?php } ?>
                         <?php } ?>
-                    </select>
+                        </select>
+                    <?php } ?>
                 </td>
+                <?php if($pageState == "in"){ ?>
                 <td>Name Vendor</td>
                 <td>:</td>
                 <td>
@@ -32,31 +39,65 @@
                         <?php } ?>
                     </select>
                 </td>
+                <?php } else { ?>
+                <td>Name customer</td>
+                <td>:</td>
+                <td>
+                    <select name="customerCode" id="customerCode">
+                        <?php foreach (getAllCustomers() as $key) { ?>
+                            <?php if($key["vendorCode"] == "NON") { ?>
+                                <option value="<?php echo $key["customerCode"]; ?>" selected><?php echo $key["customerName"]; ?></option>
+                            <?php } else { ?>
+                                <option value="<?php echo $key["customerCode"]; ?>"><?php echo $key["customerName"]; ?></option>
+                            <?php } ?>
+                        <?php } ?>
+                    </select>
+                </td> 
+                <?php } ?>
             </tr>
             <tr>
+            <?php if($pageState == "in"){ ?>
                 <td>NO. LPB</td>
                 <td>:</td>
                 <td colspan="2">
                     <input name="no_lpb_display" type="text" id="no_lpb_display" placeholder="Otomatis dari sistem" readonly>
                     <input name="no_LPB" type="hidden" id="no_LPB">
                 </td>
+            <?php } else { ?>
+                <td>No SJ</td>
+                <td>:</td>
+                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" required></td>
+            <?php } ?>
                 <td>Tgl Penerimaan</td>
                 <td>:</td>
                 <td><input name="order_date" type="date" id="tgl_penerimaan" placeholder="di isi" required></td>
             </tr>
             <tr class="highlight">
+            <?php if($pageState == "in"){ ?>
                 <td>No SJ</td>
                 <td>:</td>
                 <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" required></td>
+            <?php } else { ?>
+                <td>No Truk</td>
+                <td>:</td>
+                <td colspan="2"><input name="no_truk" type="text" id="no_truk" placeholder="di isi" required></td>
+            <?php } ?>
                 <td>No PO</td>
                 <td>:</td>
                 <td><input name="purchase_order" type="text" id="purchase_order" placeholder="di isi" required></td>
             </tr>
             <tr>
+            <?php if($pageState == "in"){ ?>
                 <td>No Truk</td>
                 <td>:</td>
                 <td colspan="2"><input name="no_truk" type="text" id="no_truk" placeholder="di isi" required></td>
                 <td colspan="3"></td>
+            <?php } else { ?>
+                <td></td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="3"></td>
+            <?php } ?>
             </tr>
         </table>
 
@@ -82,9 +123,15 @@
 </main>
 
 <script>
+    <?php if($pageState == "in"){ ?>
     window.onload = function() {
         getLPB();
     };
+    <?php } else { ?>
+    window.onload = function() {
+        getSJ();
+    };
+    <?php } ?>
 </script>
 <script src="../js/index.js" async defer></script>
 

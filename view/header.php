@@ -53,9 +53,9 @@
                                 out
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">slip out</a></li>
-                                <li><a class="dropdown-item" href="#">invoice out</a></li>
-                                <li><a class="dropdown-item" href="#">payment out</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_slip&state=out">slip out</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=out">invoice out</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=out">payment out</a></li>
                                 <li><a class="dropdown-item" href="#">slip tax out</a></li>
                                 <li><a class="dropdown-item" href="#">invoice tax out</a></li>
                                 <li><a class="dropdown-item" href="#">payment tax out</a></li>

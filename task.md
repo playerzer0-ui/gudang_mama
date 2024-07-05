@@ -29,19 +29,6 @@ function getLPB(){
     });
 }
 
-function validateForm() {
-    let isValid = true;
-    const rows = document.querySelectorAll('#productTable tbody tr');
-    rows.forEach(row => {
-        const productCode = row.querySelector('input[name="kd[]"]').value;
-        const qty = row.querySelector('input[name="qty[]"]').value;
-
-        if (!productCode || !qty || isNaN(qty) || qty <= 0) {
-            alert('Please fill out all required fields correctly.');
-            isValid = false;
-            return false;
-        }
-    });
-
-    return isValid;
-}
+<?php if($pageState == "in"){ ?>
+<?php } else { ?>
+<?php } ?>
