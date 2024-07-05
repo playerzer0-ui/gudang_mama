@@ -222,8 +222,12 @@ switch($action){
         $no_sj = filter_input(INPUT_POST, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_truk = filter_input(INPUT_POST, "no_truk", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $vendorCode = filter_input(INPUT_POST, "vendorCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $customerCode = filter_input(INPUT_POST, "customerCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $customerAddress = filter_input(INPUT_POST, "customerAddress", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $npwp = filter_input(INPUT_POST, "npwp", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $purchase_order = filter_input(INPUT_POST, "purchase_order", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $productCodes = filter_input_array(INPUT_POST)["kd"];
@@ -231,14 +235,26 @@ switch($action){
         $qtys = filter_input_array(INPUT_POST)["qty"];
         $uoms = filter_input_array(INPUT_POST)["uom"];
         $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
+        $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $storageName = getstorageByCode($storageCode)["storageName"];
-        $vendorName = getVendorByCode($vendorCode)["vendorName"];
 
-        //create_payment($no_sj, $payment_date, $payment_amount);
+        if($pageState == "in"){
+            $vendorName = getVendorByCode($vendorCode)["vendorName"];
+        }
+        else{
+            $customerName = getCustomerByCode($customerCode)["customerName"];
+        }
+
+        create_payment($no_sj, $payment_date, $payment_amount);
 
         if (isset($_POST['generate_pdf'])){
-            create_payment_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+            if($pageState == "in"){
+                create_payment_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+            }
+            else{
+                create_payment_out_pdf($storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+            }
             exit;
         }
 
@@ -251,7 +267,7 @@ switch($action){
         $qtys = array(10, 12, 2);
         $uoms = array("tray", "tray", "tray");
         $price_per_uom = array(1232, 123, 123);
-        create_payment_in_pdf("Astra", "coca", "003/ssj/213/123/12", "TRUCK", "PO102", "2022-12-12", "002/12/121/12", $productCodes, $productNames, $qtys, $uoms, $price_per_uom, "12212", "2024-12-12");
+        create_payment_out_pdf("APA", "GWEN", "1/SJK/APA/07/204", "alamat jln seen", "213213213231", "2024-11-11", "213", $productCodes, $productNames, $qtys, $uoms, $price_per_uom, "121", "1000000000000");
         break;
 }
 

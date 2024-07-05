@@ -43,6 +43,7 @@ function getDetailsFromSJ(){
     let storageCodeEl = document.getElementById("storageCode");
     let pageState = document.getElementById("pageState").value;
     let invoice_dateEl = document.getElementById("invoice_date");
+    let no_invoiceEl = document.getElementById("no_invoice");
     let no_LPBEl;
     let no_trukEl;
     let vendorCodeEl;
