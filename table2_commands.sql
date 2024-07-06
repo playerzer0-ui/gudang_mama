@@ -94,7 +94,7 @@ create table order_products(
     UOM varchar(10),
     price_per_UOM decimal(30,2),
     note varchar(80),
-    product_status varchar(10),
+    product_status varchar(20),
     foreign key(nomor_surat_jalan) references orders(nomor_surat_jalan),
     foreign key(moving_no_moving) references movings(no_moving),
     foreign key(repack_no_repack) references repacks(no_repack),
@@ -159,9 +159,9 @@ insert into order_products values ("001/SJK/NON/10/2024","-","-", "RR-100-A", 80
 insert into order_products values ("002/SJK/NON/10/2024","-","-", "RR-120-A", 800, "tray", 2000, "something tax", "out");
 insert into order_products values ("002/SJK/NON/10/2024","-","-", "RR-100-A", 60, "tray", 100, "something tax", "out");
 
-insert into order_products values ("-", "-", "001/SJR/APA/12/2024", "RR-100-A", 100, "tray", 100, "repack awal", "awal");
-insert into order_products values ("-", "-", "001/SJR/APA/12/2024", "RR-100-A", 100, "tray", 200, "repack last", "akhir");
-insert into order_products values ("-", "-", "001/SJR/APA/12/2024", "RF-100-A", 100, "tray", 200, "repack last", "akhir");
+insert into order_products values ("-", "-", "001/SJR/APA/12/2024", "RR-100-A", 100, "tray", 100, "repack awal", "repack_awal");
+insert into order_products values ("-", "-", "001/SJR/APA/12/2024", "RR-100-A", 100, "tray", 200, "repack last", "repack_akhir");
+insert into order_products values ("-", "-", "001/SJR/APA/12/2024", "RF-100-A", 100, "tray", 200, "repack last", "repack_akhir");
 
 insert into order_products values ("-", "001/SJP/APA/12/2024", "-", "RR-120-A", 100, "tray", 2000, "moving", "move");
 insert into order_products values ("-", "001/SJP/APA/12/2024", "-", "RR-100-A", 100, "tray", 100, "moving", "move");

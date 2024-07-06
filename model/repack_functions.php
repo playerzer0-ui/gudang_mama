@@ -25,4 +25,23 @@
         return $no . "/SJR/" . $storageCode . "/" . date("m") . "/" . date("Y");
     }
 
+    function create_repack($storageCode, $repack_date, $no_repack){
+        global $db;
+
+        $query = 'INSERT INTO repacks VALUES (:no_repack, :repack_date, :storageCode)';
+        $statement = $db->prepare($query);
+        $statement->bindValue(":no_repack", $no_repack);
+        $statement->bindValue(":repack_date", $repack_date);
+        $statement->bindValue(":storageCode", $storageCode);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+
+        $statement->closeCursor();
+    }
+
 ?>

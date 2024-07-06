@@ -288,6 +288,36 @@ switch($action){
         header("Location:../controller/index.php?action=dashboard");
         break;
 
+    case "create_repack":
+        $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $repack_date = filter_input(INPUT_POST, "repack_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $no_repack = filter_input(INPUT_POST, "no_repack", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        $kd_awal = filter_input_array(INPUT_POST)["kd_awal"];
+        $qty_awal = filter_input_array(INPUT_POST)["qty_awal"];
+        $uom_awal = filter_input_array(INPUT_POST)["uom_awal"];
+        $note_awal = filter_input_array(INPUT_POST)["note_awal"];
+
+        $kd_akhir = filter_input_array(INPUT_POST)["kd_akhir"];
+        $qty_akhir = filter_input_array(INPUT_POST)["qty_akhir"];
+        $uom_akhir = filter_input_array(INPUT_POST)["uom_akhir"];
+        $note_akhir = filter_input_array(INPUT_POST)["note_akhir"];
+
+        create_repack($storageCode, $repack_date, $no_repack);
+
+        for($i = 0; $i < count($kd_awal); $i++){
+            addOrderProducts($no_repack, $kd_awal[$i], $qty_awal[$i], $uom_awal[$i], $note_awal[$i], "repack_awal");
+        }
+        for($i = 0; $i < count($kd_akhir); $i++){
+            addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], $note_akhir[$i], "repack_akhir");
+        }
+
+        header("Location:../controller/index.php?action=dashboard");
+        break;
+
+    case "create_moving":
+        break;
+
     case "test":
         $productCodes = array("VOL", "BMW", "TOY");
         $productNames = array("Volvo", "BMW", "Toyota");

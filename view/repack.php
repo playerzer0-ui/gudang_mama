@@ -20,12 +20,12 @@
             </td>
             <td>Tgl Repack</td>
             <td>:</td>
-            <td><input name="repack_date" type="date"></td>
+            <td><input name="repack_date" type="date" required></td>
         </tr>
         <tr>
             <td>NO. Repack</td>
             <td>:</td>
-            <td><input name="no_repack" id="no_repack" type="text"></td>
+            <td><input name="no_repack" id="no_repack" type="text" readonly></td>
         </tr>
     </table>
 
@@ -44,10 +44,10 @@
         <tbody>
             <tr>
                 <td>1</td>
-                <td><input name="kd_awal[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" /></td>
+                <td><input name="kd_awal[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
                 <td><input name="material_awal[]" type="text" placeholder="Otomatis" readonly/></td>
-                <td><input name="qty_awal[]" type="text" placeholder="di isi" /></td>
-                <td><input name="uom_awal[]" type="text" placeholder="di isi" /></td>
+                <td><input name="qty_awal[]" type="text" placeholder="di isi"required /></td>
+                <td><input name="uom_awal[]" type="text" placeholder="di isi" required/></td>
                 <td><input name="note_awal[]" type="text" /></td>
                 <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
             </tr>
@@ -72,10 +72,10 @@
         <tbody>
             <tr>
                 <td>1</td>
-                <td><input name="kd_akhir[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" /></td>
+                <td><input name="kd_akhir[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
                 <td><input name="material_akhir[]" type="text" placeholder="Otomatis" readonly/></td>
-                <td><input name="qty_akhir[]" type="text" placeholder="di isi" /></td>
-                <td><input name="uom_akhir[]" type="text" placeholder="di isi" /></td>
+                <td><input name="qty_akhir[]" type="text" placeholder="di isi" required/></td>
+                <td><input name="uom_akhir[]" type="text" placeholder="di isi" required/></td>
                 <td><input name="note_akhir[]" type="text" /></td>
                 <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
             </tr>
