@@ -14,12 +14,12 @@ function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
             $query = 'INSERT INTO order_products VALUES (:no_id,"-","-", :productCode, :qty, :UOM, :price_per_UOM, :note, "out")';
             break;
 
-        case "repack awal":
-            $query = 'INSERT INTO order_products VALUES ("-","-",:no_id, :productCode, :qty, :UOM, :price_per_UOM, :note, "repack awal")';
+        case "repack_awal":
+            $query = 'INSERT INTO order_products VALUES ("-","-",:no_id, :productCode, :qty, :UOM, :price_per_UOM, :note, "repack_awal")';
             break;
                     
-        case "repack akhir":
-            $query = 'INSERT INTO order_products VALUES ("-","-",:no_id, :productCode, :qty, :UOM, :price_per_UOM, :note, "repack akhir")';
+        case "repack_akhir":
+            $query = 'INSERT INTO order_products VALUES ("-","-",:no_id, :productCode, :qty, :UOM, :price_per_UOM, :note, "repack_akhir")';
             break;  
         
         case "moving":
@@ -85,6 +85,25 @@ function updatePriceForProducts($no_id, $productCode, $price_per_UOM){
     global $db;
 
     $query = 'UPDATE order_products SET price_per_UOM = :price_per_UOM WHERE nomor_surat_jalan = :no_id AND productCode = :productCode';
+    $statement = $db->prepare($query);
+    $statement->bindValue(":price_per_UOM", $price_per_UOM);
+    $statement->bindValue(":no_id", $no_id);
+    $statement->bindValue(":productCode", $productCode);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $statement->closeCursor();
+}
+
+function updatePriceForProductsMoving($no_id, $productCode, $price_per_UOM){
+    global $db;
+
+    $query = 'UPDATE order_products SET price_per_UOM = :price_per_UOM WHERE moving_no_moving = :no_id AND productCode = :productCode';
     $statement = $db->prepare($query);
     $statement->bindValue(":price_per_UOM", $price_per_UOM);
     $statement->bindValue(":no_id", $no_id);

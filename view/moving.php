@@ -1,14 +1,14 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-<form id="myForm" action="../controller/index.php?action=create_repack" method="post">
+<form id="myForm" action="../controller/index.php?action=create_moving" method="post">
     <h1 style="text-align:center;">SLIP MOVING BARANG</h1>
     <table class="header-table">
         <tr>
             <td>PT Pengirim</td>
             <td>:</td>
             <td>
-            <select name="storageCodeSender" id="storageCodeSender" onchange="getRepackNO()" readonly>
+            <select name="storageCodeSender" id="storageCodeSender" onchange="getMovingNO()" readonly>
                 <?php foreach (getAllStorages() as $key) { ?>
                     <?php if($key["storageCode"] == "NON") { ?>
                         <option value="<?php echo $key["storageCode"]; ?>" selected><?php echo $key["storageName"]; ?></option>
@@ -21,7 +21,7 @@
             <td>PT Penerima</td>
             <td>:</td>
             <td>
-            <select name="storageCodeSender" id="storageCodeSender" onchange="getRepackNO()" readonly>
+            <select name="storageCodeReceiver" id="storageCodeReceiver" onchange="getRepackNO()" readonly>
                 <?php foreach (getAllStorages() as $key) { ?>
                     <?php if($key["storageCode"] == "NON") { ?>
                         <option value="<?php echo $key["storageCode"]; ?>" selected><?php echo $key["storageName"]; ?></option>
@@ -51,26 +51,28 @@
                 <th>QTY</th>
                 <th>UOM</th>
                 <th>price/UOM</th>
+                <th>nominal</th>
                 <th>action</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>1</td>
-                <td><input name="productCode[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
+                <td><input name="kd[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
                 <td><input name="productName[]" type="text" placeholder="Otomatis" readonly/></td>
                 <td><input name="qty[]" type="text" placeholder="di isi"required /></td>
                 <td><input name="uom[]" type="text" placeholder="di isi" required/></td>
-                <td><input name="price_per_uom[]" type="text" placeholder="di isi" required/></td>
+                <td><input name="price_per_uom[]" type="text" placeholder="di isi" oninput="calculateNominal(this)" required/></td>
+                <td><input type="number" inputmode="numeric" name="nominal[]" placeholder="Otomatis" readonly></td>
                 <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
             </tr>
         </tbody>
     </table>
     <p>
-        <span class="add-row" onclick="addRow('materialTable')">Add Row</span>
+        <span class="add-row" onclick="addRow('materialTable')"><button type="button" class="btn btn-success">add row</button></span>
+        <button type="submit" class="btn btn-outline-success">Submit</button>
     </p>
 
-    <button type="submit" class="btn btn-outline-success">Submit</button>
 </form>
 </main>
 

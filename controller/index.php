@@ -316,6 +316,27 @@ switch($action){
         break;
 
     case "create_moving":
+        $storageCodeSender = filter_input(INPUT_POST, "storageCodeSender", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $storageCodeReceiver = filter_input(INPUT_POST, "storageCodeReceiver", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $moving_date = filter_input(INPUT_POST, "moving_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        $productCodes = filter_input_array(INPUT_POST)["kd"];
+        $qtys = filter_input_array(INPUT_POST)["qty"];
+        $uoms = filter_input_array(INPUT_POST)["uom"];
+        $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
+
+        create_moving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver);
+
+        for($i = 0; $i < count($productCodes); $i++){
+            addOrderProducts($no_moving, $productCodes[$i], $qtys[$i], $uoms[$i], "", "moving");
+        }
+
+        for($i = 0; $i < count($productCodes); $i++){
+            updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
+        }
+
+        header("Location:../controller/index.php?action=dashboard");
         break;
 
     case "test":

@@ -15,11 +15,12 @@ function addRow(tableId) {
     var row = table.insertRow(rowCount);
 
     row.innerHTML = `<td>${rowCount}</td>
-        <td><input name="productCode[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
+        <td><input name="kd[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
         <td><input name="productName[]" type="text" placeholder="Otomatis" readonly/></td>
         <td><input name="qty[]" type="text" placeholder="di isi" required/></td>
         <td><input name="uom[]" type="text" placeholder="di isi" required/></td>
-        <td><input name="price_per_uom[]" type="text" placeholder="di isi" required/></td>
+        <td><input name="price_per_uom[]" type="text" placeholder="di isi" oninput="calculateNominal(this)" required/></td>
+        <td><input type="number" inputmode="numeric" name="nominal[]" placeholder="Otomatis" readonly></td>
         <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>`;
 
     applyAutocomplete(row.querySelector('.productCode'));
@@ -83,6 +84,19 @@ function getProductDetails(input) {
             }
         }
     });
+}
+
+function calculateNominal(priceInput) {
+    const row = priceInput.closest('tr'); // Get the closest row to the input
+    const qty = parseFloat(row.querySelector('input[name="qty[]"]').value); // Get the quantity value
+    const price = parseFloat(priceInput.value); // Get the price value
+
+    if (!isNaN(qty) && !isNaN(price)) {
+        const nominal = qty * price; // Calculate the nominal value
+        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(2); // Update the nominal field
+    } else {
+        row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
+    }
 }
 
 function getMovingNO() {
