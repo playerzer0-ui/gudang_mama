@@ -44,17 +44,17 @@
         <tbody>
             <tr>
                 <td>1</td>
-                <td><input name="kd_awal[]" type="text" placeholder="di isi" /></td>
-                <td><input name="material_awal[]" type="text" placeholder="Otomatis" /></td>
+                <td><input name="kd_awal[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" /></td>
+                <td><input name="material_awal[]" type="text" placeholder="Otomatis" readonly/></td>
                 <td><input name="qty_awal[]" type="text" placeholder="di isi" /></td>
                 <td><input name="uom_awal[]" type="text" placeholder="di isi" /></td>
                 <td><input name="note_awal[]" type="text" /></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
             </tr>
         </tbody>
     </table>
     <p>
-        <span class="add-row" onclick="addRow('materialAwalTable')">Add Row</span> | 
-        <span class="add-row" onclick="deleteRow('materialAwalTable')">Delete Row</span>
+        <span class="add-row" onclick="addRow('materialAwalTable')">Add Row</span>
     </p>
 
     <h3>Material Baru</h3>
@@ -72,18 +72,20 @@
         <tbody>
             <tr>
                 <td>1</td>
-                <td><input name="kd_akhir[]" type="text" placeholder="di isi" /></td>
-                <td><input name="material_akhir[]" type="text" placeholder="Otomatis" /></td>
+                <td><input name="kd_akhir[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" /></td>
+                <td><input name="material_akhir[]" type="text" placeholder="Otomatis" readonly/></td>
                 <td><input name="qty_akhir[]" type="text" placeholder="di isi" /></td>
-                <td><input name="uom_akhir[]" type="text" placeholder="Otomatis" /></td>
+                <td><input name="uom_akhir[]" type="text" placeholder="di isi" /></td>
                 <td><input name="note_akhir[]" type="text" /></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
             </tr>
         </tbody>
     </table>
     <p>
-        <span class="add-row" onclick="addRow('materialBaruTable')">Add Row</span> | 
-        <span class="add-row" onclick="deleteRow('materialBaruTable')">Delete Row</span>
+        <span class="add-row" onclick="addRow('materialBaruTable')">Add Row</span>
     </p>
+
+    <button type="submit" class="btn btn-outline-success">Submit</button>
 </form>
 </main>
 
