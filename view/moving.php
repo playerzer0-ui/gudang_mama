@@ -75,9 +75,9 @@
 </main>
 
 <script>
-    // window.onload = function() {
-    //     getRepackNO();
-    // };
+    window.onload = function() {
+        getMovingNO();
+    };
 </script>
 <script src="../js/moving.js"></script>
 

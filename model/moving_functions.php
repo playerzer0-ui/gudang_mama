@@ -5,7 +5,7 @@
     function generate_SJP($storageCode){
         global $db;
 
-        $query = 'SELECT count(*) AS totalIN FROM movings WHERE month(moving_date) = :mon AND year(moving_date) = :yea AND no_repack LIKE "%SJP%"';
+        $query = 'SELECT count(*) AS totalIN FROM movings WHERE month(moving_date) = :mon AND year(moving_date) = :yea';
         $statement = $db->prepare($query);
         $statement->bindValue(":mon", date("m"));
         $statement->bindValue(":yea", date("Y"));
