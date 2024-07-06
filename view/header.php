@@ -61,6 +61,15 @@
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=out_tax">payment tax out</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item dropdown btn btn-outline-primary">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                edit
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">repack</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_moving">moving</a></li>
+                            </ul>
+                        </li>
 
                         <?php if($userType == 1){ ?>
                         <li class="nav-item">

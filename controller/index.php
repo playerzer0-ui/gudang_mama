@@ -9,6 +9,8 @@ require_once "../model/vendor_functions.php";
 require_once "../model/customer_functions.php";
 require_once "../model/order_functions.php";
 require_once "../model/product_functions.php";
+require_once "../model/repack_functions.php";
+require_once "../model/moving_functions.php";
 require_once "../model/order_products_functions.php";
 require_once "../fpdf/fpdf.php";
 require_once "../model/pdf_creation.php";
@@ -98,6 +100,16 @@ switch($action){
         require_once "../view/payment.php";
         break;
 
+    case "show_repack":
+        $title = "repack";
+        require_once "../view/repack.php";
+        break;
+
+    case "show_moving":
+        $title = "moving";
+        require_once "../view/moving.php";
+        break;
+
     case "generate_LPB":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generateNoLPB($storageCode, "1");
@@ -111,6 +123,16 @@ switch($action){
     case "generate_SJT":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generateTaxSJ($storageCode);
+        break;
+
+    case "generate_SJR":
+        $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo generate_SJR($storageCode);
+        break;
+
+    case "generate_SJP":
+        $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo generate_SJP($storageCode);
         break;
     
     case 'getProductSuggestions':

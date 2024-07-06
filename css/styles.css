@@ -38,6 +38,18 @@ th, td {
     padding: 8px;
     text-align: left;
 }
+.header-table td {
+    border: none;
+    text-align: left;
+    padding: 4px;
+}
+.header-table {
+    margin-bottom: 20px;
+}
+.add-row {
+    cursor: pointer;
+    color: blue;
+}
 .form-header {
     background-color: #dff0d8;
 }
