@@ -25,4 +25,24 @@
         return $no . "/SJP/" . $storageCode . "/" . date("m") . "/" . date("Y");
     }
 
+    function create_moving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver){
+        global $db;
+
+        $query = 'INSERT INTO movings VALUES (:no_moving, :moving_date, :storageCodeSender, :storageCodeReceiver)';
+        $statement = $db->prepare($query);
+        $statement->bindValue(":no_moving", $no_moving);
+        $statement->bindValue(":moving_date", $moving_date);
+        $statement->bindValue(":storageCodeSender", $storageCodeSender);
+        $statement->bindValue(":storageCodeReceiver", $storageCodeReceiver);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+
+        $statement->closeCursor();
+    }
+
 ?>
