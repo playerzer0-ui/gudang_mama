@@ -83,4 +83,28 @@ function generateNoLPB($storageCode, $status){
     }
 }
 
+function generateTaxSJ($storageCode){
+    global $db;
+
+    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND nomor_surat_jalan LIKE "%SJT%"';
+    $statement = $db->prepare($query);
+    $statement->bindValue(":mon", date("m"));
+    $statement->bindValue(":yea", date("Y"));
+    $statement->bindValue(":stat", 2);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetch(PDO::FETCH_ASSOC);
+    $no = $result["totalIN"] + 1;
+
+    $statement->closeCursor();
+
+    return $no . "/SJT/" . $storageCode . "/" . date("m") . "/" . date("Y");
+}
+
 ?>

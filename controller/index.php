@@ -107,6 +107,11 @@ switch($action){
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generateNoLPB($storageCode, "2");
         break;
+
+    case "generate_SJT":
+        $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo generateTaxSJ($storageCode);
+        break;
     
     case 'getProductSuggestions':
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
