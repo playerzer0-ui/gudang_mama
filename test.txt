@@ -112,3 +112,7 @@
 <script src="../js/invoice.js" async defer></script>
 
 <?php include "footer.php"; ?>
+
+invoice_date 	no_invoice 	vendorName 	productName 	qty 	price_per_UOM 	nominal 	payment_date 	payment_amount 	remaining 	
+2024-07-04 	INV01 	Coca cola 	Reguler Mono 100 Acetatow 	10 	10.00 	100.00 	2024-07-04 	900000.00 	899900.00
+2024-07-04 	INV01 	Coca cola 	Reguler Falvour 100 Acetatow 	100 	12.00 	1200.00 	2024-07-04 	899900.00 	898700.00

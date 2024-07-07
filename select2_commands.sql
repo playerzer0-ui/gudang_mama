@@ -83,4 +83,35 @@ and m.no_moving = op.moving_no_moving
 and op.productCode = pr.productCode;
 
 
--- LAPORAN STOCK
+-- LAPORAN HUTANG
+SELECT 
+    i.invoice_date, 
+    i.no_invoice, 
+    v.vendorName, 
+    pr.productName, 
+    op.qty, 
+    op.price_per_UOM, 
+    (op.qty * op.price_per_UOM) AS nominal, 
+    p.payment_date, 
+    p.payment_amount, 
+    (p.payment_amount - (op.qty * op.price_per_UOM)) AS remaining
+FROM 
+    orders o
+JOIN 
+    invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+JOIN 
+    vendors v ON o.vendorCode = v.vendorCode
+JOIN 
+    order_products op ON o.nomor_surat_jalan = op.nomor_surat_jalan
+JOIN 
+    products pr ON op.productCode = pr.productCode
+LEFT JOIN 
+    payments p ON o.nomor_surat_jalan = p.nomor_surat_jalan
+WHERE 
+    MONTH(i.invoice_date) = 7
+    AND YEAR(i.invoice_date) = 2024
+    AND o.storageCode = 'APA';
+
+
+
+

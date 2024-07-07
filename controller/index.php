@@ -110,6 +110,16 @@ switch($action){
         require_once "../view/moving.php";
         break;
 
+    case "show_hutang":
+        $title = "hutang";
+        require_once "../view/hutang.php";
+        break;
+
+    case "show_piutang":
+        $title = "piutang";
+        require_once "../view/piutang.php";
+        break;
+
     case "generate_LPB":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generateNoLPB($storageCode, "1");
