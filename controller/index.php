@@ -364,6 +364,12 @@ switch($action){
         $storageCode = filter_input(INPUT_GET, "storageCode");
         echo json_encode(getLaporanHutang($month, $year, $storageCode));
         break;
+
+    case "getLaporanPiutang":
+        $month = filter_input(INPUT_GET, "month");
+        $year = filter_input(INPUT_GET, "year");
+        echo json_encode(getLaporanPiutang($month, $year));
+        break;
 }
 
 

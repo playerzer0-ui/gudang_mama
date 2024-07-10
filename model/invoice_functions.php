@@ -168,7 +168,7 @@
                 $groupedData[$invoiceKey] = [
                     'invoice_date' => $row['invoice_date'],
                     'no_invoice' => $row['no_invoice'],
-                    'vendorName' => $row['vendorName'],
+                    'customerName' => $row['customerName'],
                     'payment_date' => $row['payment_date'],
                     'payment_amount' => $row['payment_amount'],
                     'totalQty' => 0,
