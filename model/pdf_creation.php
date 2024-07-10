@@ -112,7 +112,7 @@ function create_invoice_out_pdf($storageName, $customerName, $no_sj, $customerAd
     $pdf->SetFont('Arial', 'B', 8);
 
     // Header
-    $pdf->Cell(130, 10, 'INVOICE IN', 0, 1, 'C');
+    $pdf->Cell(130, 10, 'INVOICE OUT', 0, 1, 'C');
 
     // PT and Vendor details
     $pdf->SetFont('Arial', '', 6);

@@ -56,3 +56,8 @@ th, td {
 .highlight {
     background-color: #ffff99;
 }
+
+.not-paid {
+    color: red;
+    font-weight: bold;
+}

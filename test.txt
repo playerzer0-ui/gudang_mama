@@ -116,3 +116,31 @@
 invoice_date 	no_invoice 	vendorName 	productName 	qty 	price_per_UOM 	nominal 	payment_date 	payment_amount 	remaining 	
 2024-07-04 	INV01 	Coca cola 	Reguler Mono 100 Acetatow 	10 	10.00 	100.00 	2024-07-04 	900000.00 	899900.00
 2024-07-04 	INV01 	Coca cola 	Reguler Falvour 100 Acetatow 	100 	12.00 	1200.00 	2024-07-04 	899900.00 	898700.00
+
+$query = "SELECT 
+            i.invoice_date, 
+            i.no_invoice, 
+            v.vendorName, 
+            pr.productName, 
+            op.qty, 
+            op.price_per_UOM, 
+            (op.qty * op.price_per_UOM) AS nominal, 
+            p.payment_date, 
+            p.payment_amount, 
+            (p.payment_amount - (op.qty * op.price_per_UOM)) AS remaining
+        FROM 
+            orders o
+        JOIN 
+            invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+        JOIN 
+            vendors v ON o.vendorCode = v.vendorCode
+        JOIN 
+            order_products op ON o.nomor_surat_jalan = op.nomor_surat_jalan
+        JOIN 
+            products pr ON op.productCode = pr.productCode
+        LEFT JOIN 
+            payments p ON o.nomor_surat_jalan = p.nomor_surat_jalan
+        WHERE 
+            MONTH(i.invoice_date) = :mon
+            AND YEAR(i.invoice_date) = :yea
+            AND o.storageCode = :storageCode";

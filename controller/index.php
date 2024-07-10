@@ -357,6 +357,13 @@ switch($action){
         $price_per_uom = array(1232, 123, 123);
         create_payment_out_pdf("APA", "GWEN", "1/SJK/APA/07/204", "alamat jln seen", "213213213231", "2024-11-11", "213", $productCodes, $productNames, $qtys, $uoms, $price_per_uom, "121", "1000000000000");
         break;
+
+    case "getLaporanHutang":
+        $month = filter_input(INPUT_GET, "month");
+        $year = filter_input(INPUT_GET, "year");
+        $storageCode = filter_input(INPUT_GET, "storageCode");
+        echo json_encode(getLaporanHutang($month, $year, $storageCode));
+        break;
 }
 
 

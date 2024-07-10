@@ -60,7 +60,7 @@
                     <td colspan="2"><input name="no_truk" type="text" id="no_truk" placeholder="Otomatis dari sistem" readonly></td>
                     <td>No Invoice</td>
                     <td>:</td>
-                    <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="di isi" readonly></td>
+                    <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="di isi" required></td>
                 <?php } else { ?>
                     <td>Tgl invoice</td>
                     <td>:</td>
