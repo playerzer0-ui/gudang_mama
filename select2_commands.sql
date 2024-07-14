@@ -112,6 +112,9 @@ WHERE
     AND YEAR(i.invoice_date) = 2024
     AND o.storageCode = 'APA';
 
-
-
-
+delete from order_products;
+delete from payments;
+delete from invoices;
+delete from orders;
+delete from repacks;
+delete from movings;

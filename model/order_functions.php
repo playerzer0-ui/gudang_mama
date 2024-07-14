@@ -57,11 +57,17 @@ function getOrderByNoSJ($no_sj){
 function generateNoLPB($storageCode, $status){
     global $db;
 
-    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat';
+    if($status == 1){
+        $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND no_LPB LIKE :storageCode';
+    }
+    else{
+        $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND nomor_surat_jalan LIKE :storageCode';
+    }
     $statement = $db->prepare($query);
     $statement->bindValue(":mon", date("m"));
     $statement->bindValue(":yea", date("Y"));
     $statement->bindValue(":stat", $status);
+    $statement->bindValue(":storageCode", "%" . $storageCode . "%");
 
     try {
         $statement->execute();

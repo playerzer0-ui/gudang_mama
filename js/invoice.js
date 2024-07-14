@@ -102,6 +102,7 @@ function getDetailsFromSJ(){
             let data = JSON.parse(response);
             let newRow;
             let rowCount = 1;
+            table.innerHTML = "";
 
             data.forEach(item => {
                 newRow = table.insertRow();

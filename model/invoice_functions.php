@@ -24,6 +24,31 @@
         $statement->closeCursor();
     }
 
+    function generateNoInvoice($storageCode, $month, $year){
+        global $db;
+        
+        $query = 'SELECT count(*) AS totalIN FROM invoices WHERE month(invoice_date) = :mon AND year(invoice_date) = :yea AND no_invoice LIKE :storageCode';
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(":mon", $month);
+        $statement->bindValue(":yea", $year);
+        $statement->bindValue(":storageCode", "%" . $storageCode . "%");
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        $no = $result["totalIN"] + 1;
+    
+        $statement->closeCursor();
+    
+        return $no . "/INV/" . $storageCode . "/" . $month . "/" . $year;
+    }
+
     function getInvoiceByNoSJ($nomor_surat_jalan){
         global $db;
 
