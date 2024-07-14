@@ -10,12 +10,22 @@
                 <td>PT</td>
                 <td>:</td>
                 <td colspan="2">
-                    <?php if($pageState == "out" || $pageState == "out_tax"){ ?>
+                    <?php if($pageState == "out"){ ?>
                         <select name="storageCode" id="storageCode" readonly>
                             <option value="NON" selected>none</option>
                         </select>
                     <?php } else if($pageState == "in") { ?>
                         <select name="storageCode" id="storageCode" onchange="getLPB()" readonly>
+                        <?php foreach (getAllStorages() as $key) { ?>
+                            <?php if($key["storageCode"] == "NON") { ?>
+                                <option value="<?php echo $key["storageCode"]; ?>" selected><?php echo $key["storageName"]; ?></option>
+                            <?php } else { ?>
+                                <option value="<?php echo $key["storageCode"]; ?>"><?php echo $key["storageName"]; ?></option>
+                            <?php } ?>
+                        <?php } ?>
+                        </select>
+                    <?php } else if($pageState == "out_tax") { ?>
+                        <select name="storageCode" id="storageCode" onchange="getSJT()" readonly>
                         <?php foreach (getAllStorages() as $key) { ?>
                             <?php if($key["storageCode"] == "NON") { ?>
                                 <option value="<?php echo $key["storageCode"]; ?>" selected><?php echo $key["storageName"]; ?></option>

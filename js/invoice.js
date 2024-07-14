@@ -9,10 +9,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    let invoice_dateEl = document.getElementById("invoice_date");
+
+    // Get today's date
+    let today = new Date();
+
+    // Format the date to YYYY-MM-DD
+    let year = today.getFullYear();
+    let month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero if needed
+    let day = String(today.getDate()).padStart(2, '0'); // Pad day with zero if needed
+
+    let formattedDate = `${year}-${month}-${day}`;
+
+    // Set the value of the date input to today's date
+    invoice_dateEl.value = formattedDate;
+});
+
+
 function handleFormSubmit(event) {
     event.preventDefault(); // Prevent the default form submission
 
     var form = document.getElementById('myForm');
+
+    // Check if the form is valid
+    if (!form.checkValidity()) {
+        // If the form is not valid, trigger the browser's validation UI
+        form.reportValidity();
+        return;
+    }
     var formData = new FormData(form);
 
     // Add a flag to indicate PDF generation
@@ -85,6 +110,7 @@ function getDetailsFromSJ(){
                 customerCode.value = data.customerCode;
                 customerAddress.value = data.customerAddress;
                 npwp.value = data.customerNPWP;
+                generateNoInvoice();
             }
         }
     });
@@ -116,6 +142,28 @@ function getDetailsFromSJ(){
                     <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
                 `;
             });
+        }
+    });
+}
+
+function generateNoInvoice(){
+    let invoice_dateEl = document.getElementById("invoice_date");
+    let no_invoiceEl = document.getElementById("no_invoice");
+    let sCode = document.getElementById("storageCode").value;
+
+    let dateValue = invoice_dateEl.value;
+    let date = new Date(dateValue);
+    let mon = date.getMonth() + 1;
+    let yea = date.getFullYear();
+
+    $.ajax({
+        type: "get",
+        url: "../controller/index.php?action=generateNoInvoice&storageCode=" + sCode + "&month=" + mon + "&year=" + yea,
+        success: function (response) {
+            no_invoiceEl.value = response;
+        },
+        error: function(xhr, status, error) {
+            console.error("Error: " + error);
         }
     });
 }

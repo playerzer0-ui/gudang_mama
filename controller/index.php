@@ -144,6 +144,13 @@ switch($action){
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generate_SJP($storageCode);
         break;
+
+    case "generateNoInvoice":
+        $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $month = filter_input(INPUT_GET, "month", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $year = filter_input(INPUT_GET, "year", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo generateNoInvoice($storageCode, $month, $year);
+        break;
     
     case 'getProductSuggestions':
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_FULL_SPECIAL_CHARS);

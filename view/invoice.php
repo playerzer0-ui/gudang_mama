@@ -47,7 +47,7 @@
                 <?php } else { ?>
                     <td>No Invoice</td>
                     <td>:</td>
-                    <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="di isi" required></td>
+                    <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="otomatis dari sistem" readonly></td>
                     <td>NPWP</td>
                     <td>:</td>
                     <td colspan="2"><input name="npwp" type="text" id="npwp" placeholder="Otomatis dari sistem" readonly></td>
@@ -64,7 +64,7 @@
                 <?php } else { ?>
                     <td>Tgl invoice</td>
                     <td>:</td>
-                    <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" required></td>
+                    <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" oninput="generateNoInvoice()" required></td>
                     <td colspan="4"></td>
                 <?php } ?>
             </tr>

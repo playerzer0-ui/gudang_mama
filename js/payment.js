@@ -13,6 +13,13 @@ function handleFormSubmit(event) {
     event.preventDefault(); // Prevent the default form submission
 
     var form = document.getElementById('myForm');
+
+    // Check if the form is valid
+    if (!form.checkValidity()) {
+        // If the form is not valid, trigger the browser's validation UI
+        form.reportValidity();
+        return;
+    }
     var formData = new FormData(form);
 
     // Add a flag to indicate PDF generation

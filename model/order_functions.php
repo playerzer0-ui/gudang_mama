@@ -92,11 +92,12 @@ function generateNoLPB($storageCode, $status){
 function generateTaxSJ($storageCode){
     global $db;
 
-    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND nomor_surat_jalan LIKE "%SJT%"';
+    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND nomor_surat_jalan LIKE "%SJT%" AND nomor_surat_jalan LIKE :storageCode';
     $statement = $db->prepare($query);
     $statement->bindValue(":mon", date("m"));
     $statement->bindValue(":yea", date("Y"));
     $statement->bindValue(":stat", 2);
+    $statement->bindValue(":storageCode", "%" . $storageCode . "%");
 
     try {
         $statement->execute();

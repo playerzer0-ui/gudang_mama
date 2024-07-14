@@ -45,6 +45,10 @@
         $no = $result["totalIN"] + 1;
     
         $statement->closeCursor();
+
+        if($month < 10){
+            $month = "0" . $month;
+        }
     
         return $no . "/INV/" . $storageCode . "/" . $month . "/" . $year;
     }
@@ -79,9 +83,9 @@
             op.qty, 
             op.price_per_UOM, 
             (op.qty * op.price_per_UOM) AS nominal, 
-            p.payment_date, 
-            p.payment_amount, 
-            (p.payment_amount - (op.qty * op.price_per_UOM)) AS remaining
+            COALESCE(p.payment_date, NULL) AS payment_date, 
+            COALESCE(p.payment_amount, 0) AS payment_amount, 
+            (COALESCE(p.payment_amount, 0) - (op.qty * op.price_per_UOM)) AS remaining
         FROM 
             orders o
         JOIN 
@@ -133,11 +137,11 @@
             $groupedData[$invoiceKey]['rows'][] = $row;
             $groupedData[$invoiceKey]['totalQty'] += $row['qty'];
             $groupedData[$invoiceKey]['totalNominal'] += $row['nominal'];
-            $groupedData[$invoiceKey]['totalRemaining'] += $row['payment_amount'] - $row['nominal'];
+            $groupedData[$invoiceKey]['totalRemaining'] += $row['remaining'];
         }
     
         return array_values($groupedData);
-    }
+    }    
 
     function getLaporanPiutang($month, $year) {
         global $db;
@@ -150,9 +154,9 @@
             op.qty, 
             op.price_per_UOM, 
             (op.qty * op.price_per_UOM) AS nominal, 
-            p.payment_date, 
-            p.payment_amount, 
-            (p.payment_amount - (op.qty * op.price_per_UOM)) AS remaining
+            COALESCE(p.payment_date, NULL) AS payment_date, 
+            COALESCE(p.payment_amount, 0) AS payment_amount, 
+            (COALESCE(p.payment_amount, 0) - (op.qty * op.price_per_UOM)) AS remaining
         FROM 
             orders o
         JOIN 
@@ -205,10 +209,11 @@
             $groupedData[$invoiceKey]['rows'][] = $row;
             $groupedData[$invoiceKey]['totalQty'] += $row['qty'];
             $groupedData[$invoiceKey]['totalNominal'] += $row['nominal'];
-            $groupedData[$invoiceKey]['totalRemaining'] += $row['payment_amount'] - $row['nominal'];
+            $groupedData[$invoiceKey]['totalRemaining'] += $row['remaining'];
         }
     
         return array_values($groupedData);
     }
+    
 
 ?>
