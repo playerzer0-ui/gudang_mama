@@ -2,26 +2,22 @@
 
 require_once "database.php";
 
-function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCustomerCode, $order_date, $purchase_order, $status){
+function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $status){
     global $db;
 
-    if($status == 1){
-        $query = 'INSERT INTO orders
-        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCustomerCode, "NON", :order_date, :purchase_order, "1")';
-    }
-    else{
-        $query = 'INSERT INTO orders
-        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, "NON", :vendorCustomerCode, :order_date, :purchase_order, "2")';
-    }
+    $query = 'INSERT INTO orders
+        VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCode, :customerCode, :order_date, :purchase_order, :stat)';
 
     $statement = $db->prepare($query);
     $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
     $statement->bindValue(":storageCode", $storageCode);
     $statement->bindValue(":no_LPB", $no_LPB);
     $statement->bindValue(":no_truk", $no_truk);
-    $statement->bindValue(":vendorCustomerCode", $vendorCustomerCode);
+    $statement->bindValue(":vendorCode", $vendorCode);
+    $statement->bindValue(":customerCode", $customerCode);
     $statement->bindValue(":order_date", $order_date);
     $statement->bindValue(":purchase_order", $purchase_order);
+    $statement->bindValue(":stat", $status);
 
     try {
         $statement->execute();
@@ -96,7 +92,7 @@ function generateTaxSJ($storageCode){
     $statement = $db->prepare($query);
     $statement->bindValue(":mon", date("m"));
     $statement->bindValue(":yea", date("Y"));
-    $statement->bindValue(":stat", 2);
+    $statement->bindValue(":stat", 3);
     $statement->bindValue(":storageCode", "%" . $storageCode . "%");
 
     try {

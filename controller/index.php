@@ -194,15 +194,21 @@ switch($action){
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if($pageState == "in"){
-            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $order_date, $purchase_order, 1);
+            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, 1);
             for($i = 0; $i < count($productCodes); $i++){
                 addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "in");
             }
         }
-        else{
-            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $customerCode, $order_date, $purchase_order, 2);
+        else if($pageState == "out"){
+            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, 2);
             for($i = 0; $i < count($productCodes); $i++){
                 addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "out");
+            }
+        }
+        else{
+            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, 3);
+            for($i = 0; $i < count($productCodes); $i++){
+                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "out_tax");
             }
         }
 

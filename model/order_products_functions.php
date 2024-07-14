@@ -14,6 +14,10 @@ function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
             $query = 'INSERT INTO order_products VALUES (:no_id,"-","-", :productCode, :qty, :UOM, :price_per_UOM, :note, "out")';
             break;
 
+        case "out_tax":
+            $query = 'INSERT INTO order_products VALUES (:no_id,"-","-", :productCode, :qty, :UOM, :price_per_UOM, :note, "out_tax")';
+            break;
+
         case "repack_awal":
             $query = 'INSERT INTO order_products VALUES ("-","-",:no_id, :productCode, :qty, :UOM, :price_per_UOM, :note, "repack_awal")';
             break;
