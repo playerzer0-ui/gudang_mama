@@ -30,7 +30,7 @@
             <?php } else { ?>
                 <td>No SJ</td>
                 <td>:</td>
-                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
+                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" required></td>
                 <td>Alamat</td>
                 <td>:</td>
                 <td colspan="2"><input name="customerAddress" type="text" id="customerAddress" placeholder="Otomatis dari sistem" readonly></td>
@@ -40,7 +40,7 @@
             <?php if ($pageState == "in") { ?>
                 <td>No SJ</td>
                 <td>:</td>
-                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
+                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" required></td>
                 <td>Tgl invoice</td>
                 <td>:</td>
                 <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" readonly></td>
@@ -96,13 +96,15 @@
         </tr>
         <tr>
             <td>nilai payment: </td>
-            <td><input type="number" inputmode="numeric" name="payment_amount" id="payment_amount" required></td>
+            <td>
+                <input type="number" inputmode="numeric" name="payment_amount" id="payment_amount" oninput="calculateHutang()" required>
+            </td>
             <td>PPN (11%): </td>
             <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" disabled></td>
         </tr>
         <tr>
-            <td></td>
-            <td></td>
+            <td>sisa hutang: </td>
+            <td><span id="remaining">0</span></td>
             <td>nilai dibayar: </td>
             <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" disabled></td>
         </tr>

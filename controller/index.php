@@ -311,6 +311,30 @@ switch($action){
         header("Location:../controller/index.php?action=dashboard");
         break;
 
+    case "calculateHutang":
+        $no_sj = filter_input(INPUT_GET, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $remaining = 0;
+
+        if($no_sj != null){
+            $payment_amount = filter_input(INPUT_GET, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $totalNominal = getTotalNominalByNoSJ($no_sj)["totalNominal"];
+            $totalPayment = getTotalPayment($no_sj)["totalPayment"];
+            
+            $totalNominal = $totalNominal + ($totalNominal * 0.11);
+            if($payment_amount != null){
+                $remaining = $totalNominal - $totalPayment - $payment_amount;
+                echo $remaining;
+            }
+            else{
+                $remaining = $totalNominal - $totalPayment;
+                echo $remaining;
+            }
+        }
+        else{
+            echo $remaining;
+        }
+        break;
+
     case "create_repack":
         $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $repack_date = filter_input(INPUT_POST, "repack_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);

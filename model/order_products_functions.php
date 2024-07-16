@@ -119,4 +119,24 @@ function updatePriceForProductsMoving($no_id, $productCode, $price_per_UOM){
     $statement->closeCursor();
 }
 
+function getTotalNominalByNoSJ($no_sj){
+    global $db;
+
+    $query = "SELECT SUM(qty * price_per_UOM) AS totalNominal FROM order_products WHERE nomor_surat_jalan = :no_sj";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(":no_sj", $no_sj);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetch(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $result;
+}
+
 ?>

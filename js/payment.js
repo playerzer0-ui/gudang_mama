@@ -147,6 +147,21 @@ function getDetailsFromSJ(){
     });
 }
 
+function calculateHutang(){
+    let amount = document.getElementById("payment_amount").value;
+    let remaining = document.getElementById("remaining");
+    let no_sjEl = document.getElementById("no_sj").value;
+
+    $.ajax({
+        type: "get",
+        url: "../controller/index.php",
+        data: {action: "calculateHutang", payment_amount: amount, no_sj: no_sjEl},
+        success: function (response) {
+            remaining.innerHTML = response;
+        }
+    });
+}
+
 function calculateNominal(priceInput) {
     const row = priceInput.closest('tr'); // Get the closest row to the input
     const qty = parseFloat(row.querySelector('input[name="qty[]"]').value); // Get the quantity value
