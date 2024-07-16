@@ -118,3 +118,12 @@ delete from invoices;
 delete from orders;
 delete from repacks;
 delete from movings;
+
+insert into orders values ("-", "NON", "-", "-", "NON", "NON", null, "-", "0");
+insert into repacks values ("-", NULL, "NON");
+insert into movings values ("-", NULL, "NON", "NON");
+insert into orders values ("001/SJJ/SOME/12/2024", "APA", "001/LPB/APA/12/2024", "001202130", "WIM", "NON", "2024-07-16", "1212213", "1");
+insert into order_products values ("001/SJJ/SOME/12/2024","-","-", "RR-120-A", 100, "tray", 2000, "something", "in");
+insert into order_products values ("001/SJJ/SOME/12/2024","-","-", "RR-100-A", 80, "tray", 100, "something", "in");
+insert into invoices values ("001/SJJ/SOME/12/2024", "2024-07-16", "001", "99.99.12312-213");
+insert into payments values ("001/SJJ/SOME/12/2024", "2024-07-16", "123231");
