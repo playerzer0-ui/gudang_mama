@@ -140,32 +140,64 @@
     function getLaporanHutangPiutang($month, $year, $storageCode, $mode) {
         $groupData = [];
         $hutangDetails = getHutangDetails($month, $year, $storageCode, $mode);
-        foreach($hutangDetails as $details){
-            $hutangKey = $details["nomor_surat_jalan"];
-            if(!isset($groupData[$hutangKey])){
-                $groupData[$hutangKey] = [
-                    "invoice_date" => $details["invoice_date"],
-                    "no_invoice" => $details["no_invoice"],
-                    "vendorName" => $details["vendorName"],
-                    "payments" => [],
-                    "products" => []
-                ];
-
-                $productsList = getProductsForHutang($hutangKey);
-                foreach($productsList as $key){
-                    array_push($groupData[$hutangKey]["products"], [
-                        "productCode" => $key["productCode"],
-                        "qty" => $key["qty"],
-                        "price_per_UOM" => $key["price_per_UOM"],
-                        "nominal" => $key["nominal"]
-                    ]);
+        
+        if($mode == "hutang"){
+            foreach($hutangDetails as $details){
+                $hutangKey = $details["nomor_surat_jalan"];
+                if(!isset($groupData[$hutangKey])){
+                    $groupData[$hutangKey] = [
+                        "invoice_date" => $details["invoice_date"],
+                        "no_invoice" => $details["no_invoice"],
+                        "vendorName" => $details["vendorName"],
+                        "payments" => [],
+                        "products" => []
+                    ];
+    
+                    $productsList = getProductsForHutang($hutangKey);
+                    foreach($productsList as $key){
+                        array_push($groupData[$hutangKey]["products"], [
+                            "productCode" => $key["productCode"],
+                            "qty" => $key["qty"],
+                            "price_per_UOM" => $key["price_per_UOM"],
+                            "nominal" => $key["nominal"]
+                        ]);
+                    }
                 }
+    
+                array_push($groupData[$hutangKey]["payments"], [
+                    "payment_date" => $details["payment_date"],
+                    "payment_amount" => $details["payment_amount"]
+                ]);
             }
-
-            array_push($groupData[$hutangKey]["payments"], [
-                "payment_date" => $details["payment_date"],
-                "payment_amount" => $details["payment_amount"]
-            ]);
+        }
+        else{
+            foreach($hutangDetails as $details){
+                $hutangKey = $details["nomor_surat_jalan"];
+                if(!isset($groupData[$hutangKey])){
+                    $groupData[$hutangKey] = [
+                        "invoice_date" => $details["invoice_date"],
+                        "no_invoice" => $details["no_invoice"],
+                        "customerName" => $details["customerName"],
+                        "payments" => [],
+                        "products" => []
+                    ];
+    
+                    $productsList = getProductsForHutang($hutangKey);
+                    foreach($productsList as $key){
+                        array_push($groupData[$hutangKey]["products"], [
+                            "productCode" => $key["productCode"],
+                            "qty" => $key["qty"],
+                            "price_per_UOM" => $key["price_per_UOM"],
+                            "nominal" => $key["nominal"]
+                        ]);
+                    }
+                }
+    
+                array_push($groupData[$hutangKey]["payments"], [
+                    "payment_date" => $details["payment_date"],
+                    "payment_amount" => $details["payment_amount"]
+                ]);
+            }
         }
 
         return array_values($groupData);

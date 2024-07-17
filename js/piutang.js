@@ -47,7 +47,7 @@ function populateTable(data) {
                 <th>total nominal</th>
                 <th>Tgl Pembayaran</th>
                 <th>Nilai Bayar</th>
-                <th>Sisa Hutang</th>
+                <th>Sisa Piutang</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -61,11 +61,18 @@ function populateTable(data) {
     let totalRemaining = 0;
 
     data.forEach((invoice, index) => {
-        const rowCount = invoice.rows.length;
+        const productCount = invoice.products.length;
+        const paymentCount = invoice.payments.length;
+        const rowCount = Math.max(productCount, paymentCount);
         let firstRow = true;
 
-        invoice.rows.forEach(row => {
+        const invoiceTotalNominal = invoice.products.reduce((sum, product) => sum + parseFloat(product.nominal), 0);
+        const invoiceTotalPayment = invoice.payments.reduce((sum, payment) => sum + parseFloat(payment.payment_amount), 0);
+        const invoiceRemaining = invoiceTotalNominal - invoiceTotalPayment;
+
+        for (let i = 0; i < rowCount; i++) {
             const tr = document.createElement('tr');
+
             if (firstRow) {
                 tr.innerHTML += `<td rowspan="${rowCount}">${rowNumber}</td>`;
                 tr.innerHTML += `<td rowspan="${rowCount}">${invoice.invoice_date}</td>`;
@@ -73,32 +80,39 @@ function populateTable(data) {
                 tr.innerHTML += `<td rowspan="${rowCount}">${invoice.no_invoice}</td>`;
             }
 
-            tr.innerHTML += `<td>${row.productName}</td>`;
-            tr.innerHTML += `<td>${row.qty}</td>`;
-            tr.innerHTML += `<td>${formatNumber(row.price_per_UOM)}</td>`;
-            tr.innerHTML += `<td>${formatNumber(row.nominal)}</td>`;
+            if (i < productCount) {
+                const product = invoice.products[i];
+                tr.innerHTML += `<td>${product.productCode}</td>`;
+                tr.innerHTML += `<td>${product.qty}</td>`;
+                tr.innerHTML += `<td>${formatNumber(product.price_per_UOM)}</td>`;
+                tr.innerHTML += `<td>${formatNumber(product.nominal)}</td>`;
+                if (firstRow) {
+                    tr.innerHTML += `<td rowspan="${rowCount}">${formatNumber(invoiceTotalNominal)}</td>`;
+                }
+            } else {
+                tr.innerHTML += `<td colspan="4"></td>`;
+            }
 
-            if (firstRow) {
-                tr.innerHTML += `<td rowspan="${rowCount}">${formatNumber(invoice.totalNominal)}</td>`;
-                tr.innerHTML += `<td rowspan="${rowCount}">${invoice.payment_date}</td>`;
-                tr.innerHTML += `<td rowspan="${rowCount}">${formatNumber(invoice.payment_amount)}</td>`;
-                if(formatNumber(invoice.payment_amount - invoice.totalNominal) < 0){
-                    tr.innerHTML += `<td class="not-paid" rowspan="${rowCount}">${formatNumber(invoice.payment_amount - invoice.totalNominal)}</td>`;
+            if (i < paymentCount) {
+                const payment = invoice.payments[i];
+                tr.innerHTML += `<td>${payment.payment_date}</td>`;
+                tr.innerHTML += `<td>${formatNumber(payment.payment_amount)}</td>`;
+                if (firstRow) {
+                    tr.innerHTML += `<td rowspan="${rowCount}"${invoiceRemaining < 0 ? ' class="not-paid"' : ''}>${formatNumber(invoiceRemaining)}</td>`;
                 }
-                else{
-                    tr.innerHTML += `<td rowspan="${rowCount}">${formatNumber(invoice.payment_amount - invoice.totalNominal)}</td>`;
-                }
-                firstRow = false;
+            } else {
+                tr.innerHTML += `<td colspan="2"></td>`;
             }
 
             tbody.appendChild(tr);
-        });
+            firstRow = false;
+        }
 
         rowNumber++;
-        totalQty += invoice.totalQty;
-        totalNominal += invoice.totalNominal;
-        totalPayment += parseFloat(invoice.payment_amount);
-        totalRemaining += invoice.payment_amount - invoice.totalNominal;
+        totalQty += invoice.products.reduce((sum, p) => sum + parseInt(p.qty), 0);
+        totalNominal += invoiceTotalNominal;
+        totalPayment += invoiceTotalPayment;
+        totalRemaining += invoiceRemaining;
     });
 
     const totalRow = document.createElement('tr');
@@ -116,5 +130,5 @@ function populateTable(data) {
 }
 
 function formatNumber(number) {
-    return new Intl.NumberFormat('id-ID', { style: 'decimal', maximumFractionDigits: 0 }).format(number);
+    return new Intl.NumberFormat('id-ID', { style: 'decimal', maximumFractionDigits: 2 }).format(number);
 }

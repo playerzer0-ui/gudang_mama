@@ -387,37 +387,8 @@ switch($action){
         break;
 
     case "test":
-        $groupData = [];
-        $hutangDetails = getHutangDetails(7, 2024, "APA", "hutang");
-        foreach($hutangDetails as $details){
-            $hutangKey = $details["nomor_surat_jalan"];
-            if(!isset($groupData[$hutangKey])){
-                $groupData[$hutangKey] = [
-                    "invoice_date" => $details["invoice_date"],
-                    "no_invoice" => $details["no_invoice"],
-                    "vendorName" => $details["vendorName"],
-                    "payments" => [],
-                    "products" => []
-                ];
-
-                $productsList = getProductsForHutang($hutangKey);
-                foreach($productsList as $key){
-                    array_push($groupData[$hutangKey]["products"], [
-                        "productCode" => $key["productCode"],
-                        "qty" => $key["qty"],
-                        "price_per_UOM" => $key["price_per_UOM"],
-                        "nominal" => $key["nominal"]
-                    ]);
-                }
-            }
-
-            array_push($groupData[$hutangKey]["payments"], [
-                "payment_date" => $details["payment_date"],
-                "payment_amount" => $details["payment_amount"]
-            ]);
-        }
         echo "<br>";
-        echo "<pre>" . print_r(array_values($groupData), true) . "</pre>";
+        echo "<pre>" . print_r(getLaporanHutangPiutang(7, 2024, "NON", "piutang"), true) . "</pre>";
         // $products = getProductsForHutang("001/SJJ/SOME/12/2024");
         // var_dump($products);
         break;
