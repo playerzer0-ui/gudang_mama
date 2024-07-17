@@ -1,6 +1,7 @@
 <?php
 
     require_once "database.php";
+    require_once "../model/order_products_functions.php";
 
     function create_invoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur){
         global $db;
@@ -72,148 +73,101 @@
         return $result;
     }
 
-    function getLaporanHutang($month, $year, $storageCode) {
+    function getHutangDetails($month, $year, $storageCode, $mode){
         global $db;
-    
-        $query = "SELECT 
-            i.invoice_date, 
-            i.no_invoice, 
-            v.vendorName, 
-            pr.productName, 
-            op.qty, 
-            op.price_per_UOM, 
-            (op.qty * op.price_per_UOM) AS nominal, 
-            COALESCE(p.payment_date, NULL) AS payment_date, 
-            COALESCE(p.payment_amount, 0) AS payment_amount, 
-            (COALESCE(p.payment_amount, 0) - (op.qty * op.price_per_UOM)) AS remaining
-        FROM 
-            orders o
-        JOIN 
-            invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
-        JOIN 
-            vendors v ON o.vendorCode = v.vendorCode
-        JOIN 
-            order_products op ON o.nomor_surat_jalan = op.nomor_surat_jalan
-        JOIN 
-            products pr ON op.productCode = pr.productCode
-        LEFT JOIN 
-            payments p ON o.nomor_surat_jalan = p.nomor_surat_jalan
-        WHERE 
-            MONTH(i.invoice_date) = :mon
-            AND YEAR(i.invoice_date) = :yea
-            AND o.storageCode = :storageCode";
-    
+
+        if($mode == "hutang"){
+            $query = 'SELECT 
+                o.nomor_surat_jalan,
+                i.invoice_date, 
+                i.no_invoice, 
+                v.vendorName, 
+                COALESCE(p.payment_date, "-") AS payment_date, 
+                COALESCE(p.payment_amount, 0) AS payment_amount
+            FROM 
+                orders o
+            JOIN 
+                invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+            JOIN 
+                vendors v ON o.vendorCode = v.vendorCode
+            LEFT JOIN 
+                payments p ON o.nomor_surat_jalan = p.nomor_surat_jalan
+            WHERE 
+                MONTH(i.invoice_date) = :mon
+                AND YEAR(i.invoice_date) = :yea
+                AND o.storageCode = :storageCode
+                AND o.status_mode = 1';
+        }
+        else{
+            $query = 'SELECT 
+                o.nomor_surat_jalan,
+                i.invoice_date, 
+                i.no_invoice, 
+                c.customerName, 
+                COALESCE(p.payment_date, "-") AS payment_date, 
+                COALESCE(p.payment_amount, 0) AS payment_amount
+            FROM 
+                orders o
+            JOIN 
+                invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+            JOIN 
+                customers c ON o.customerCode = c.customerCode
+            LEFT JOIN 
+                payments p ON o.nomor_surat_jalan = p.nomor_surat_jalan
+            WHERE 
+                MONTH(i.invoice_date) = :mon
+                AND YEAR(i.invoice_date) = :yea
+                AND o.storageCode = :storageCode
+                AND o.status_mode = 2';
+        }
+
         $statement = $db->prepare($query);
         $statement->bindValue(':mon', $month);
         $statement->bindValue(':yea', $year);
         $statement->bindValue(':storageCode', $storageCode);
-    
-        try {
-            $statement->execute();
-        } catch (PDOException $ex) {
-            echo $ex->getMessage();
-        }
-    
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-    
-        // Group data by invoice
-        $groupedData = [];
-        foreach ($result as $row) {
-            $invoiceKey = $row['invoice_date'] . '-' . $row['no_invoice'];
-            if (!isset($groupedData[$invoiceKey])) {
-                $groupedData[$invoiceKey] = [
-                    'invoice_date' => $row['invoice_date'],
-                    'no_invoice' => $row['no_invoice'],
-                    'vendorName' => $row['vendorName'],
-                    'payment_date' => $row['payment_date'],
-                    'payment_amount' => $row['payment_amount'],
-                    'totalQty' => 0,
-                    'totalNominal' => 0,
-                    'totalRemaining' => 0,
-                    'rows' => []
-                ];
-            }
-            $groupedData[$invoiceKey]['rows'][] = $row;
-            $groupedData[$invoiceKey]['totalQty'] += $row['qty'];
-            $groupedData[$invoiceKey]['totalNominal'] += $row['nominal'];
-            $groupedData[$invoiceKey]['totalRemaining'] += $row['remaining'];
-        }
-    
-        return array_values($groupedData);
-    }    
 
-    function getLaporanPiutang($month, $year) {
-        global $db;
-    
-        $query = "SELECT 
-            i.invoice_date, 
-            i.no_invoice, 
-            c.customerName, 
-            pr.productName, 
-            op.qty, 
-            op.price_per_UOM, 
-            (op.qty * op.price_per_UOM) AS nominal, 
-            COALESCE(p.payment_date, NULL) AS payment_date, 
-            COALESCE(p.payment_amount, 0) AS payment_amount, 
-            (COALESCE(p.payment_amount, 0) - (op.qty * op.price_per_UOM)) AS remaining
-        FROM 
-            orders o
-        JOIN 
-            invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
-        JOIN 
-            vendors v ON o.vendorCode = v.vendorCode
-        JOIN 
-            customers c ON o.customerCode = c.customerCode
-        JOIN 
-            order_products op ON o.nomor_surat_jalan = op.nomor_surat_jalan
-        JOIN 
-            products pr ON op.productCode = pr.productCode
-        LEFT JOIN 
-            payments p ON o.nomor_surat_jalan = p.nomor_surat_jalan
-        WHERE 
-            MONTH(i.invoice_date) = :mon
-            AND YEAR(i.invoice_date) = :yea
-            AND o.storageCode = 'NON'";
-    
-        $statement = $db->prepare($query);
-        $statement->bindValue(':mon', $month);
-        $statement->bindValue(':yea', $year);
-    
         try {
             $statement->execute();
         } catch (PDOException $ex) {
             echo $ex->getMessage();
         }
-    
+
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         $statement->closeCursor();
-    
-        // Group data by invoice
-        $groupedData = [];
-        foreach ($result as $row) {
-            $invoiceKey = $row['invoice_date'] . '-' . $row['no_invoice'];
-            if (!isset($groupedData[$invoiceKey])) {
-                $groupedData[$invoiceKey] = [
-                    'invoice_date' => $row['invoice_date'],
-                    'no_invoice' => $row['no_invoice'],
-                    'customerName' => $row['customerName'],
-                    'payment_date' => $row['payment_date'],
-                    'payment_amount' => $row['payment_amount'],
-                    'totalQty' => 0,
-                    'totalNominal' => 0,
-                    'totalRemaining' => 0,
-                    'rows' => []
-                ];
-            }
-            $groupedData[$invoiceKey]['rows'][] = $row;
-            $groupedData[$invoiceKey]['totalQty'] += $row['qty'];
-            $groupedData[$invoiceKey]['totalNominal'] += $row['nominal'];
-            $groupedData[$invoiceKey]['totalRemaining'] += $row['remaining'];
-        }
-    
-        return array_values($groupedData);
+        return $result;
     }
-    
 
+    function getLaporanHutangPiutang($month, $year, $storageCode, $mode) {
+        $groupData = [];
+        $hutangDetails = getHutangDetails($month, $year, $storageCode, $mode);
+        foreach($hutangDetails as $details){
+            $hutangKey = $details["nomor_surat_jalan"];
+            if(!isset($groupData[$hutangKey])){
+                $groupData[$hutangKey] = [
+                    "invoice_date" => $details["invoice_date"],
+                    "no_invoice" => $details["no_invoice"],
+                    "vendorName" => $details["vendorName"],
+                    "payments" => [],
+                    "products" => []
+                ];
+
+                $productsList = getProductsForHutang($hutangKey);
+                foreach($productsList as $key){
+                    array_push($groupData[$hutangKey]["products"], [
+                        "productCode" => $key["productCode"],
+                        "qty" => $key["qty"],
+                        "price_per_UOM" => $key["price_per_UOM"],
+                        "nominal" => $key["nominal"]
+                    ]);
+                }
+            }
+
+            array_push($groupData[$hutangKey]["payments"], [
+                "payment_date" => $details["payment_date"],
+                "payment_amount" => $details["payment_amount"]
+            ]);
+        }
+
+        return array_values($groupData);
+    }
 ?>

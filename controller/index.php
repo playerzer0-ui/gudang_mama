@@ -387,25 +387,52 @@ switch($action){
         break;
 
     case "test":
-        $productCodes = array("VOL", "BMW", "TOY");
-        $productNames = array("Volvo", "BMW", "Toyota");
-        $qtys = array(10, 12, 2);
-        $uoms = array("tray", "tray", "tray");
-        $price_per_uom = array(1232, 123, 123);
-        create_payment_out_pdf("APA", "GWEN", "1/SJK/APA/07/204", "alamat jln seen", "213213213231", "2024-11-11", "213", $productCodes, $productNames, $qtys, $uoms, $price_per_uom, "121", "1000000000000");
+        $groupData = [];
+        $hutangDetails = getHutangDetails(7, 2024, "APA", "hutang");
+        foreach($hutangDetails as $details){
+            $hutangKey = $details["nomor_surat_jalan"];
+            if(!isset($groupData[$hutangKey])){
+                $groupData[$hutangKey] = [
+                    "invoice_date" => $details["invoice_date"],
+                    "no_invoice" => $details["no_invoice"],
+                    "vendorName" => $details["vendorName"],
+                    "payments" => [],
+                    "products" => []
+                ];
+
+                $productsList = getProductsForHutang($hutangKey);
+                foreach($productsList as $key){
+                    array_push($groupData[$hutangKey]["products"], [
+                        "productCode" => $key["productCode"],
+                        "qty" => $key["qty"],
+                        "price_per_UOM" => $key["price_per_UOM"],
+                        "nominal" => $key["nominal"]
+                    ]);
+                }
+            }
+
+            array_push($groupData[$hutangKey]["payments"], [
+                "payment_date" => $details["payment_date"],
+                "payment_amount" => $details["payment_amount"]
+            ]);
+        }
+        echo "<br>";
+        echo "<pre>" . print_r(array_values($groupData), true) . "</pre>";
+        // $products = getProductsForHutang("001/SJJ/SOME/12/2024");
+        // var_dump($products);
         break;
 
     case "getLaporanHutang":
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
         $storageCode = filter_input(INPUT_GET, "storageCode");
-        echo json_encode(getLaporanHutang($month, $year, $storageCode));
+        echo json_encode(getLaporanHutangPiutang($month, $year, $storageCode, "hutang"));
         break;
 
     case "getLaporanPiutang":
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
-        echo json_encode(getLaporanPiutang($month, $year));
+        echo json_encode(getLaporanHutangPiutang($month, $year, "NON", "piutang"));
         break;
 }
 

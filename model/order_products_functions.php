@@ -139,4 +139,26 @@ function getTotalNominalByNoSJ($no_sj){
     return $result;
 }
 
+function getProductsForHutang($no_sj){
+    global $db;
+
+    $query = 'SELECT
+        productCode, qty, price_per_UOM, (qty * price_per_UOM) AS nominal
+    FROM order_products
+    WHERE nomor_surat_jalan = :no_sj';
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(':no_sj', $no_sj);
+
+    try {
+        $statement->execute();
+    } catch (PDOException $ex) {
+        echo $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $result;
+}
+
 ?>
