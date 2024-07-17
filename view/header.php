@@ -84,3 +84,6 @@
                 </div>
             </div>
         </nav>
+        <div class="msg">
+            <p><?php echo $msg; ?></p>
+        </div>

@@ -18,8 +18,13 @@ require_once "../model/pdf_creation.php";
 $action = filter_input(INPUT_GET, "action");
 $title = "";
 $pageState = "";
+$msg = filter_input(INPUT_GET, "msg", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 if($action == null){
     $action = "show_login";
+}
+
+if($msg == null){
+    $msg = "";
 }
 
 if(isset($_SESSION["userID"])){
@@ -212,7 +217,7 @@ switch($action){
             }
         }
 
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=show_invoice&msg=NO_sj:" . $no_sj . "&state=" . $pageState);
         break;
 
     case "create_invoice":
@@ -263,7 +268,7 @@ switch($action){
         }
 
         // Redirect to the dashboard
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=show_payment&msg=NO_sj:" . $no_sj . "&state=" . $pageState);
         break;
 
     case "create_payment":
@@ -308,7 +313,7 @@ switch($action){
             exit;
         }
 
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=dashboard&msg=payment_made" . "&state=" . $pageState);
         break;
 
     case "calculateHutang":
@@ -359,7 +364,7 @@ switch($action){
             addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], $note_akhir[$i], "repack_akhir");
         }
 
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=dashboard&msg=NO_repack:" . $no_repack);
         break;
 
     case "create_moving":
@@ -383,7 +388,7 @@ switch($action){
             updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
         }
 
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=dashboard&msg=NO_moving:" . $no_moving);
         break;
 
     case "test":

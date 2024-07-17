@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 function handleFormSubmit(event) {
+    let pageState = document.getElementById("pageState").value;
+    let no_sj = document.getElementById("no_sj").value;
     event.preventDefault(); // Prevent the default form submission
 
     var form = document.getElementById('myForm');
@@ -56,7 +58,7 @@ function handleFormSubmit(event) {
 
         // Redirect to the dashboard after a short delay
         setTimeout(() => {
-            window.location.href = '../controller/index.php?action=dashboard';
+            window.location.href = `../controller/index.php?action=show_payment&msg=NO_sj:${no_sj}&state=${pageState}`;
         }, 2000); // Adjust the delay as needed
     }).catch(error => {
         console.error('Error:', error);
