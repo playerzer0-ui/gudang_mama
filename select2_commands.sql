@@ -127,3 +127,29 @@ insert into order_products values ("001/SJJ/SOME/12/2024","-","-", "RR-120-A", 1
 insert into order_products values ("001/SJJ/SOME/12/2024","-","-", "RR-100-A", 80, "tray", 100, "something", "in");
 insert into invoices values ("001/SJJ/SOME/12/2024", "2024-07-16", "001", "99.99.12312-213");
 insert into payments values ("001/SJJ/SOME/12/2024", "2024-07-16", "123231");
+
+--hutang details ID
+SELECT 
+    i.invoice_date, 
+    i.no_invoice, 
+    v.vendorName, 
+    COALESCE(p.payment_date, "-") AS payment_date, 
+    COALESCE(p.payment_amount, 0) AS payment_amount
+FROM 
+    orders o
+JOIN 
+    invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+JOIN 
+    vendors v ON o.vendorCode = v.vendorCode
+LEFT JOIN 
+    payments p ON o.nomor_surat_jalan = p.nomor_surat_jalan
+WHERE 
+    MONTH(i.invoice_date) = 7
+    AND YEAR(i.invoice_date) = 2024
+    AND o.storageCode = "APA"
+
+--all products linked to that order
+SELECT
+    productCode, qty, price_per_UOM, (qty * price_per_UOM) AS nominal
+FROM order_products
+WHERE nomor_surat_jalan = "001/SJJ/SOME/12/2024"

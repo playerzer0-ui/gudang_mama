@@ -6,11 +6,21 @@
 
 .main-container {
     display: flex;
-    width: 100vw;
-    height: 100vh;
     justify-content: center;
-    /* align-items: center; */
     flex-direction: column;
+}
+
+.msg {
+    display: flex;
+    justify-content: center;
+}
+
+.msg p {
+    background-color: red;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    color: white;
+    font-weight: bold;
 }
 
 .bg-white {

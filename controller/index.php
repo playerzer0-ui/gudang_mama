@@ -18,8 +18,13 @@ require_once "../model/pdf_creation.php";
 $action = filter_input(INPUT_GET, "action");
 $title = "";
 $pageState = "";
+$msg = filter_input(INPUT_GET, "msg", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 if($action == null){
     $action = "show_login";
+}
+
+if($msg == null){
+    $msg = "";
 }
 
 if(isset($_SESSION["userID"])){
@@ -212,7 +217,7 @@ switch($action){
             }
         }
 
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=show_invoice&msg=NO_sj:" . $no_sj . "&state=" . $pageState);
         break;
 
     case "create_invoice":
@@ -263,7 +268,7 @@ switch($action){
         }
 
         // Redirect to the dashboard
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=show_payment&msg=NO_sj:" . $no_sj . "&state=" . $pageState);
         break;
 
     case "create_payment":
@@ -308,7 +313,7 @@ switch($action){
             exit;
         }
 
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=dashboard&msg=payment_made" . "&state=" . $pageState);
         break;
 
     case "calculateHutang":
@@ -359,7 +364,7 @@ switch($action){
             addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], $note_akhir[$i], "repack_akhir");
         }
 
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=dashboard&msg=NO_repack:" . $no_repack);
         break;
 
     case "create_moving":
@@ -383,29 +388,27 @@ switch($action){
             updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
         }
 
-        header("Location:../controller/index.php?action=dashboard");
+        header("Location:../controller/index.php?action=dashboard&msg=NO_moving:" . $no_moving);
         break;
 
     case "test":
-        $productCodes = array("VOL", "BMW", "TOY");
-        $productNames = array("Volvo", "BMW", "Toyota");
-        $qtys = array(10, 12, 2);
-        $uoms = array("tray", "tray", "tray");
-        $price_per_uom = array(1232, 123, 123);
-        create_payment_out_pdf("APA", "GWEN", "1/SJK/APA/07/204", "alamat jln seen", "213213213231", "2024-11-11", "213", $productCodes, $productNames, $qtys, $uoms, $price_per_uom, "121", "1000000000000");
+        echo "<br>";
+        echo "<pre>" . print_r(getLaporanHutangPiutang(7, 2024, "NON", "piutang"), true) . "</pre>";
+        // $products = getProductsForHutang("001/SJJ/SOME/12/2024");
+        // var_dump($products);
         break;
 
     case "getLaporanHutang":
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
         $storageCode = filter_input(INPUT_GET, "storageCode");
-        echo json_encode(getLaporanHutang($month, $year, $storageCode));
+        echo json_encode(getLaporanHutangPiutang($month, $year, $storageCode, "hutang"));
         break;
 
     case "getLaporanPiutang":
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
-        echo json_encode(getLaporanPiutang($month, $year));
+        echo json_encode(getLaporanHutangPiutang($month, $year, "NON", "piutang"));
         break;
 }
 

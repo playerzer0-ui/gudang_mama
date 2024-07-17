@@ -38,7 +38,7 @@ function handleFormSubmit(event) {
 
         // Redirect to the dashboard after a short delay
         setTimeout(() => {
-            window.location.href = '../controller/index.php?action=dashboard';
+            window.location.href = `../controller/index.php?action=dashboard&msg=payment_made`;
         }, 2000); // Adjust the delay as needed
     }).catch(error => {
         console.error('Error:', error);
