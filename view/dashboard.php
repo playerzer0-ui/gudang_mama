@@ -31,4 +31,6 @@
     </div>
  </main>
 
+ <script src="../js/storage.js"></script>
+
 <?php include "footer.php"; ?>
