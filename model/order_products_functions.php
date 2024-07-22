@@ -161,4 +161,13 @@ function getProductsForHutang($no_sj){
     return $result;
 }
 
+function getAllInsStorage($storageCode){
+    global $db;
+
+    $query = 'SELECT
+        productCode, qty, price_per_UOM, (qty * price_per_UOM) AS nominal
+    FROM order_products
+    WHERE nomor_surat_jalan = :no_sj';
+}
+
 ?>

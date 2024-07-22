@@ -101,6 +101,17 @@ create table order_products(
     foreign key(productCode) references products(productCode)
 );
 
+create table saldos(){
+    productCode varhcar(10) not null,
+    storageCode varcchar(10) not null,
+    totalQty int,
+    price_per_qty decimal(30, 2),
+    saldoMonth int,
+    saldoYear int,
+    foreign key(productCode) references products(productCode),
+    foreign key(storageCode) references storages(storageCode)
+}
+
 -- insert data
 
 insert into storages values ("NON", "none", "none", "001.111.111.111-111");

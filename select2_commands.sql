@@ -153,3 +153,63 @@ SELECT
     productCode, qty, price_per_UOM, (qty * price_per_UOM) AS nominal
 FROM order_products
 WHERE nomor_surat_jalan = "001/SJJ/SOME/12/2024"
+
+SELECT 
+    op.productCode, 
+    op.product_status, 
+    SUM(op.qty) AS total_qty, 
+    AVG(op.price_per_UOM) AS average_price, 
+    SUM(op.qty * op.price_per_UOM) AS nominal
+FROM 
+    order_products op
+JOIN 
+    orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
+WHERE 
+    DATE_FORMAT(o.order_date, '%Y-%m') = '2024-07'
+GROUP BY 
+    op.productCode, 
+    op.product_status
+ORDER BY 
+    op.productCode, 
+    op.product_status;
+
+--ins pembelian
+SELECT 
+    p.productCode,
+    p.productName,
+    SUM(op.qty) AS total_quantity,
+    AVG(op.price_per_UOM) AS avg_price_per_UOM,
+    SUM(op.qty) * AVG(op.price_per_UOM) AS nominal
+FROM 
+    order_products op
+    JOIN products p ON op.productCode = p.productCode
+    JOIN orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
+WHERE 
+    o.storageCode = 'APA' 
+    AND op.product_status = 'in'
+    AND YEAR(o.order_date) = 2024
+    AND MONTH(o.order_date) = 7
+GROUP BY 
+    p.productCode, p.productName;
+
+--ins moving
+SELECT 
+    op.productCode,
+    p.productName,
+    SUM(op.qty) AS totalQty
+FROM 
+    order_products op
+    JOIN products p ON op.productCode = p.productCode
+    JOIN orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
+    LEFT JOIN movings m ON op.moving_no_moving = m.no_moving
+WHERE 
+    op.product_status = 'moving'
+    AND YEAR(o.order_date) = 2024
+    AND MONTH(o.order_date) = 7
+    AND (m.storageCodeReceiver = 'BBB' OR o.storageCode = 'BBB')
+GROUP BY 
+    op.productCode, 
+    p.productName
+ORDER BY 
+    op.productCode;
+

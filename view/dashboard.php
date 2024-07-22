@@ -2,6 +2,16 @@
 
  <main>
     <div>
+    <label for="storageCode">storage:</label>
+    <select name="storageCode" id="storageCode">
+        <?php foreach (getAllStorages() as $key) { ?>
+            <?php if($key["storageCode"] == "NON") { ?>
+                <option value="<?php echo $key["storageCode"]; ?>" selected><?php echo $key["storageName"]; ?></option>
+            <?php } else { ?>
+                <option value="<?php echo $key["storageCode"]; ?>"><?php echo $key["storageName"]; ?></option>
+            <?php } ?>
+        <?php } ?>
+    </select>
     <label for="month">Month:</label>
     <select id="month" name="month">
         <option value="01">January</option>
@@ -25,9 +35,61 @@
     <button class="btn btn-secondary" onclick="generateReport()">search</button>
     </div>
     <div>
-        <table id="reporttable" border="1">
-            <!-- JavaScript will populate this table -->
-        </table>
+        <table id="reporttable">
+            <thead>
+                <tr>
+                    <th rowspan="3">No</th>
+                    <th rowspan="3">KD</th>
+                    <th rowspan="3">Material</th>
+                    <th colspan="3">Saldo Awal</th>
+                    <th colspan="9">Penerimaan</th>
+                    <th colspan="3">BARANG SIAP DI JUAL</th>
+                    <th colspan="9">Pengeluaran</th>
+                    <th colspan="3">Saldo Akhir</th>
+                </tr>
+                <tr>
+                    <th rowspan="2">QTY</th>
+                    <th rowspan="2">H/QTY</th>
+                    <th rowspan="2">Rupiah</th>
+                    <th colspan="3" style="background-color: #FFFF00;">Pembelian</th>
+                    <th colspan="3" style="background-color: #FFC000;">Pindah PT</th>
+                    <th colspan="3" style="background-color: #FFC000;">Repack</th>
+                    <th rowspan="2">QTY</th>
+                    <th rowspan="2">H/QTY</th>
+                    <th rowspan="2" style="background-color: #FFFF00;">Rupiah</th>
+                    <th colspan="3" style="background-color: #92D050;">Penjualan</th>
+                    <th colspan="3" style="background-color: #FFFF00;">Pindah PT</th>
+                    <th colspan="3" style="background-color: #FF0000;">Repack</th>
+                    <th rowspan="2">QTY</th>
+                    <th rowspan="2">H/QTY</th>
+                    <th rowspan="2">Rupiah</th>
+                </tr>
+                <tr>
+                    <th>QTY</th>
+                    <th>H/QTY</th>
+                    <th>Rupiah</th>
+                    <th>QTY</th>
+                    <th>H/QTY</th>
+                    <th>Rupiah</th>
+                    <th>QTY</th>
+                    <th>H/QTY</th>
+                    <th>Rupiah</th>
+                    <th>QTY</th>
+                    <th>H/QTY</th>
+                    <th>Rupiah</th>
+                    <th>QTY</th>
+                    <th>H/QTY</th>
+                    <th>Rupiah</th>
+                    <th>QTY</th>
+                    <th>H/QTY</th>
+                    <th>Rupiah</th>
+                </tr>
+            </thead>
+        <tbody>
+            <!-- Data rows go here -->
+        </tbody>
+    </table>
+
     </div>
  </main>
 

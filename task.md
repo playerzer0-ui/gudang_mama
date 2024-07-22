@@ -37,3 +37,12 @@ function getLPB(){
 SELECT o.nomor_surat_jalan, o.storageCode, o.no_LPB, no_truk, o.vendorCode, o.customerCode, c.customerName, c.customerAddress, c.customerNPWP, o.order_date, o.purchase_order, o.status_mode FROM orders o, customers c
 WHERE o.customerCode = c.customerCode
 AND o.nomor_surat_jalan = "1/SJK/NON/07/2024";
+
+harga repack untuk stock report:
+repack awal = penerimaan
+repack akhir = penjualan
+
+h/qty = (total barang masuk + saldo awal) / qty total
+
+moving
+h/qty = (total barang masuk + saldo awal) / qty total
