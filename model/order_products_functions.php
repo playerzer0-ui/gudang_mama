@@ -171,8 +171,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
                 o.storageCode, 
                 MONTH(i.invoice_date) AS saldoMonth, 
                 YEAR(i.invoice_date) AS saldoYear, 
-                SUM(op.qty) AS totalQty, 
-                AVG(op.price_per_UOM) AS avg_price_per_qty
+                op.qty AS totalQty, 
+                op.price_per_UOM AS avg_price_per_qty
             FROM
                 products p
             JOIN 
@@ -189,8 +189,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
             GROUP BY 
                 p.productCode, 
                 o.storageCode, 
-                invoice_month, 
-                invoice_year;
+                saldoMonth, 
+                saldoYear;
             ";
             break;
 
@@ -200,8 +200,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
                 o.storageCode, 
                 MONTH(i.invoice_date) AS saldoMonth, 
                 YEAR(i.invoice_date) AS saldoYear, 
-                SUM(op.qty) AS totalQty, 
-                AVG(op.price_per_UOM) AS avg_price_per_qty
+                op.qty AS totalQty, 
+                op.price_per_UOM AS avg_price_per_qty
             FROM
                 products p
             JOIN 
@@ -218,8 +218,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
             GROUP BY 
                 p.productCode, 
                 o.storageCode, 
-                invoice_month, 
-                invoice_year;
+                saldoMonth, 
+                saldoYear;
             ";
             break;
         
@@ -229,8 +229,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
                 r.storageCode, 
                 MONTH(r.repack_date) AS saldoMonth, 
                 YEAR(r.repack_date) AS saldoYear, 
-                SUM(op.qty) AS totalQty, 
-                AVG(op.price_per_UOM) AS avg_price_per_qty
+                op.qty AS totalQty, 
+                op.price_per_UOM AS avg_price_per_qty
             FROM
                 products p
                 JOIN order_products op ON p.productCode = op.productCode
@@ -243,8 +243,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
             GROUP BY 
                 p.productCode, 
                 r.storageCode, 
-                repack_month, 
-                repack_year;
+                saldoMonth, 
+                saldoYear;
             ";
             break;
 
@@ -254,8 +254,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
                 r.storageCode, 
                 MONTH(r.repack_date) AS saldoMonth, 
                 YEAR(r.repack_date) AS saldoYear, 
-                SUM(op.qty) AS totalQty, 
-                AVG(op.price_per_UOM) AS avg_price_per_qty
+                op.qty AS totalQty, 
+                op.price_per_UOM AS avg_price_per_qty
             FROM
                 products p
                 JOIN order_products op ON p.productCode = op.productCode
@@ -268,8 +268,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
             GROUP BY 
                 p.productCode, 
                 r.storageCode, 
-                repack_month, 
-                repack_year;
+                saldoMonth, 
+                saldoYear;
             ";
             break;
 
@@ -279,8 +279,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
                 m.storageCodeSender AS storageCode, 
                 MONTH(m.moving_date) AS saldoMonth, 
                 YEAR(m.moving_date) AS saldoYear, 
-                SUM(op.qty) AS totalQty, 
-                AVG(op.price_per_UOM) AS avg_price_per_qty
+                op.qty AS totalQty, 
+                op.price_per_UOM AS avg_price_per_qty
             FROM
                 products p
                 JOIN order_products op ON p.productCode = op.productCode
@@ -292,8 +292,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
             GROUP BY 
                 p.productCode, 
                 m.storageCodeSender, 
-                moving_month, 
-                moving_year;
+                saldoMonth, 
+                saldoYear;
             ";
             break;
 
@@ -303,8 +303,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
                 m.storageCodeReceiver AS storageCode, 
                 MONTH(m.moving_date) AS saldoMonth, 
                 YEAR(m.moving_date) AS saldoYear, 
-                SUM(op.qty) AS totalQty, 
-                AVG(op.price_per_UOM) AS avg_price_per_qty
+                op.qty AS totalQty, 
+                op.price_per_UOM AS avg_price_per_qty
             FROM
                 products p
                 JOIN order_products op ON p.productCode = op.productCode
@@ -316,8 +316,8 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
             GROUP BY 
                 p.productCode, 
                 m.storageCodeReceiver, 
-                moving_month, 
-                moving_year;
+                saldoMonth, 
+                saldoYear;
             ";
             break;
     }

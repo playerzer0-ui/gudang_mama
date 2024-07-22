@@ -11,6 +11,7 @@ require_once "../model/order_functions.php";
 require_once "../model/product_functions.php";
 require_once "../model/repack_functions.php";
 require_once "../model/moving_functions.php";
+require_once "../model/saldo_functions.php";
 require_once "../model/order_products_functions.php";
 require_once "../fpdf/fpdf.php";
 require_once "../model/pdf_creation.php";
@@ -241,6 +242,9 @@ switch($action){
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $storageName = getstorageByCode($storageCode)["storageName"];
+        $date = DateTime::createFromFormat('Y-m-d', $invoice_date);
+        $month = $date->format('m');
+        $year = $date->format('Y');
 
         if($pageState == "in"){
             $vendorName = getVendorByCode($vendorCode)["vendorName"];
@@ -255,6 +259,19 @@ switch($action){
         for($i = 0; $i < count($productCodes); $i++){
             updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
         }
+
+        // if($pageState == "in"){
+        //     $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "in");
+        //     foreach($prodSaldo as $key){
+        //         updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "in");
+        //     }
+        // }
+        // else if($pageState == "out_tax"){
+        //     $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "out_tax");
+        //     foreach($prodSaldo as $key){
+        //         updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "out_tax");
+        //     }
+        // }
 
         // Generate the PDF and return it as a response
         if (isset($_POST['generate_pdf'])) {
@@ -355,6 +372,10 @@ switch($action){
         $uom_akhir = filter_input_array(INPUT_POST)["uom_akhir"];
         $note_akhir = filter_input_array(INPUT_POST)["note_akhir"];
 
+        $date = DateTime::createFromFormat('Y-m-d', $repack_date);
+        $month = $date->format('m');
+        $year = $date->format('Y');
+
         create_repack($storageCode, $repack_date, $no_repack);
 
         for($i = 0; $i < count($kd_awal); $i++){
@@ -363,6 +384,16 @@ switch($action){
         for($i = 0; $i < count($kd_akhir); $i++){
             addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], $note_akhir[$i], "repack_akhir");
         }
+
+        // $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "repack_awal");
+        // $prodSaldoAkh = getAllProductsForSaldo($storageCode, $month, $year, "repack_akhir");
+
+        // foreach($prodSaldo as $key){
+        //     updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "repack_awal");
+        // }
+        // foreach($prodSaldoAkh as $key){
+        //     updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "repack_akhir");
+        // }
 
         header("Location:../controller/index.php?action=dashboard&msg=NO_repack:" . $no_repack);
         break;
@@ -378,6 +409,10 @@ switch($action){
         $uoms = filter_input_array(INPUT_POST)["uom"];
         $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
 
+        $date = DateTime::createFromFormat('Y-m-d', $moving_date);
+        $month = $date->format('m');
+        $year = $date->format('Y');
+
         create_moving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver);
 
         for($i = 0; $i < count($productCodes); $i++){
@@ -387,6 +422,16 @@ switch($action){
         for($i = 0; $i < count($productCodes); $i++){
             updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
         }
+
+        // $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "moving_sender");
+        // $prodSaldoAkh = getAllProductsForSaldo($storageCode, $month, $year, "moving_receiver");
+
+        // foreach($prodSaldo as $key){
+        //     updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "moving_sender");
+        // }
+        // foreach($prodSaldoAkh as $key){
+        //     updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "moving_receiver");
+        // }
 
         header("Location:../controller/index.php?action=dashboard&msg=NO_moving:" . $no_moving);
         break;

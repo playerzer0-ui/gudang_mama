@@ -108,6 +108,7 @@ create table saldos(
     price_per_qty decimal(30, 2),
     saldoMonth int,
     saldoYear int,
+    saldoCount int,
     foreign key(productCode) references products(productCode),
     foreign key(storageCode) references storages(storageCode)
 )

@@ -34,15 +34,14 @@
 
         $exist = checkExistence($productCode, $storageCode, $month, $year);
         if($exist){
-            $query = "UPDATE saldos SET totalQty = :qty, price_per_qty = :price WHERE productCode = :productCode AND storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
+            $query = "UPDATE saldos SET totalQty = totalQty + :qty, price_per_qty = price_per_qty + :price, saldoCount = saldoCount + 1 WHERE productCode = :productCode AND storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
         }
         else{
-            $query = "INSERT INTO saldos VALUES (:productCode, :storageCode, :qty, :price, :mon, :yea)";
+            $query = "INSERT INTO saldos VALUES (:productCode, :storageCode, :qty, :price, :mon, :yea, 1)";
         }
 
         if($status == "out_tax" || $status == "moving_sender" || $status == "repack_awal"){
             $qty *= -1;
-            $price *= -1;
         }
 
         $statement = $db->prepare($query);
