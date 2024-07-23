@@ -240,23 +240,19 @@ UNION ALL
 SELECT 
     p.productCode, 
     r.storageCode, 
-    MONTH(i.invoice_date) AS saldoMonth, 
-    YEAR(i.invoice_date) AS saldoYear, 
+    MONTH(r.repack_date) AS saldoMonth, 
+    YEAR(r.repack_date) AS saldoYear, 
     op.qty AS totalQty, 
     op.price_per_UOM AS avg_price_per_qty,
     op.product_status
 FROM
     products p
-JOIN 
-    order_products op ON p.productCode = op.productCode
-JOIN 
-    repacks r ON op.repack_no_repack = r.no_repack
-JOIN 
-    invoices i ON r.no_repack = i.nomor_surat_jalan
-WHERE 
+    JOIN order_products op ON p.productCode = op.productCode
+    JOIN repacks r ON op.repack_no_repack = r.no_repack
+WHERE
     r.storageCode = "APA"
-    AND MONTH(i.invoice_date) = 7
-    AND YEAR(i.invoice_date) = 2024
+    AND MONTH(r.repack_date) = 7
+    AND YEAR(r.repack_date) = 2024
 
 UNION ALL
 

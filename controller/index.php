@@ -437,10 +437,11 @@ switch($action){
         break;
 
     case "test":
-        echo "<br>";
-        echo "<pre>" . print_r(getLaporanHutangPiutang(7, 2024, "NON", "piutang"), true) . "</pre>";
-        // $products = getProductsForHutang("001/SJJ/SOME/12/2024");
-        // var_dump($products);
+        getAllProductsForSaldo("APA", 7, 2024);
+        break;
+
+    case "test2":
+        generateSaldo("APA", 7, 2024);
         break;
 
     case "getLaporanHutang":

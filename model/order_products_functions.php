@@ -161,166 +161,125 @@ function getProductsForHutang($no_sj){
     return $result;
 }
 
-function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
+function getAllProductsForSaldo($storageCode, $month, $year){
     global $db;
 
-    switch($product_status){
-        case "in":
-            $query = "SELECT 
-                p.productCode, 
-                o.storageCode, 
-                MONTH(i.invoice_date) AS saldoMonth, 
-                YEAR(i.invoice_date) AS saldoYear, 
-                op.qty AS totalQty, 
-                op.price_per_UOM AS avg_price_per_qty
-            FROM
-                products p
-            JOIN 
-                order_products op ON p.productCode = op.productCode
-            JOIN 
-                orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
-            JOIN 
-                invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
-            WHERE 
-                o.storageCode = :storageCode 
-                AND MONTH(i.invoice_date) = :mon
-                AND YEAR(i.invoice_date) = :yea
-                AND op.product_status = 'in'
-            GROUP BY 
-                p.productCode, 
-                o.storageCode, 
-                saldoMonth, 
-                saldoYear;
-            ";
-            break;
+    $query = 'SELECT 
+        p.productCode, 
+        p.productName,
+        o.storageCode, 
+        MONTH(i.invoice_date) AS saldoMonth, 
+        YEAR(i.invoice_date) AS saldoYear, 
+        SUM(op.qty) AS totalQty, 
+        SUM(op.price_per_UOM) AS totalPrice,
+        op.product_status
+    FROM
+        products p
+    JOIN 
+        order_products op ON p.productCode = op.productCode
+    JOIN 
+        orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
+    JOIN 
+        invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+    WHERE 
+        o.storageCode = :storageCode
+        AND MONTH(i.invoice_date) = :mon
+        AND YEAR(i.invoice_date) = :yea
+        AND op.product_status != "out"
+    GROUP BY 
+        p.productCode, 
+        o.storageCode, 
+        saldoMonth, 
+        saldoYear,
+        op.product_status
 
-        case "out_tax":
-            $query = "SELECT 
-                p.productCode, 
-                o.storageCode, 
-                MONTH(i.invoice_date) AS saldoMonth, 
-                YEAR(i.invoice_date) AS saldoYear, 
-                op.qty AS totalQty, 
-                op.price_per_UOM AS avg_price_per_qty
-            FROM
-                products p
-            JOIN 
-                order_products op ON p.productCode = op.productCode
-            JOIN 
-                orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
-            JOIN 
-                invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
-            WHERE 
-                o.storageCode = :storageCode 
-                AND MONTH(i.invoice_date) = :mon
-                AND YEAR(i.invoice_date) = :yea
-                AND op.product_status = 'out_tax'
-            GROUP BY 
-                p.productCode, 
-                o.storageCode, 
-                saldoMonth, 
-                saldoYear;
-            ";
-            break;
-        
-        case "repack_awal":
-            $query = "SELECT 
-                p.productCode, 
-                r.storageCode, 
-                MONTH(r.repack_date) AS saldoMonth, 
-                YEAR(r.repack_date) AS saldoYear, 
-                op.qty AS totalQty, 
-                op.price_per_UOM AS avg_price_per_qty
-            FROM
-                products p
-                JOIN order_products op ON p.productCode = op.productCode
-                JOIN repacks r ON op.repack_no_repack = r.no_repack
-            WHERE
-                r.storageCode = :storageCode
-                AND MONTH(r.repack_date) = :mon
-                AND YEAR(r.repack_date) = :yea
-                AND op.product_status = 'repack_awal'
-            GROUP BY 
-                p.productCode, 
-                r.storageCode, 
-                saldoMonth, 
-                saldoYear;
-            ";
-            break;
+    UNION ALL
 
-        case "repack_akhir":
-            $query = "SELECT 
-                p.productCode, 
-                r.storageCode, 
-                MONTH(r.repack_date) AS saldoMonth, 
-                YEAR(r.repack_date) AS saldoYear, 
-                op.qty AS totalQty, 
-                op.price_per_UOM AS avg_price_per_qty
-            FROM
-                products p
-                JOIN order_products op ON p.productCode = op.productCode
-                JOIN repacks r ON op.repack_no_repack = r.no_repack
-            WHERE
-                r.storageCode = :storageCode
-                AND MONTH(r.repack_date) = :mon
-                AND YEAR(r.repack_date) = :yea
-                AND op.product_status = 'repack_akhir'
-            GROUP BY 
-                p.productCode, 
-                r.storageCode, 
-                saldoMonth, 
-                saldoYear;
-            ";
-            break;
+    SELECT 
+        p.productCode, 
+        p.productName,
+        r.storageCode, 
+        MONTH(r.repack_date) AS saldoMonth, 
+        YEAR(r.repack_date) AS saldoYear, 
+        SUM(op.qty) AS totalQty, 
+        SUM(op.price_per_UOM) AS totalPrice,
+        op.product_status
+    FROM
+        products p
+    JOIN 
+        order_products op ON p.productCode = op.productCode
+    JOIN 
+        repacks r ON op.repack_no_repack = r.no_repack
+    WHERE
+        r.storageCode = :storageCode1
+        AND MONTH(r.repack_date) = :mon1
+        AND YEAR(r.repack_date) = :yea1
+    GROUP BY 
+        p.productCode, 
+        p.productName,
+        r.storageCode, 
+        saldoMonth, 
+        saldoYear,
+        op.product_status
+    ';
 
-        case "moving_sender":
-            $query = "SELECT 
-                p.productCode, 
-                m.storageCodeSender AS storageCode, 
-                MONTH(m.moving_date) AS saldoMonth, 
-                YEAR(m.moving_date) AS saldoYear, 
-                op.qty AS totalQty, 
-                op.price_per_UOM AS avg_price_per_qty
-            FROM
-                products p
-                JOIN order_products op ON p.productCode = op.productCode
-                JOIN movings m ON op.moving_no_moving = m.no_moving
-            WHERE
-                m.storageCodeSender = :storageCode
-                AND MONTH(m.moving_date) = :mon
-                AND YEAR(m.moving_date) = :yea
-            GROUP BY 
-                p.productCode, 
-                m.storageCodeSender, 
-                saldoMonth, 
-                saldoYear;
-            ";
-            break;
+    $statement = $db->prepare($query);
+    $statement->bindValue(":storageCode", $storageCode);
+    $statement->bindValue(":mon", $month);
+    $statement->bindValue(":yea", $year);
+    $statement->bindValue(":storageCode1", $storageCode);
+    $statement->bindValue(":mon1", $month);
+    $statement->bindValue(":yea1", $year);
 
-        case "moving_receiver":
-            $query = "SELECT 
-                p.productCode, 
-                m.storageCodeReceiver AS storageCode, 
-                MONTH(m.moving_date) AS saldoMonth, 
-                YEAR(m.moving_date) AS saldoYear, 
-                op.qty AS totalQty, 
-                op.price_per_UOM AS avg_price_per_qty
-            FROM
-                products p
-                JOIN order_products op ON p.productCode = op.productCode
-                JOIN movings m ON op.moving_no_moving = m.no_moving
-            WHERE
-                m.storageCodeReceiver = :storageCode
-                AND MONTH(m.moving_date) = :mon
-                AND YEAR(m.moving_date) = :yea
-            GROUP BY 
-                p.productCode, 
-                m.storageCodeReceiver, 
-                saldoMonth, 
-                saldoYear;
-            ";
-            break;
+    try {
+        $statement->execute();
+    } catch(PDOException $ex) {
+        echo $ex->getMessage(); // Use echo to display the error message
     }
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+
+    $movings = getAllProductsMovingSaldo($storageCode, $month, $year);
+
+    // echo "<pre>senders" . print_r($movings, true) . "</pre>";
+    // echo "<pre>inouts" . print_r($result, true) . "</pre>";
+
+    // echo "<pre>RESULTTT" . print_r(combineForReportStock($result, $movings, $storageCode, $month, $year), true) . "</pre>";
+    return [$result, $movings];
+
+
+}
+
+function getAllProductsMovingSaldo($storageCode, $month, $year){
+    global $db;
+
+    $query = 'SELECT 
+            p.productCode, 
+            p.productName,
+            m.storageCodeSender AS storageCode, 
+            MONTH(m.moving_date) AS saldoMonth, 
+            YEAR(m.moving_date) AS saldoYear, 
+            SUM(op.qty) AS totalQty, 
+            SUM(op.price_per_UOM) AS totalPrice,
+            op.product_status
+        FROM
+            products p
+        JOIN 
+            order_products op ON p.productCode = op.productCode
+        JOIN 
+            movings m ON op.moving_no_moving = m.no_moving
+        WHERE 
+            m.storageCodeSender = :storageCode
+            AND MONTH(m.moving_date) = :mon
+            AND YEAR(m.moving_date) = :yea
+        GROUP BY 
+            p.productCode, 
+            p.productName,
+            m.storageCodeSender, 
+            saldoMonth, 
+            saldoYear,
+            op.product_status';
 
     $statement = $db->prepare($query);
     $statement->bindValue(":storageCode", $storageCode);
@@ -333,10 +292,121 @@ function getAllProductsForSaldo($storageCode, $month, $year, $product_status){
     catch(PDOException $ex){
         $ex->getMessage();
     }
-    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $senders = $statement->fetchAll(PDO::FETCH_ASSOC);
     $statement->closeCursor();
 
-    return $result;
+    $query = 'SELECT 
+            p.productCode, 
+            p.productName,
+            m.storageCodeReceiver AS storageCode, 
+            MONTH(m.moving_date) AS saldoMonth, 
+            YEAR(m.moving_date) AS saldoYear, 
+            SUM(op.qty) AS totalQty, 
+            SUM(op.price_per_UOM) AS totalPrice,
+            op.product_status
+        FROM
+            products p
+        JOIN 
+            order_products op ON p.productCode = op.productCode
+        JOIN 
+            movings m ON op.moving_no_moving = m.no_moving
+        WHERE 
+            m.storageCodeReceiver = :storageCode
+            AND MONTH(m.moving_date) = :mon
+            AND YEAR(m.moving_date) = :yea
+        GROUP BY 
+            p.productCode, 
+            p.productName,
+            m.storageCodeReceiver, 
+            saldoMonth, 
+            saldoYear,
+            op.product_status';
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(":storageCode", $storageCode);
+    $statement->bindValue(":mon", $month);
+    $statement->bindValue(":yea", $year);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+    $receivers = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return [$senders, $receivers];
+}
+
+function combineForReportStock($storageCode, $month, $year){
+    $storageReport = getAllProductsForSaldo($storageCode, $month, $year);
+    $inouts = $storageReport[0];
+    $movings = $storageReport[1];
+    $data = [];
+    array_push($data, ["storageCode" => $storageCode, "month" => $month, "year" => $year]);
+
+    foreach($inouts as $key){
+        $productCode = $key["productCode"];
+        if(!isset($data[$productCode])){
+            $data[$productCode] = [
+                "productCode" => $productCode,
+                "productName" => $key["productName"],
+                "saldo_awal" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+                "penerimaan" => [
+                    "pembelian" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+                    "repackIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+                    "movingIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+                    "totalIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
+                ],
+                "pengeluaran" => [
+                    "penjualan" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+                    "repackOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+                    "movingOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+                    "totalOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
+                ],
+                "barang_siap_dijual" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+                "saldo_akhir" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
+            ];
+        }
+
+        switch($key["product_status"]){
+            case "in":
+                $data[$productCode]["penerimaan"]["pembelian"]["totalQty"] = $key["totalQty"];
+                $data[$productCode]["penerimaan"]["pembelian"]["totalPrice"] = $key["totalPrice"];
+                $data[$productCode]["penerimaan"]["pembelian"]["price_per_qty"] = $key["totalPrice"] / $key["totalQty"];
+                break;
+
+            case "out_tax":
+                $data[$productCode]["pengeluaran"]["penjualan"]["totalQty"] = $key["totalQty"];
+                $data[$productCode]["pengeluaran"]["penjualan"]["totalPrice"] = $key["totalPrice"];
+                $data[$productCode]["pengeluaran"]["penjualan"]["price_per_qty"] = $key["totalPrice"] / $key["totalQty"];
+                break;
+
+            case "repack_awal":
+                $data[$productCode]["pengeluaran"]["repackOut"]["totalQty"] = $key["totalQty"];
+                $data[$productCode]["pengeluaran"]["repackOut"]["totalPrice"] = $key["totalPrice"];
+                $data[$productCode]["pengeluaran"]["repackOut"]["price_per_qty"] = $key["totalPrice"] / $key["totalQty"];
+                break;
+
+            case "repack_akhir":
+                $data[$productCode]["penerimaan"]["repackIn"]["totalQty"] = $key["totalQty"];
+                $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"] = $key["totalPrice"];
+                $data[$productCode]["penerimaan"]["repackIn"]["price_per_qty"] = $key["totalPrice"] / $key["totalQty"];
+                break;
+        }
+    }
+
+    return $data;
+}
+
+function generateSaldo($storageCode, $month, $year){
+    $date = new DateTime($year . "-" . $month . "-" . "01");
+    $date->modify('-1 month');
+    $prevMonth = $date->format('m');
+    $prevYear = $date->format('Y');
+    
+    echo "<pre>RESULTTT" . print_r(combineForReportStock($storageCode, $month, $year), true) . "</pre>";
 }
 
 ?>
