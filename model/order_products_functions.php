@@ -1,6 +1,7 @@
 <?php 
 
 require_once "database.php";
+require_once "saldo_functions.php";
 
 function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
     global $db;
@@ -171,7 +172,7 @@ function getAllProductsForSaldo($storageCode, $month, $year){
         MONTH(i.invoice_date) AS saldoMonth, 
         YEAR(i.invoice_date) AS saldoYear, 
         SUM(op.qty) AS totalQty, 
-        SUM(op.price_per_UOM) AS totalPrice,
+        AVG(op.price_per_UOM) AS avgPrice,
         op.product_status
     FROM
         products p
@@ -202,7 +203,7 @@ function getAllProductsForSaldo($storageCode, $month, $year){
         MONTH(r.repack_date) AS saldoMonth, 
         YEAR(r.repack_date) AS saldoYear, 
         SUM(op.qty) AS totalQty, 
-        SUM(op.price_per_UOM) AS totalPrice,
+        AVG(op.price_per_UOM) AS avgPrice,
         op.product_status
     FROM
         products p
@@ -261,7 +262,7 @@ function getAllProductsMovingSaldo($storageCode, $month, $year){
             MONTH(m.moving_date) AS saldoMonth, 
             YEAR(m.moving_date) AS saldoYear, 
             SUM(op.qty) AS totalQty, 
-            SUM(op.price_per_UOM) AS totalPrice,
+            AVG(op.price_per_UOM) AS avgPrice,
             op.product_status
         FROM
             products p
@@ -302,7 +303,7 @@ function getAllProductsMovingSaldo($storageCode, $month, $year){
             MONTH(m.moving_date) AS saldoMonth, 
             YEAR(m.moving_date) AS saldoYear, 
             SUM(op.qty) AS totalQty, 
-            SUM(op.price_per_UOM) AS totalPrice,
+            AVG(op.price_per_UOM) AS avgPrice,
             op.product_status
         FROM
             products p
@@ -339,11 +340,17 @@ function getAllProductsMovingSaldo($storageCode, $month, $year){
     return [$senders, $receivers];
 }
 
-function combineForReportStock($storageCode, $month, $year){
+function generateSaldo($storageCode, $month, $year){
     $storageReport = getAllProductsForSaldo($storageCode, $month, $year);
     $inouts = $storageReport[0];
     $movings = $storageReport[1];
+    $date = new DateTime($year . "-" . $month . "-" . "01");
+    $date->modify('-1 month');
+    $prevMonth = $date->format('m');
+    $prevYear = $date->format('Y');
     $data = [];
+
+    $saldos_awal = getSaldoAwal($storageCode, $prevMonth, $prevYear);
     array_push($data, ["storageCode" => $storageCode, "month" => $month, "year" => $year]);
 
     foreach($inouts as $key){
@@ -370,43 +377,67 @@ function combineForReportStock($storageCode, $month, $year){
             ];
         }
 
+        if(isset($saldos_awal[$productCode])){
+            $data[$productCode]["saldo_awal"]["totalQty"] = $saldos_awal[$productCode]["totalQty"];
+            $data[$productCode]["saldo_awal"]["totalPrice"] = $saldos_awal[$productCode]["totalPrice"];
+            $data[$productCode]["saldo_awal"]["price_per_qty"] = $saldos_awal[$productCode]["totalPrice"] / $saldos_awal[$productCode]["totalQty"];
+        }
+
         switch($key["product_status"]){
             case "in":
                 $data[$productCode]["penerimaan"]["pembelian"]["totalQty"] = $key["totalQty"];
-                $data[$productCode]["penerimaan"]["pembelian"]["totalPrice"] = $key["totalPrice"];
-                $data[$productCode]["penerimaan"]["pembelian"]["price_per_qty"] = $key["totalPrice"] / $key["totalQty"];
+                $data[$productCode]["penerimaan"]["pembelian"]["price_per_qty"] = $key["avgPrice"];
+                $data[$productCode]["penerimaan"]["pembelian"]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
+
+                $data[$productCode]["penerimaan"]["totalIn"]["totalQty"] += $key["totalQty"];
+                $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"] += $data[$productCode]["penerimaan"]["pembelian"]["totalPrice"];
+                $data[$productCode]["penerimaan"]["totalIn"]["price_per_qty"] = $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"] / $data[$productCode]["penerimaan"]["totalIn"]["totalQty"];
                 break;
 
             case "out_tax":
                 $data[$productCode]["pengeluaran"]["penjualan"]["totalQty"] = $key["totalQty"];
-                $data[$productCode]["pengeluaran"]["penjualan"]["totalPrice"] = $key["totalPrice"];
-                $data[$productCode]["pengeluaran"]["penjualan"]["price_per_qty"] = $key["totalPrice"] / $key["totalQty"];
+                $data[$productCode]["pengeluaran"]["penjualan"]["price_per_qty"] = $key["avgPrice"];
+                $data[$productCode]["pengeluaran"]["penjualan"]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
+
+                $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"] += $key["totalQty"];
+                $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"] += $data[$productCode]["pengeluaran"]["penjualan"]["totalPrice"];
+                $data[$productCode]["pengeluaran"]["totalOut"]["price_per_qty"] = $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"] / $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"];
                 break;
 
             case "repack_awal":
                 $data[$productCode]["pengeluaran"]["repackOut"]["totalQty"] = $key["totalQty"];
-                $data[$productCode]["pengeluaran"]["repackOut"]["totalPrice"] = $key["totalPrice"];
-                $data[$productCode]["pengeluaran"]["repackOut"]["price_per_qty"] = $key["totalPrice"] / $key["totalQty"];
+                $data[$productCode]["pengeluaran"]["repackOut"]["price_per_qty"] = $key["avgPrice"];
+                $data[$productCode]["pengeluaran"]["repackOut"]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
+
+                $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"] += $key["totalQty"];
+                $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"] += $data[$productCode]["pengeluaran"]["repackOut"]["totalPrice"];
+                $data[$productCode]["pengeluaran"]["totalOut"]["price_per_qty"] = $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"] / $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"];
                 break;
 
             case "repack_akhir":
                 $data[$productCode]["penerimaan"]["repackIn"]["totalQty"] = $key["totalQty"];
-                $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"] = $key["totalPrice"];
-                $data[$productCode]["penerimaan"]["repackIn"]["price_per_qty"] = $key["totalPrice"] / $key["totalQty"];
+                $data[$productCode]["penerimaan"]["repackIn"]["price_per_qty"] = $key["avgPrice"];
+                $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
+
+                $data[$productCode]["penerimaan"]["totalIn"]["totalQty"] += $key["totalQty"];
+                $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"] += $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"];
+                $data[$productCode]["penerimaan"]["totalIn"]["price_per_qty"] = $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"] / $data[$productCode]["penerimaan"]["totalIn"]["totalQty"];
                 break;
         }
+        
+
     }
 
     return $data;
 }
 
-function generateSaldo($storageCode, $month, $year){
-    $date = new DateTime($year . "-" . $month . "-" . "01");
-    $date->modify('-1 month');
-    $prevMonth = $date->format('m');
-    $prevYear = $date->format('Y');
+// function generateSaldo($storageCode, $month, $year){
+//     $date = new DateTime($year . "-" . $month . "-" . "01");
+//     $date->modify('-1 month');
+//     $prevMonth = $date->format('m');
+//     $prevYear = $date->format('Y');
     
-    echo "<pre>RESULTTT" . print_r(combineForReportStock($storageCode, $month, $year), true) . "</pre>";
-}
+//     echo "<pre>RESULTTT" . print_r(combineForReportStock($storageCode, $month, $year), true) . "</pre>";
+// }
 
 ?>

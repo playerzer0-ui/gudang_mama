@@ -258,6 +258,12 @@ switch($action){
 
         for($i = 0; $i < count($productCodes); $i++){
             updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+            if($pageState == "in"){
+                updateSaldo($productCodes[$i], $storageCode, $month, $year, $qtys[$i], $price_per_uom[$i], "in");
+            }
+            else if($pageState == "out_tax"){
+                updateSaldo($productCodes[$i], $storageCode, $month, $year, $qtys[$i], $price_per_uom[$i], "out_tax");
+            }
         }
 
         // if($pageState == "in"){
@@ -380,9 +386,11 @@ switch($action){
 
         for($i = 0; $i < count($kd_awal); $i++){
             addOrderProducts($no_repack, $kd_awal[$i], $qty_awal[$i], $uom_awal[$i], $note_awal[$i], "repack_awal");
+            updateSaldo($kd_awal[$i], $storageCode, $month, $year, $qty_awal[$i], 0, "repack_awal");
         }
         for($i = 0; $i < count($kd_akhir); $i++){
             addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], $note_akhir[$i], "repack_akhir");
+            updateSaldo($kd_akhir[$i], $storageCode, $month, $year, $qty_akhir[$i], 0, "repack_akhir");
         }
 
         // $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "repack_awal");
@@ -421,6 +429,8 @@ switch($action){
 
         for($i = 0; $i < count($productCodes); $i++){
             updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
+            updateSaldo($productCodes[$i], $storageCodeSender, $month, $year, $qtys[$i], $price_per_uom[$i], "moving_sender");
+            updateSaldo($productCodes[$i], $storageCodeReceiver, $month, $year, $qtys[$i], $price_per_uom[$i], "moving_receiver");
         }
 
         // $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "moving_sender");
@@ -437,11 +447,11 @@ switch($action){
         break;
 
     case "test":
-        getAllProductsForSaldo("APA", 7, 2024);
+        echo "<pre>RESULTTT" . print_r(generateSaldo("APA", 7, 2024), true) . "</pre>";
         break;
 
     case "test2":
-        generateSaldo("APA", 7, 2024);
+        echo "<pre>" . print_r(getSaldoAwal("APA", 7, 2024), true) . "</pre>";
         break;
 
     case "getLaporanHutang":

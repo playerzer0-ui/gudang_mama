@@ -34,14 +34,15 @@
 
         $exist = checkExistence($productCode, $storageCode, $month, $year);
         if($exist){
-            $query = "UPDATE saldos SET totalQty = totalQty + :qty, price_per_qty = price_per_qty + :price, saldoCount = saldoCount + 1 WHERE productCode = :productCode AND storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
+            if($status == "out_tax" || $status == "moving_sender" || $status == "repack_awal"){
+                $query = "UPDATE saldos SET totalQty = totalQty - :qty, totalPrice = totalPrice - :price WHERE productCode = :productCode AND storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
+            }
+            else{
+                $query = "UPDATE saldos SET totalQty = totalQty + :qty, totalPrice = totalPrice + :price WHERE productCode = :productCode AND storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
+            }
         }
         else{
-            $query = "INSERT INTO saldos VALUES (:productCode, :storageCode, :qty, :price, :mon, :yea, 1)";
-        }
-
-        if($status == "out_tax" || $status == "moving_sender" || $status == "repack_awal"){
-            $qty *= -1;
+            $query = "INSERT INTO saldos VALUES (:productCode, :storageCode, :qty, :price, :mon, :yea)";
         }
 
         $statement = $db->prepare($query);
@@ -59,6 +60,38 @@
             $ex->getMessage();
         }
         $statement->closeCursor();
+    }
+
+    function getSaldoAwal($storageCode, $month, $year){
+        global $db;
+        $data = [];
+
+        $query = "SELECT * FROM saldos WHERE storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":storageCode", $storageCode);
+        $statement->bindValue(":mon", $month);
+        $statement->bindValue(":yea", $year);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+
+        foreach($result as $key){
+            $productCode = $key["productCode"];
+            $data[$productCode] = [
+                "storageCode" => $key["storageCode"],
+                "totalQty" => $key["totalQty"],
+                "totalPrice" => $key["totalPrice"]
+            ];
+        }
+
+        return $data;
     }
 
 ?>
