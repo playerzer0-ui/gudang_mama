@@ -405,7 +405,7 @@ switch($action){
         break;
 
     case "test":
-        echo "<pre>RESULTTT" . print_r(generateSaldo("APA", 7, 2024), true) . "</pre>";
+        echo "<pre>" . print_r(json_encode(generateSaldo("APA", 7, 2024)), true) . "</pre>";
         break;
 
     case "test2":
@@ -423,6 +423,13 @@ switch($action){
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
         echo json_encode(getLaporanHutangPiutang($month, $year, "NON", "piutang"));
+        break;
+
+    case "getReportStock":
+        $month = filter_input(INPUT_GET, "month");
+        $year = filter_input(INPUT_GET, "year");
+        $storageCode = filter_input(INPUT_GET, "storageCode");
+        echo json_encode(generateSaldo($storageCode, $month, $year));
         break;
 }
 

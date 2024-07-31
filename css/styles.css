@@ -37,17 +37,23 @@
     border-radius: 10px;
 }
 
-table {
-    width: 100%;
+.table-container {
+    overflow-x: auto;
+    overflow-y: hidden; /* Optional: to hide vertical scroll if unnecessary */
+    width: 100%; /* or specify a fixed width if needed */
+    white-space: nowrap; /* Ensures table cells don't wrap */
+}
+
+#reporttable {
+    width: 100%; /* This will take full width of the container */
     border-collapse: collapse;
 }
-table, th, td {
-    border: 1px solid black;
+
+#reporttable th, #reporttable td {
+    padding: 8px 12px; /* Adjust as necessary */
+    border: 1px solid #ddd; /* Example border styling */
 }
-th, td {
-    padding: 8px;
-    text-align: left;
-}
+
 .header-table td {
     border: none;
     text-align: left;
