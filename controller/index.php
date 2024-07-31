@@ -11,6 +11,7 @@ require_once "../model/order_functions.php";
 require_once "../model/product_functions.php";
 require_once "../model/repack_functions.php";
 require_once "../model/moving_functions.php";
+require_once "../model/saldo_functions.php";
 require_once "../model/order_products_functions.php";
 require_once "../fpdf/fpdf.php";
 require_once "../model/pdf_creation.php";
@@ -241,6 +242,9 @@ switch($action){
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $storageName = getstorageByCode($storageCode)["storageName"];
+        $date = DateTime::createFromFormat('Y-m-d', $invoice_date);
+        $month = $date->format('m');
+        $year = $date->format('Y');
 
         if($pageState == "in"){
             $vendorName = getVendorByCode($vendorCode)["vendorName"];
@@ -355,6 +359,10 @@ switch($action){
         $uom_akhir = filter_input_array(INPUT_POST)["uom_akhir"];
         $note_akhir = filter_input_array(INPUT_POST)["note_akhir"];
 
+        $date = DateTime::createFromFormat('Y-m-d', $repack_date);
+        $month = $date->format('m');
+        $year = $date->format('Y');
+
         create_repack($storageCode, $repack_date, $no_repack);
 
         for($i = 0; $i < count($kd_awal); $i++){
@@ -363,6 +371,7 @@ switch($action){
         for($i = 0; $i < count($kd_akhir); $i++){
             addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], $note_akhir[$i], "repack_akhir");
         }
+
 
         header("Location:../controller/index.php?action=dashboard&msg=NO_repack:" . $no_repack);
         break;
@@ -378,6 +387,10 @@ switch($action){
         $uoms = filter_input_array(INPUT_POST)["uom"];
         $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
 
+        $date = DateTime::createFromFormat('Y-m-d', $moving_date);
+        $month = $date->format('m');
+        $year = $date->format('Y');
+
         create_moving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver);
 
         for($i = 0; $i < count($productCodes); $i++){
@@ -392,10 +405,17 @@ switch($action){
         break;
 
     case "test":
-        echo "<br>";
-        echo "<pre>" . print_r(getLaporanHutangPiutang(7, 2024, "NON", "piutang"), true) . "</pre>";
-        // $products = getProductsForHutang("001/SJJ/SOME/12/2024");
-        // var_dump($products);
+        echo "<pre>" . print_r(json_encode(generateSaldo("APA", 7, 2024)), true) . "</pre>";
+        break;
+
+    case "getHPP":
+        $storageCode = filter_input(INPUT_GET, "storageCode");
+        $month = date("m");
+        $year = date("Y");
+        $productCode = filter_input(INPUT_GET, "productCode");
+        
+        $data = generateSaldo($storageCode, $month, $year);
+        echo $data[$productCode]["barang_siap_dijual"]["price_per_qty"];
         break;
 
     case "getLaporanHutang":
@@ -409,6 +429,13 @@ switch($action){
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
         echo json_encode(getLaporanHutangPiutang($month, $year, "NON", "piutang"));
+        break;
+
+    case "getReportStock":
+        $month = filter_input(INPUT_GET, "month");
+        $year = filter_input(INPUT_GET, "year");
+        $storageCode = filter_input(INPUT_GET, "storageCode");
+        echo json_encode(generateSaldo($storageCode, $month, $year));
         break;
 }
 

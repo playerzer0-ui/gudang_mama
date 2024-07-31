@@ -118,6 +118,7 @@ delete from invoices;
 delete from orders;
 delete from repacks;
 delete from movings;
+delete from saldos;
 
 insert into orders values ("-", "NON", "-", "-", "NON", "NON", null, "-", "0");
 insert into repacks values ("-", NULL, "NON");
@@ -213,3 +214,72 @@ GROUP BY
 ORDER BY 
     op.productCode;
 
+SELECT 
+    p.productCode, 
+    o.storageCode, 
+    MONTH(i.invoice_date) AS saldoMonth, 
+    YEAR(i.invoice_date) AS saldoYear, 
+    op.qty AS totalQty, 
+    op.price_per_UOM AS avg_price_per_qty,
+    op.product_status
+FROM
+    products p
+JOIN 
+    order_products op ON p.productCode = op.productCode
+JOIN 
+    orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
+JOIN 
+    invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+WHERE 
+    o.storageCode = "APA"
+    AND MONTH(i.invoice_date) = 7
+    AND YEAR(i.invoice_date) = 2024
+
+UNION ALL
+
+SELECT 
+    p.productCode, 
+    r.storageCode, 
+    MONTH(r.repack_date) AS saldoMonth, 
+    YEAR(r.repack_date) AS saldoYear, 
+    op.qty AS totalQty, 
+    op.price_per_UOM AS avg_price_per_qty,
+    op.product_status
+FROM
+    products p
+    JOIN order_products op ON p.productCode = op.productCode
+    JOIN repacks r ON op.repack_no_repack = r.no_repack
+WHERE
+    r.storageCode = "APA"
+    AND MONTH(r.repack_date) = 7
+    AND YEAR(r.repack_date) = 2024
+
+UNION ALL
+
+SELECT 
+    p.productCode, 
+    m.storageCodeSender AS storageCode, 
+    MONTH(i.invoice_date) AS saldoMonth, 
+    YEAR(i.invoice_date) AS saldoYear, 
+    op.qty AS totalQty, 
+    op.price_per_UOM AS avg_price_per_qty,
+    op.product_status
+FROM
+    products p
+JOIN 
+    order_products op ON p.productCode = op.productCode
+JOIN 
+    movings m ON op.moving_no_moving = m.no_moving
+JOIN 
+    invoices i ON m.no_moving = i.nomor_surat_jalan
+WHERE 
+    m.storageCodeSender = "APA"
+    AND MONTH(i.invoice_date) = 7
+    AND YEAR(i.invoice_date) = 2024
+
+GROUP BY 
+    p.productCode, 
+    storageCode, 
+    saldoMonth, 
+    saldoYear,
+    op.product_status;

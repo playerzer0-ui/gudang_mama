@@ -60,9 +60,9 @@
                 <td>1</td>
                 <td><input name="kd[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
                 <td><input name="productName[]" type="text" placeholder="Otomatis" readonly/></td>
-                <td><input name="qty[]" type="text" placeholder="di isi"required /></td>
+                <td><input name="qty[]" type="text" placeholder="di isi" oninput="calculateNominal(this)" required/></td>
                 <td><input name="uom[]" type="text" placeholder="di isi" required/></td>
-                <td><input name="price_per_uom[]" type="text" placeholder="di isi" oninput="calculateNominal(this)" required/></td>
+                <td><input name="price_per_uom[]" type="text" placeholder="otomatis" readonly/></td>
                 <td><input type="number" inputmode="numeric" name="nominal[]" placeholder="Otomatis" readonly></td>
                 <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
             </tr>

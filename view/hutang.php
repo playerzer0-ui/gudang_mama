@@ -34,7 +34,7 @@
     </select>
     <button class="btn btn-secondary" onclick="generateReport()">search</button>
     </div>
-    <div>
+    <div class="table-container">
         <table id="reporttable" border="1">
             <!-- JavaScript will populate this table -->
         </table>

@@ -34,7 +34,7 @@
     </select>
     <button class="btn btn-secondary" onclick="generateReport()">search</button>
     </div>
-    <div>
+    <div class="table-container">
         <table id="reporttable">
             <thead>
                 <tr>
@@ -42,24 +42,26 @@
                     <th rowspan="3">KD</th>
                     <th rowspan="3">Material</th>
                     <th colspan="3">Saldo Awal</th>
-                    <th colspan="9">Penerimaan</th>
-                    <th colspan="3">BARANG SIAP DI JUAL</th>
-                    <th colspan="9">Pengeluaran</th>
+                    <th colspan="12">Penerimaan</th>
+                    <th colspan="3">Barang Siap Dijual</th>
+                    <th colspan="12">Pengeluaran</th>
                     <th colspan="3">Saldo Akhir</th>
                 </tr>
                 <tr>
                     <th rowspan="2">QTY</th>
                     <th rowspan="2">H/QTY</th>
                     <th rowspan="2">Rupiah</th>
-                    <th colspan="3" style="background-color: #FFFF00;">Pembelian</th>
-                    <th colspan="3" style="background-color: #FFC000;">Pindah PT</th>
-                    <th colspan="3" style="background-color: #FFC000;">Repack</th>
+                    <th colspan="3">Pembelian</th>
+                    <th colspan="3">Pindah PT</th>
+                    <th colspan="3">Repack</th>
+                    <th colspan="3">Total In</th>
                     <th rowspan="2">QTY</th>
                     <th rowspan="2">H/QTY</th>
-                    <th rowspan="2" style="background-color: #FFFF00;">Rupiah</th>
-                    <th colspan="3" style="background-color: #92D050;">Penjualan</th>
-                    <th colspan="3" style="background-color: #FFFF00;">Pindah PT</th>
-                    <th colspan="3" style="background-color: #FF0000;">Repack</th>
+                    <th rowspan="2">Rupiah</th>
+                    <th colspan="3">Penjualan</th>
+                    <th colspan="3">Pindah PT</th>
+                    <th colspan="3">Repack</th>
+                    <th colspan="3">Total Out</th>
                     <th rowspan="2">QTY</th>
                     <th rowspan="2">H/QTY</th>
                     <th rowspan="2">Rupiah</th>
@@ -85,10 +87,11 @@
                     <th>Rupiah</th>
                 </tr>
             </thead>
-        <tbody>
-            <!-- Data rows go here -->
-        </tbody>
-    </table>
+            <tbody>
+                <!-- Data rows will be populated here -->
+            </tbody>
+        </table>
+
 
     </div>
  </main>

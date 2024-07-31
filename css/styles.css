@@ -37,6 +37,24 @@
     border-radius: 10px;
 }
 
+.table-container {
+    overflow-x: auto;
+    overflow-y: hidden; /* Optional: to hide vertical scroll if unnecessary */
+    width: 100%; /* or specify a fixed width if needed */
+    white-space: nowrap; /* Ensures table cells don't wrap */
+}
+
+#reporttable {
+    width: 100%; /* This will take full width of the container */
+    border-collapse: collapse;
+}
+
+#reporttable th, #reporttable td {
+    padding: 8px 12px; /* Adjust as necessary */
+    border: 1px solid #ddd; /* Example border styling */
+}
+
+
 table {
     width: 100%;
     border-collapse: collapse;
