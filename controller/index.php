@@ -258,26 +258,7 @@ switch($action){
 
         for($i = 0; $i < count($productCodes); $i++){
             updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
-            if($pageState == "in"){
-                updateSaldo($productCodes[$i], $storageCode, $month, $year, $qtys[$i], $price_per_uom[$i], "in");
-            }
-            else if($pageState == "out_tax"){
-                updateSaldo($productCodes[$i], $storageCode, $month, $year, $qtys[$i], $price_per_uom[$i], "out_tax");
-            }
         }
-
-        // if($pageState == "in"){
-        //     $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "in");
-        //     foreach($prodSaldo as $key){
-        //         updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "in");
-        //     }
-        // }
-        // else if($pageState == "out_tax"){
-        //     $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "out_tax");
-        //     foreach($prodSaldo as $key){
-        //         updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "out_tax");
-        //     }
-        // }
 
         // Generate the PDF and return it as a response
         if (isset($_POST['generate_pdf'])) {
@@ -386,22 +367,11 @@ switch($action){
 
         for($i = 0; $i < count($kd_awal); $i++){
             addOrderProducts($no_repack, $kd_awal[$i], $qty_awal[$i], $uom_awal[$i], $note_awal[$i], "repack_awal");
-            updateSaldo($kd_awal[$i], $storageCode, $month, $year, $qty_awal[$i], 0, "repack_awal");
         }
         for($i = 0; $i < count($kd_akhir); $i++){
             addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], $note_akhir[$i], "repack_akhir");
-            updateSaldo($kd_akhir[$i], $storageCode, $month, $year, $qty_akhir[$i], 0, "repack_akhir");
         }
 
-        // $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "repack_awal");
-        // $prodSaldoAkh = getAllProductsForSaldo($storageCode, $month, $year, "repack_akhir");
-
-        // foreach($prodSaldo as $key){
-        //     updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "repack_awal");
-        // }
-        // foreach($prodSaldoAkh as $key){
-        //     updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "repack_akhir");
-        // }
 
         header("Location:../controller/index.php?action=dashboard&msg=NO_repack:" . $no_repack);
         break;
@@ -429,19 +399,7 @@ switch($action){
 
         for($i = 0; $i < count($productCodes); $i++){
             updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
-            updateSaldo($productCodes[$i], $storageCodeSender, $month, $year, $qtys[$i], $price_per_uom[$i], "moving_sender");
-            updateSaldo($productCodes[$i], $storageCodeReceiver, $month, $year, $qtys[$i], $price_per_uom[$i], "moving_receiver");
         }
-
-        // $prodSaldo = getAllProductsForSaldo($storageCode, $month, $year, "moving_sender");
-        // $prodSaldoAkh = getAllProductsForSaldo($storageCode, $month, $year, "moving_receiver");
-
-        // foreach($prodSaldo as $key){
-        //     updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "moving_sender");
-        // }
-        // foreach($prodSaldoAkh as $key){
-        //     updateSaldo($key["productCode"], $key["storageCode"], $key["saldoMonth"], $key["saldoYear"], $key["totalQty"], $key["avg_price_per_qty"], "moving_receiver");
-        // }
 
         header("Location:../controller/index.php?action=dashboard&msg=NO_moving:" . $no_moving);
         break;

@@ -425,7 +425,13 @@ function generateSaldo($storageCode, $month, $year){
                 break;
         }
         
+        $data[$productCode]["barang_siap_dijual"]["totalQty"] = $data[$productCode]["penerimaan"]["totalIn"]["totalQty"] + $data[$productCode]["saldo_awal"]["totalQty"];
+        $data[$productCode]["barang_siap_dijual"]["totalPrice"] = $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"];
+        $data[$productCode]["barang_siap_dijual"]["price_per_qty"] = $data[$productCode]["barang_siap_dijual"]["totalPrice"] / $data[$productCode]["barang_siap_dijual"]["totalQty"];
 
+        $data[$productCode]["saldo_akhir"]["totalQty"] = $data[$productCode]["barang_siap_dijual"]["totalQty"] - $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"];
+        $data[$productCode]["saldo_akhir"]["totalPrice"] = $data[$productCode]["barang_siap_dijual"]["totalPrice"] - $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"];
+        $data[$productCode]["saldo_akhir"]["price_per_qty"] = $data[$productCode]["saldo_akhir"]["totalPrice"] / $data[$productCode]["saldo_akhir"]["totalQty"];
     }
 
     return $data;

@@ -29,17 +29,12 @@
         }
     }
 
-    function updateSaldo($productCode, $storageCode, $month, $year, $qty, $price, $status){
+    function updateSaldo($productCode, $storageCode, $month, $year, $qty, $price){
         global $db;
 
         $exist = checkExistence($productCode, $storageCode, $month, $year);
         if($exist){
-            if($status == "out_tax" || $status == "moving_sender" || $status == "repack_awal"){
-                $query = "UPDATE saldos SET totalQty = totalQty - :qty, totalPrice = totalPrice - :price WHERE productCode = :productCode AND storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
-            }
-            else{
-                $query = "UPDATE saldos SET totalQty = totalQty + :qty, totalPrice = totalPrice + :price WHERE productCode = :productCode AND storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
-            }
+            $query = "UPDATE saldos SET totalQty = :qty, totalPrice = :price WHERE productCode = :productCode AND storageCode = :storageCode AND saldoMonth = :mon AND saldoYear = :yea";
         }
         else{
             $query = "INSERT INTO saldos VALUES (:productCode, :storageCode, :qty, :price, :mon, :yea)";
