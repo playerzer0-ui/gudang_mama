@@ -408,8 +408,14 @@ switch($action){
         echo "<pre>" . print_r(json_encode(generateSaldo("APA", 7, 2024)), true) . "</pre>";
         break;
 
-    case "test2":
-        echo "<pre>" . print_r(getSaldoAwal("APA", 7, 2024), true) . "</pre>";
+    case "getHPP":
+        $storageCode = filter_input(INPUT_GET, "storageCode");
+        $month = date("m");
+        $year = date("Y");
+        $productCode = filter_input(INPUT_GET, "productCode");
+        
+        $data = generateSaldo($storageCode, $month, $year);
+        echo $data[$productCode]["barang_siap_dijual"]["price_per_qty"];
         break;
 
     case "getLaporanHutang":

@@ -17,9 +17,9 @@ function addRow(tableId) {
     row.innerHTML = `<td>${rowCount}</td>
         <td><input name="kd[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
         <td><input name="productName[]" type="text" placeholder="Otomatis" readonly/></td>
-        <td><input name="qty[]" type="text" placeholder="di isi" required/></td>
+        <td><input name="qty[]" type="text" placeholder="di isi" oninput="calculateNominal(this)" required/></td>
         <td><input name="uom[]" type="text" placeholder="di isi" required/></td>
-        <td><input name="price_per_uom[]" type="text" placeholder="di isi" oninput="calculateNominal(this)" required/></td>
+        <td><input name="price_per_uom[]" type="text" placeholder="otomatis" readonly/></td>
         <td><input type="number" inputmode="numeric" name="nominal[]" placeholder="Otomatis" readonly></td>
         <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>`;
 
@@ -79,6 +79,7 @@ function getProductDetails(input) {
         success: function(data) {
             if (data) {
                 row.querySelector('input[name="productName[]"]').value = data.productName;
+                getHPP(input);
             } else {
                 row.querySelector('input[name="productName[]"]').value = "Terisi Otomatis";
             }
@@ -86,9 +87,29 @@ function getProductDetails(input) {
     });
 }
 
+function getHPP(input){
+    const productCode = input.value;
+    const row = input.parentElement.parentElement;
+    const storageCode = document.getElementById("storageCodeSender").value;
+
+    $.ajax({
+        type: "get",
+        url: "../controller/index.php",
+        dataType: 'json',
+        data: {
+            action: 'getHPP',
+            productCode: productCode,
+            storageCode: storageCode
+        },
+        success: function (data) {
+            row.querySelector('input[name="price_per_uom[]"]').value = data;
+        }
+    });
+}
+
 function calculateNominal(priceInput) {
     const row = priceInput.closest('tr'); // Get the closest row to the input
-    const qty = parseFloat(row.querySelector('input[name="qty[]"]').value); // Get the quantity value
+    const qty = parseFloat(row.querySelector('input[name="price_per_uom[]"]').value); // Get the quantity value
     const price = parseFloat(priceInput.value); // Get the price value
 
     if (!isNaN(qty) && !isNaN(price)) {

@@ -432,6 +432,8 @@ function generateSaldo($storageCode, $month, $year){
         $data[$productCode]["saldo_akhir"]["totalQty"] = $data[$productCode]["barang_siap_dijual"]["totalQty"] - $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"];
         $data[$productCode]["saldo_akhir"]["totalPrice"] = $data[$productCode]["barang_siap_dijual"]["totalPrice"] - $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"];
         $data[$productCode]["saldo_akhir"]["price_per_qty"] = $data[$productCode]["saldo_akhir"]["totalPrice"] / $data[$productCode]["saldo_akhir"]["totalQty"];
+
+        updateSaldo($productCode, $storageCode, $month, $year, $data[$productCode]["saldo_akhir"]["totalQty"], $data[$productCode]["saldo_akhir"]["totalPrice"]);
     }
 
     return $data;

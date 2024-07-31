@@ -70,6 +70,18 @@
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_moving">moving</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item dropdown btn btn-outline-primary">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                amend
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">edit slips</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_moving">edit invoices</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">edit payments</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_moving">edit repacks</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">edit movings</a></li>
+                            </ul>
+                        </li>
 
                         <?php if($userType == 1){ ?>
                         <li class="nav-item">
