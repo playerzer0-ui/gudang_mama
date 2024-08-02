@@ -80,4 +80,20 @@
         return $result;
     }
 
+    function deletePayment($no_sj){
+        global $db;
+    
+        $query = "DELETE FROM payments WHERE nomor_surat_jalan = :no_sj";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":no_sj", $no_sj);
+    
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $statement->closeCursor();
+    }
 ?>

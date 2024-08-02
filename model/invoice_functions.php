@@ -220,4 +220,21 @@
 
         return array_values($groupData);
     }
+
+    function deleteInvoice($no_sj){
+        global $db;
+    
+        $query = "DELETE FROM invoices WHERE nomor_surat_jalan = :no_sj";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":no_sj", $no_sj);
+    
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $statement->closeCursor();
+    }
 ?>

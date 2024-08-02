@@ -62,4 +62,21 @@
         $statement->closeCursor();
     }
 
+    function deleteRepack($no_sj){
+        global $db;
+    
+        $query = "DELETE FROM repacks WHERE no_repack = :no_sj";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":no_sj", $no_sj);
+    
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $statement->closeCursor();
+    }
+
 ?>

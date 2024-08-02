@@ -1,15 +1,16 @@
 <?php include "header.php"; ?>
 
 <main>
+    <h1>amend <?php echo $state; ?></h1>
     <div class="container text-center">
         <?php foreach($no_SJs as $key){ ?>
             <div class="row align-items-start">
                 <div class="col">
-                    <?php echo $key["nomor_surat_jalan"]; ?>
+                    <b><?php echo $key["nomor_surat_jalan"]; ?></b>
                 </div>
                 <div class="col">
                     <button class="btn btn-info">EDIT</button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setHref(this)" value=<?php echo $key["nomor_surat_jalan"]; ?>>
                     DELETE
                     </button>
                 </div>
@@ -28,12 +29,14 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger">delete</button>
+                <a id="deleteButton" href="../controller/index.php?action=test"><button type="button" class="btn btn-danger">delete</button></a>
             </div>
             </div>
         </div>
     </div>
 
 </main>
+
+<script src="../js/amends.js" async defer></script>
 
 <?php include "footer.php"; ?>

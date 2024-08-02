@@ -128,4 +128,21 @@ function generateTaxSJ($storageCode){
     return $no . "/SJT/" . $storageCode . "/" . date("m") . "/" . date("Y");
 }
 
+function deleteOrder($no_sj){
+    global $db;
+
+    $query = "DELETE FROM orders WHERE nomor_surat_jalan = :no_sj";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":no_sj", $no_sj);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $statement->closeCursor();
+}
+
 ?>
