@@ -25,6 +25,24 @@
         return $no . "/SJP/" . $storageCode . "/" . date("m") . "/" . date("Y");
     }
 
+    function getAllMovings(){
+        global $db;
+
+        $query = "SELECT no_moving AS nomor_surat_jalan, moving_date, storageCodeSender, storageCodeReceiver FROM movings WHERE no_moving != '-'";
+        $statement = $db->prepare($query);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
+    }
+
     function create_moving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver){
         global $db;
 

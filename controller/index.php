@@ -126,6 +126,29 @@ switch($action){
         require_once "../view/piutang.php";
         break;
 
+    case "show_amends":
+        $title = "amends";
+        $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        switch($state){
+            case "slip":
+                $no_SJs = getAllOrders();
+                break;
+            case "invoice":
+                $no_SJs = getAllInvoices();
+                break;
+            case "payment":
+                $no_SJs = getAllPayments();
+                break;
+            case "repack":
+                $no_SJs = getAllRepacks();
+                break;
+            case "moving":
+                $no_SJs = getAllMovings();
+                break;
+        }
+        require_once "../view/amends.php";
+        break;
+
     case "generate_LPB":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generateNoLPB($storageCode, "1");

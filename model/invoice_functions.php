@@ -25,6 +25,24 @@
         $statement->closeCursor();
     }
 
+    function getAllInvoices(){
+        global $db;
+
+        $query = "SELECT * FROM invoices";
+        $statement = $db->prepare($query);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
+    }
+
     function generateNoInvoice($storageCode, $month, $year){
         global $db;
         

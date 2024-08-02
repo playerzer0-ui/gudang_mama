@@ -29,6 +29,24 @@ function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendo
     $statement->closeCursor();
 }
 
+function getAllOrders(){
+    global $db;
+
+    $query = "SELECT * FROM orders WHERE nomor_surat_jalan != '-'";
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $result;
+}
+
 function getOrderByNoSJ($no_sj){
     global $db;
 

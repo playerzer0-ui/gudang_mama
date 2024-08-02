@@ -75,11 +75,11 @@
                                 amend
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">edit slips</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_moving">edit invoices</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">edit payments</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_moving">edit repacks</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">edit movings</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=slip">edit slips</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=invoice">edit invoices</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=payment">edit payments</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=repack">edit repacks</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=moving">edit movings</a></li>
                             </ul>
                         </li>
 

@@ -24,6 +24,24 @@
         $statement->closeCursor();
     }
 
+    function getAllPayments(){
+        global $db;
+
+        $query = "SELECT * FROM payments";
+        $statement = $db->prepare($query);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
+    }
+
     function getPaymentByNoSJ($nomor_surat_jalan){
         global $db;
 

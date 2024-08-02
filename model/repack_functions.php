@@ -25,6 +25,24 @@
         return $no . "/SJR/" . $storageCode . "/" . date("m") . "/" . date("Y");
     }
 
+    function getAllRepacks(){
+        global $db;
+
+        $query = "SELECT no_repack AS nomor_surat_jalan, repack_date, storageCode FROM repacks WHERE no_repack != '-'";
+        $statement = $db->prepare($query);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
+    }
+
     function create_repack($storageCode, $repack_date, $no_repack){
         global $db;
 

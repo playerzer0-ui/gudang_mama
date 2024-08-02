@@ -50,6 +50,34 @@ function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
     $statement->closeCursor();
 }
 
+function deleteOrderProducts($no_id, $status){
+    global $db;
+
+    switch($status){
+        case "order":
+            $query = 'DELETE FROM order_products WHERE nomor_surat_jalan = :no_id';
+            break;
+
+        case "repack":
+            $query = 'DELETE FROM order_products WHERE repack_no_repack = :no_id';
+            break;
+        
+        case "moving":
+            $query = 'DELETE FROM order_products WHERE moving_no_moving = :no_id';
+            break; 
+    }
+    $statement = $db->prepare($query);
+    $statement->bindValue(":no_id", $no_id);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+    $statement->closeCursor();
+}
+
 function getOrderProductsFromNoID($no_id, $status){
     global $db;
 
