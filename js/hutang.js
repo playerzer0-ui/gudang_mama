@@ -132,7 +132,7 @@ function populateTable(data) {
 }
 
 function formatNumber(number) {
-    return new Intl.NumberFormat('id-ID', { style: 'decimal', maximumFractionDigits: 2 }).format(number);
+    return new Intl.NumberFormat('id-ID', { style: 'decimal', maximumFractionDigits: 0 }).format(number);
 }
 
 

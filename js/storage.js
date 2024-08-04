@@ -74,8 +74,8 @@ function populateReportTable(data) {
 
         row.innerHTML += `
             <td>${saldoAwalQty}</td>
-            <td>${item.saldo_awal.price_per_qty}</td>
-            <td>${saldoAwalRupiah.toFixed(2)}</td>
+            <td>${formatNumber(item.saldo_awal.price_per_qty)}</td>
+            <td>${formatNumber(saldoAwalRupiah)}</td>
         `;
 
         // Penerimaan
@@ -91,24 +91,24 @@ function populateReportTable(data) {
 
         row.innerHTML += `
             <td>${pembelianQty}</td>
-            <td>${item.penerimaan.pembelian.price_per_qty}</td>
-            <td>${pembelianRupiah.toFixed(2)}</td>
+            <td>${formatNumber(item.penerimaan.pembelian.price_per_qty)}</td>
+            <td>${formatNumber(pembelianRupiah)}</td>
             <td>${item.penerimaan.movingIn.totalQty}</td>
-            <td>${item.penerimaan.movingIn.price_per_qty}</td>
-            <td>${item.penerimaan.movingIn.totalPrice}</td>
+            <td>${formatNumber(item.penerimaan.movingIn.price_per_qty)}</td>
+            <td>${formatNumber(item.penerimaan.movingIn.totalPrice)}</td>
             <td>${item.penerimaan.repackIn.totalQty}</td>
-            <td>${item.penerimaan.repackIn.price_per_qty}</td>
-            <td>${item.penerimaan.repackIn.totalPrice}</td>
+            <td>${formatNumber(item.penerimaan.repackIn.price_per_qty)}</td>
+            <td>${formatNumber(item.penerimaan.repackIn.totalPrice)}</td>
             <td>${totalInQty}</td>
-            <td>${item.penerimaan.totalIn.price_per_qty}</td>
-            <td>${totalInRupiah.toFixed(2)}</td>
+            <td>${formatNumber(item.penerimaan.totalIn.price_per_qty)}</td>
+            <td>${formatNumber(totalInRupiah)}</td>
         `;
 
         // Barang Siap Dijual
         row.innerHTML += `
             <td>${item.barang_siap_dijual.totalQty}</td>
-            <td>${item.barang_siap_dijual.price_per_qty}</td>
-            <td>${item.barang_siap_dijual.totalPrice}</td>
+            <td>${formatNumber(item.barang_siap_dijual.price_per_qty)}</td>
+            <td>${formatNumber(item.barang_siap_dijual.totalPrice)}</td>
         `;
 
         // Pengeluaran
@@ -124,17 +124,17 @@ function populateReportTable(data) {
 
         row.innerHTML += `
             <td>${penjualanQty}</td>
-            <td>${item.pengeluaran.penjualan.price_per_qty}</td>
-            <td>${penjualanRupiah.toFixed(2)}</td>
+            <td>${formatNumber(item.pengeluaran.penjualan.price_per_qty)}</td>
+            <td>${formatNumber(penjualanRupiah)}</td>
             <td>${item.pengeluaran.movingOut.totalQty}</td>
-            <td>${item.pengeluaran.movingOut.price_per_qty}</td>
-            <td>${item.pengeluaran.movingOut.totalPrice}</td>
+            <td>${formatNumber(item.pengeluaran.movingOut.price_per_qty)}</td>
+            <td>${formatNumber(item.pengeluaran.movingOut.totalPrice)}</td>
             <td>${item.pengeluaran.repackOut.totalQty}</td>
-            <td>${item.pengeluaran.repackOut.price_per_qty}</td>
-            <td>${item.pengeluaran.repackOut.totalPrice}</td>
+            <td>${formatNumber(item.pengeluaran.repackOut.price_per_qty)}</td>
+            <td>${formatNumber(item.pengeluaran.repackOut.totalPrice)}</td>
             <td>${totalOutQty}</td>
-            <td>${item.pengeluaran.totalOut.price_per_qty}</td>
-            <td>${totalOutRupiah.toFixed(2)}</td>
+            <td>${formatNumber(item.pengeluaran.totalOut.price_per_qty)}</td>
+            <td>${formatNumber(totalOutRupiah)}</td>
         `;
 
         // Saldo Akhir
@@ -145,12 +145,16 @@ function populateReportTable(data) {
 
         row.innerHTML += `
             <td>${saldoAkhirQty}</td>
-            <td>${item.saldo_akhir.price_per_qty}</td>
-            <td>${saldoAkhirRupiah.toFixed(2)}</td>
+            <td>${formatNumber(item.saldo_akhir.price_per_qty)}</td>
+            <td>${formatNumber(saldoAkhirRupiah)}</td>
         `;
 
         tbody.appendChild(row);
     }
 
     // Optionally, you can add a row for totals if needed
+}
+
+function formatNumber(number) {
+    return new Intl.NumberFormat('id-ID', { style: 'decimal', maximumFractionDigits: 0 }).format(number);
 }
