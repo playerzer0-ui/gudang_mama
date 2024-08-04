@@ -193,64 +193,67 @@ function getProductsForHutang($no_sj){
 function getAllProductsForSaldo($storageCode, $month, $year){
     global $db;
 
-    $query = 'SELECT 
-        p.productCode, 
-        p.productName,
-        o.storageCode, 
-        MONTH(i.invoice_date) AS saldoMonth, 
-        YEAR(i.invoice_date) AS saldoYear, 
-        SUM(op.qty) AS totalQty, 
-        AVG(op.price_per_UOM) AS avgPrice,
-        op.product_status
-    FROM
-        products p
-    JOIN 
-        order_products op ON p.productCode = op.productCode
-    JOIN 
-        orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
-    JOIN 
-        invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
-    WHERE 
-        o.storageCode = :storageCode
-        AND MONTH(i.invoice_date) = :mon
-        AND YEAR(i.invoice_date) = :yea
-        AND op.product_status != "out"
-    GROUP BY 
-        p.productCode, 
-        o.storageCode, 
-        saldoMonth, 
-        saldoYear,
-        op.product_status
-
+    $query = '(SELECT 
+            p.productCode, 
+            p.productName,
+            o.storageCode, 
+            MONTH(i.invoice_date) AS saldoMonth, 
+            YEAR(i.invoice_date) AS saldoYear, 
+            SUM(op.qty) AS totalQty, 
+            AVG(op.price_per_UOM) AS avgPrice,
+            op.product_status
+        FROM
+            products p
+        JOIN 
+            order_products op ON p.productCode = op.productCode
+        JOIN 
+            orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
+        JOIN 
+            invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+        WHERE 
+            o.storageCode = :storageCode
+            AND MONTH(i.invoice_date) = :mon
+            AND YEAR(i.invoice_date) = :yea
+            AND op.product_status != "out"
+        GROUP BY 
+            p.productCode, 
+            p.productName,
+            o.storageCode, 
+            saldoMonth, 
+            saldoYear,
+            op.product_status
+    )
     UNION ALL
-
-    SELECT 
-        p.productCode, 
-        p.productName,
-        r.storageCode, 
-        MONTH(r.repack_date) AS saldoMonth, 
-        YEAR(r.repack_date) AS saldoYear, 
-        SUM(op.qty) AS totalQty, 
-        AVG(op.price_per_UOM) AS avgPrice,
-        op.product_status
-    FROM
-        products p
-    JOIN 
-        order_products op ON p.productCode = op.productCode
-    JOIN 
-        repacks r ON op.repack_no_repack = r.no_repack
-    WHERE
-        r.storageCode = :storageCode1
-        AND MONTH(r.repack_date) = :mon1
-        AND YEAR(r.repack_date) = :yea1
-    GROUP BY 
-        p.productCode, 
-        p.productName,
-        r.storageCode, 
-        saldoMonth, 
-        saldoYear,
-        op.product_status
-    ';
+    (
+        SELECT 
+            p.productCode, 
+            p.productName,
+            r.storageCode, 
+            MONTH(r.repack_date) AS saldoMonth, 
+            YEAR(r.repack_date) AS saldoYear, 
+            SUM(op.qty) AS totalQty, 
+            AVG(op.price_per_UOM) AS avgPrice,
+            op.product_status
+        FROM
+            products p
+        JOIN 
+            order_products op ON p.productCode = op.productCode
+        JOIN 
+            repacks r ON op.repack_no_repack = r.no_repack
+        WHERE
+            r.storageCode = :storageCode1
+            AND MONTH(r.repack_date) = :mon1
+            AND YEAR(r.repack_date) = :yea1
+        GROUP BY 
+            p.productCode, 
+            p.productName,
+            r.storageCode, 
+            saldoMonth, 
+            saldoYear,
+            op.product_status
+    )
+    ORDER BY
+        product_status';
 
     $statement = $db->prepare($query);
     $statement->bindValue(":storageCode", $storageCode);
@@ -280,6 +283,10 @@ function getAllProductsForSaldo($storageCode, $month, $year){
 
 }
 
+/**
+ * moving saldo function
+ * @return array senders and receivers in that order
+ */
 function getAllProductsMovingSaldo($storageCode, $month, $year){
     global $db;
 
@@ -368,7 +375,7 @@ function getAllProductsMovingSaldo($storageCode, $month, $year){
     return [$senders, $receivers];
 }
 
-function generateSaldo($storageCode, $month, $year){
+function generateSaldo($storageCode, $month, $year) {
     $storageReport = getAllProductsForSaldo($storageCode, $month, $year);
     $inouts = $storageReport[0];
     $movings = $storageReport[1];
@@ -381,91 +388,145 @@ function generateSaldo($storageCode, $month, $year){
     $saldos_awal = getSaldoAwal($storageCode, $prevMonth, $prevYear);
     array_push($data, ["storageCode" => $storageCode, "month" => $month, "year" => $year]);
 
-    foreach($inouts as $key){
+    foreach ($inouts as $key) {
         $productCode = $key["productCode"];
-        if(!isset($data[$productCode])){
-            $data[$productCode] = [
-                "productCode" => $productCode,
-                "productName" => $key["productName"],
-                "saldo_awal" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
-                "penerimaan" => [
-                    "pembelian" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
-                    "repackIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
-                    "movingIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
-                    "totalIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
-                ],
-                "pengeluaran" => [
-                    "penjualan" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
-                    "repackOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
-                    "movingOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
-                    "totalOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
-                ],
-                "barang_siap_dijual" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
-                "saldo_akhir" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
-            ];
+        if (!isset($data[$productCode])) {
+            $data[$productCode] = initializeProductData($key["productCode"], $key["productName"]);
         }
 
-        if(isset($saldos_awal[$productCode])){
-            $data[$productCode]["saldo_awal"]["totalQty"] = $saldos_awal[$productCode]["totalQty"];
-            $data[$productCode]["saldo_awal"]["totalPrice"] = $saldos_awal[$productCode]["totalPrice"];
-            $data[$productCode]["saldo_awal"]["price_per_qty"] = $saldos_awal[$productCode]["totalPrice"] / $saldos_awal[$productCode]["totalQty"];
-        }
+        updateSaldoAwal($data[$productCode], $saldos_awal);
 
-        switch($key["product_status"]){
+        switch ($key["product_status"]) {
             case "in":
-                $data[$productCode]["penerimaan"]["pembelian"]["totalQty"] = $key["totalQty"];
-                $data[$productCode]["penerimaan"]["pembelian"]["price_per_qty"] = $key["avgPrice"];
-                $data[$productCode]["penerimaan"]["pembelian"]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
-
-                $data[$productCode]["penerimaan"]["totalIn"]["totalQty"] += $key["totalQty"];
-                $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"] += $data[$productCode]["penerimaan"]["pembelian"]["totalPrice"];
-                $data[$productCode]["penerimaan"]["totalIn"]["price_per_qty"] = $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"] / $data[$productCode]["penerimaan"]["totalIn"]["totalQty"];
+                updatePenerimaan($data[$productCode], $key, "pembelian");
                 break;
 
             case "out_tax":
-                $data[$productCode]["pengeluaran"]["penjualan"]["totalQty"] = $key["totalQty"];
-                $data[$productCode]["pengeluaran"]["penjualan"]["price_per_qty"] = $key["avgPrice"];
-                $data[$productCode]["pengeluaran"]["penjualan"]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
-
-                $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"] += $key["totalQty"];
-                $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"] += $data[$productCode]["pengeluaran"]["penjualan"]["totalPrice"];
-                $data[$productCode]["pengeluaran"]["totalOut"]["price_per_qty"] = $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"] / $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"];
+                updatePengeluaran($data[$productCode], $key, "penjualan");
                 break;
 
             case "repack_awal":
-                $data[$productCode]["pengeluaran"]["repackOut"]["totalQty"] = $key["totalQty"];
-                $data[$productCode]["pengeluaran"]["repackOut"]["price_per_qty"] = $key["avgPrice"];
-                $data[$productCode]["pengeluaran"]["repackOut"]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
-
-                $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"] += $key["totalQty"];
-                $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"] += $data[$productCode]["pengeluaran"]["repackOut"]["totalPrice"];
-                $data[$productCode]["pengeluaran"]["totalOut"]["price_per_qty"] = $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"] / $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"];
+                updatePengeluaran($data[$productCode], $key, "repackOut");
                 break;
 
             case "repack_akhir":
-                $data[$productCode]["penerimaan"]["repackIn"]["totalQty"] = $key["totalQty"];
-                $data[$productCode]["penerimaan"]["repackIn"]["price_per_qty"] = $key["avgPrice"];
-                $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
-
-                $data[$productCode]["penerimaan"]["totalIn"]["totalQty"] += $key["totalQty"];
-                $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"] += $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"];
-                $data[$productCode]["penerimaan"]["totalIn"]["price_per_qty"] = $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"] / $data[$productCode]["penerimaan"]["totalIn"]["totalQty"];
+                updatePenerimaan($data[$productCode], $key, "repackIn");
                 break;
         }
-        
-        $data[$productCode]["barang_siap_dijual"]["totalQty"] = $data[$productCode]["penerimaan"]["totalIn"]["totalQty"] + $data[$productCode]["saldo_awal"]["totalQty"];
-        $data[$productCode]["barang_siap_dijual"]["totalPrice"] = $data[$productCode]["penerimaan"]["totalIn"]["totalPrice"];
-        $data[$productCode]["barang_siap_dijual"]["price_per_qty"] = $data[$productCode]["barang_siap_dijual"]["totalPrice"] / $data[$productCode]["barang_siap_dijual"]["totalQty"];
 
-        $data[$productCode]["saldo_akhir"]["totalQty"] = $data[$productCode]["barang_siap_dijual"]["totalQty"] - $data[$productCode]["pengeluaran"]["totalOut"]["totalQty"];
-        $data[$productCode]["saldo_akhir"]["totalPrice"] = $data[$productCode]["barang_siap_dijual"]["totalPrice"] - $data[$productCode]["pengeluaran"]["totalOut"]["totalPrice"];
-        $data[$productCode]["saldo_akhir"]["price_per_qty"] = $data[$productCode]["saldo_akhir"]["totalPrice"] / $data[$productCode]["saldo_akhir"]["totalQty"];
+        updateBarangSiapDijual($data[$productCode]);
+        updateSaldoAkhir($data[$productCode]);
+
+        updateSaldo($productCode, $storageCode, $month, $year, $data[$productCode]["saldo_akhir"]["totalQty"], $data[$productCode]["saldo_akhir"]["totalPrice"]);
+    }
+
+    foreach ($movings[1] as $key) {
+        $productCode = $key["productCode"];
+        if (!isset($data[$productCode])) {
+            $data[$productCode] = initializeProductData($key["productCode"], $key["productName"]);
+        }
+
+        updateSaldoAwal($data[$productCode], $saldos_awal);
+
+        // Handle movingIn logic here
+        updatePenerimaan($data[$productCode], $key, "movingIn");
+
+        updateBarangSiapDijual($data[$productCode]);
+        updateSaldoAkhir($data[$productCode]);
+
+        updateSaldo($productCode, $storageCode, $month, $year, $data[$productCode]["saldo_akhir"]["totalQty"], $data[$productCode]["saldo_akhir"]["totalPrice"]);
+    }
+
+    foreach ($movings[0] as $key) {
+        $productCode = $key["productCode"];
+        if (!isset($data[$productCode])) {
+            $data[$productCode] = initializeProductData($key["productCode"], $key["productName"]);
+        }
+
+        updateSaldoAwal($data[$productCode], $saldos_awal);
+
+        // Handle movingOut logic here
+        updatePengeluaran($data[$productCode], $key, "movingOut");
+
+        updateBarangSiapDijual($data[$productCode]);
+        updateSaldoAkhir($data[$productCode]);
 
         updateSaldo($productCode, $storageCode, $month, $year, $data[$productCode]["saldo_akhir"]["totalQty"], $data[$productCode]["saldo_akhir"]["totalPrice"]);
     }
 
     return $data;
 }
+
+
+function initializeProductData($productCode, $productName) {
+    return [
+        "productCode" => $productCode,
+        "productName" => $productName,
+        "saldo_awal" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+        "penerimaan" => [
+            "pembelian" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+            "repackIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+            "movingIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+            "totalIn" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
+        ],
+        "pengeluaran" => [
+            "penjualan" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+            "repackOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+            "movingOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+            "totalOut" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
+        ],
+        "barang_siap_dijual" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0],
+        "saldo_akhir" => ["totalQty" => 0, "price_per_qty" => 0, "totalPrice" => 0]
+    ];
+}
+
+function updateSaldoAwal(&$productData, $saldos_awal) {
+    $productCode = $productData["productCode"];
+    if (isset($saldos_awal[$productCode])) {
+        $productData["saldo_awal"]["totalQty"] = $saldos_awal[$productCode]["totalQty"];
+        $productData["saldo_awal"]["totalPrice"] = $saldos_awal[$productCode]["totalPrice"];
+        $productData["saldo_awal"]["price_per_qty"] = $saldos_awal[$productCode]["totalPrice"] / $saldos_awal[$productCode]["totalQty"];
+    }
+}
+
+function updatePenerimaan(&$productData, $key, $type) {
+    $productData["penerimaan"][$type]["totalQty"] = $key["totalQty"];
+    $productData["penerimaan"][$type]["price_per_qty"] = $key["avgPrice"];
+    $productData["penerimaan"][$type]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
+
+    $productData["penerimaan"]["totalIn"]["totalQty"] += $key["totalQty"];
+    $productData["penerimaan"]["totalIn"]["totalPrice"] += $productData["penerimaan"][$type]["totalPrice"];
+    $productData["penerimaan"]["totalIn"]["price_per_qty"] = $productData["penerimaan"]["totalIn"]["totalPrice"] / $productData["penerimaan"]["totalIn"]["totalQty"];
+}
+
+function updatePengeluaran(&$productData, $key, $type) {
+    // Use price_per_qty of barang_siap_dijual
+    $price_per_qty = $productData["barang_siap_dijual"]["price_per_qty"];
+
+    // Update the pengeluaran values
+    $productData["pengeluaran"][$type]["totalQty"] = $key["totalQty"];
+    $productData["pengeluaran"][$type]["price_per_qty"] = $price_per_qty;
+    $productData["pengeluaran"][$type]["totalPrice"] = $key["totalQty"] * $price_per_qty;
+
+    // Update the totalOut values
+    $productData["pengeluaran"]["totalOut"]["totalQty"] += $key["totalQty"];
+    $productData["pengeluaran"]["totalOut"]["totalPrice"] += $productData["pengeluaran"][$type]["totalPrice"];
+    $productData["pengeluaran"]["totalOut"]["price_per_qty"] = $price_per_qty;
+}
+
+function updateBarangSiapDijual(&$productData) {
+    $productData["barang_siap_dijual"]["totalQty"] = $productData["penerimaan"]["totalIn"]["totalQty"] + $productData["saldo_awal"]["totalQty"];
+    $productData["barang_siap_dijual"]["totalPrice"] = $productData["penerimaan"]["totalIn"]["totalPrice"] + $productData["saldo_awal"]["totalPrice"];
+    $productData["barang_siap_dijual"]["price_per_qty"] = $productData["barang_siap_dijual"]["totalPrice"] / $productData["barang_siap_dijual"]["totalQty"];
+}
+
+function updateSaldoAkhir(&$productData) {
+    // Calculate saldo_akhir based on updated values
+    $productData["saldo_akhir"]["totalQty"] = $productData["barang_siap_dijual"]["totalQty"] - $productData["pengeluaran"]["totalOut"]["totalQty"];
+    $productData["saldo_akhir"]["totalPrice"] = $productData["barang_siap_dijual"]["totalPrice"] - $productData["pengeluaran"]["totalOut"]["totalPrice"];
+    $productData["saldo_akhir"]["price_per_qty"] = $productData["barang_siap_dijual"]["price_per_qty"];
+}
+
 
 // function generateSaldo($storageCode, $month, $year){
 //     $date = new DateTime($year . "-" . $month . "-" . "01");

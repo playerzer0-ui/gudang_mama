@@ -420,15 +420,21 @@ switch($action){
             addOrderProducts($no_moving, $productCodes[$i], $qtys[$i], $uoms[$i], "", "moving");
         }
 
-        for($i = 0; $i < count($productCodes); $i++){
-            updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
-        }
+        // for($i = 0; $i < count($productCodes); $i++){
+        //     updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
+        // }
 
         header("Location:../controller/index.php?action=dashboard&msg=NO_moving:" . $no_moving);
         break;
 
     case "test":
-        echo "<pre>" . print_r(json_encode(generateSaldo("APA", 7, 2024)), true) . "</pre>";
+        //echo "<pre>" . print_r(json_encode(generateSaldo("APA", 8, 2024)), true) . "</pre>";
+        echo "<pre>" . print_r(getAllProductsForSaldo("APA", 8, 2024), true) . "</pre>";
+        break;
+
+    case "test2":
+        echo "<pre>" . print_r(generateSaldo("APA", 8, 2024), true) . "</pre>";
+        //echo "<pre>" . print_r(json_encode(getAllProductsForSaldo("APA", 8, 2024)), true) . "</pre>";
         break;
 
     case "getHPP":
