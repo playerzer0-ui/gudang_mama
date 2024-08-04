@@ -82,6 +82,17 @@
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=moving">edit movings</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item dropdown btn btn-outline-warning">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                master
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_vendor">vendors</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_customer">customers</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_product">products</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_storage">storages</a></li>
+                            </ul>
+                        </li>
 
                         <?php if($userType == 1){ ?>
                         <li class="nav-item">
