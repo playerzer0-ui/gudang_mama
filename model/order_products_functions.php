@@ -5,6 +5,8 @@ require_once "saldo_functions.php";
 
 // Declare a global variable
 $global_repackOut_price_per_qty = 0;
+// $data = [];
+// $productCode = "";
 
 function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
     global $db;
@@ -416,13 +418,13 @@ function generateSaldo($storageCode, $month, $year) {
 
             case "repack_awal":
                 updatePengeluaran($data[$productCode], $key, "repackOut");
-                $global_repackOut_price_per_qty = $data[$productCode]["pengeluaran"]["repackOut"]["price_per_qty"];
+                // $global_repackOut_price_per_qty = $data[$productCode]["pengeluaran"]["repackOut"]["price_per_qty"];
                 break;
 
             case "repack_akhir":
                 updatePenerimaan($data[$productCode], $key, "repackIn");
-                $data[$productCode]["penerimaan"]["repackIn"]["price_per_qty"] = $global_repackOut_price_per_qty;
-                $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"] = $key["totalQty"] * $global_repackOut_price_per_qty;
+                // $data[$productCode]["penerimaan"]["repackIn"]["price_per_qty"] = $global_repackOut_price_per_qty;
+                // $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"] = $key["totalQty"] * $global_repackOut_price_per_qty;
                 break;
         }
 
@@ -501,9 +503,16 @@ function updateSaldoAwal(&$productData, $saldos_awal) {
 }
 
 function updatePenerimaan(&$productData, $key, $type) {
+    global $global_repackOut_price_per_qty;
+
     $productData["penerimaan"][$type]["totalQty"] = $key["totalQty"];
     $productData["penerimaan"][$type]["price_per_qty"] = $key["avgPrice"];
     $productData["penerimaan"][$type]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
+
+    if($type == "repackIn" || $type == "movingIn"){
+        $productData["penerimaan"][$type]["price_per_qty"] = $global_repackOut_price_per_qty;
+        $productData["penerimaan"][$type]["totalPrice"] = $key["totalQty"] * $global_repackOut_price_per_qty;
+    }
 
     $productData["penerimaan"]["totalIn"]["totalQty"] += $key["totalQty"];
     $productData["penerimaan"]["totalIn"]["totalPrice"] += $productData["penerimaan"][$type]["totalPrice"];
@@ -511,6 +520,8 @@ function updatePenerimaan(&$productData, $key, $type) {
 }
 
 function updatePengeluaran(&$productData, $key, $type) {
+    global $global_repackOut_price_per_qty;
+
     // Use price_per_qty of barang_siap_dijual
     $price_per_qty = $productData["barang_siap_dijual"]["price_per_qty"];
 
@@ -518,6 +529,8 @@ function updatePengeluaran(&$productData, $key, $type) {
     $productData["pengeluaran"][$type]["totalQty"] = $key["totalQty"];
     $productData["pengeluaran"][$type]["price_per_qty"] = $price_per_qty;
     $productData["pengeluaran"][$type]["totalPrice"] = $key["totalQty"] * $price_per_qty;
+
+    $global_repackOut_price_per_qty = $productData["pengeluaran"][$type]["price_per_qty"];
 
     // Update the totalOut values
     $productData["pengeluaran"]["totalOut"]["totalQty"] += $key["totalQty"];
