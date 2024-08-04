@@ -3,6 +3,9 @@
 require_once "database.php";
 require_once "saldo_functions.php";
 
+// Declare a global variable
+$global_repackOut_price_per_qty = 0;
+
 function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
     global $db;
 
@@ -253,7 +256,13 @@ function getAllProductsForSaldo($storageCode, $month, $year){
             op.product_status
     )
     ORDER BY
-        product_status';
+        CASE 
+            WHEN product_status = "in" THEN 1
+            WHEN product_status = "out_tax" THEN 2
+            WHEN product_status = "repack_awal" THEN 3
+            WHEN product_status = "repack_akhir" THEN 4
+            ELSE 5
+        END';
 
     $statement = $db->prepare($query);
     $statement->bindValue(":storageCode", $storageCode);
@@ -279,8 +288,6 @@ function getAllProductsForSaldo($storageCode, $month, $year){
 
     // echo "<pre>RESULTTT" . print_r(combineForReportStock($result, $movings, $storageCode, $month, $year), true) . "</pre>";
     return [$result, $movings];
-
-
 }
 
 /**
@@ -376,6 +383,8 @@ function getAllProductsMovingSaldo($storageCode, $month, $year){
 }
 
 function generateSaldo($storageCode, $month, $year) {
+    global $global_repackOut_price_per_qty;
+
     $storageReport = getAllProductsForSaldo($storageCode, $month, $year);
     $inouts = $storageReport[0];
     $movings = $storageReport[1];
@@ -407,10 +416,13 @@ function generateSaldo($storageCode, $month, $year) {
 
             case "repack_awal":
                 updatePengeluaran($data[$productCode], $key, "repackOut");
+                $global_repackOut_price_per_qty = $data[$productCode]["pengeluaran"]["repackOut"]["price_per_qty"];
                 break;
 
             case "repack_akhir":
                 updatePenerimaan($data[$productCode], $key, "repackIn");
+                $data[$productCode]["penerimaan"]["repackIn"]["price_per_qty"] = $global_repackOut_price_per_qty;
+                $data[$productCode]["penerimaan"]["repackIn"]["totalPrice"] = $key["totalQty"] * $global_repackOut_price_per_qty;
                 break;
         }
 
@@ -456,7 +468,6 @@ function generateSaldo($storageCode, $month, $year) {
 
     return $data;
 }
-
 
 function initializeProductData($productCode, $productName) {
     return [
@@ -526,6 +537,7 @@ function updateSaldoAkhir(&$productData) {
     $productData["saldo_akhir"]["totalPrice"] = $productData["barang_siap_dijual"]["totalPrice"] - $productData["pengeluaran"]["totalOut"]["totalPrice"];
     $productData["saldo_akhir"]["price_per_qty"] = $productData["barang_siap_dijual"]["price_per_qty"];
 }
+
 
 
 // function generateSaldo($storageCode, $month, $year){
