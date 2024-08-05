@@ -87,10 +87,10 @@
                                 master
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_vendor">vendors</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_customer">customers</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_product">products</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_storage">storages</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=vendor">vendors</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=customer">customers</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=product">products</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=storage">storages</a></li>
                             </ul>
                         </li>
 

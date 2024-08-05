@@ -23,6 +23,23 @@ function getProductSuggestions($term) {
     }, $results);
 }
 
+function getAllProducts(){
+    global $db;
+
+    $query = "SELECT * FROM products";
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    } catch (PDOException $ex) {
+        return [];
+    }
+
+    $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $results;
+}
+
 function getProductByCode($productCode) {
     global $db;
 

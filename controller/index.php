@@ -149,6 +149,28 @@ switch($action){
         require_once "../view/amends.php";
         break;
 
+    case "master_read":
+        $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        switch($data){
+            case "vendor":
+                $result = getAllVendors();
+                break;
+            case "product":
+                $result = getAllProducts();
+                break;
+            case "customer":
+                $result = getAllCustomers();
+                break;
+            case "storage":
+                $result = getAllStorages();
+                break;
+        }
+
+        require_once "../view/read.php";
+        //echo "<pre>" . print_r($result, true) . "</pre>";
+        break;
+
     case "generate_LPB":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generateNoLPB($storageCode, "1");

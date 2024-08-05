@@ -5,7 +5,7 @@ require_once "database.php";
 function getAllCustomers(){
     global $db;
 
-    $query = "SELECT * FROM customers";
+    $query = "SELECT * FROM customers WHERE customerCode != 'NON'";
     $statement = $db->prepare($query);
 
     try {
