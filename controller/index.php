@@ -286,6 +286,45 @@ switch($action){
         }
         break;
 
+    case "master_delete":
+        $title = "master delete";
+        $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $code = filter_input(INPUT_GET, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        require_once "../view/delete.php";
+        break;
+
+    case "master_delete_data":
+        $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $code = filter_input(INPUT_POST, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        switch($data){
+            case "vendor":
+                $flag = deleteVendor($code);
+                break;
+            case "product":
+                $flag = deleteProduct($code);
+                break;
+            case "customer":
+                $flag = deleteCustomer($code);
+                break;
+            case "storage":
+                $flag = deleteStorage($code);
+                break;
+        }
+
+        if($flag){
+            header("Location:../controller/index.php?action=master_read&data=" . $data . "&msg=deleted data");
+        }
+        else if($flag == "foreign"){
+            header("Location:../controller/index.php?action=master_read&data=" . $data . "&msg=code is messing with the orders or linked to something else");
+        }
+        else{
+            header("Location:../controller/index.php?action=master_read&data=" . $data . "&msg=code delete error");
+        }
+
+        require_once "../view/delete.php";
+        break;
+
     case "generate_LPB":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo generateNoLPB($storageCode, "1");

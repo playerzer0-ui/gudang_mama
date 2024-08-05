@@ -90,6 +90,31 @@ function updateCustomer($customerCode, $customerName, $customerAddress, $custome
     }
 }
 
+function deleteCustomer($customerCode){
+    global $db;
+
+    $query = "DELETE FROM customers WHERE customerCode = :customerCode";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":customerCode", $customerCode);
+
+    try {
+        $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        $errorCode = $ex->getCode();
+        // MySQL error code for foreign key constraint violation
+        if ($errorCode == 23000) {
+            // Foreign key constraint error
+            $errorInfo = $ex->errorInfo;
+            if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                return 'foreign_key';
+            }
+        }
+        return false;
+    }
+}
+
 function getCustomerByCode($customerCode){
     global $db;
 
