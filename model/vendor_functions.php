@@ -59,6 +59,37 @@ function createVendor($vendorCode, $vendorName, $vendorAddress, $vendorNPWP){
     return true;
 }
 
+function updateVendor($vendorCode, $vendorName, $vendorAddress, $vendorNPWP, $oldCode){
+    global $db;
+
+    $query = "UPDATE vendors SET vendorCode = :vendorCode, vendorName = :vendorName, vendorAddress = :vendorAddress, vendorNPWP = :vendorNPWP WHERE vendorCode = :oldCode";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":vendorCode", $vendorCode);
+    $statement->bindValue(":vendorName", $vendorName);
+    $statement->bindValue(":vendorAddress", $vendorAddress);
+    $statement->bindValue(":vendorNPWP", $vendorNPWP);
+    $statement->bindValue(":oldCode", $oldCode);
+
+    try {
+        $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        $errorCode = $ex->getCode();
+        // MySQL error code for duplicate entry
+        if ($errorCode == 23000) {
+            // Duplicate entry or foreign key constraint error
+            $errorInfo = $ex->errorInfo;
+            if (strpos($errorInfo[2], 'Duplicate entry') !== false) {
+                return 'duplicate';
+            } elseif (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                return 'foreign_key';
+            }
+        }
+        return false;
+    }
+}
+
 function getVendorByCode($vendorCode){
     global $db;
 

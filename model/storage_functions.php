@@ -59,6 +59,37 @@ function createStorage($storageCode, $storageName, $storageAddress, $storageNPWP
     return true;
 }
 
+function updateStorage($storageCode, $storageName, $storageAddress, $storageNPWP, $oldCode){
+    global $db;
+
+    $query = "UPDATE storages SET storageCode = :storageCode, storageName = :storageName, storageAddress = :storageAddress, storageNPWP = :storageNPWP WHERE storageCode = :oldCode";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":storageCode", $storageCode);
+    $statement->bindValue(":storageName", $storageName);
+    $statement->bindValue(":storageAddress", $storageAddress);
+    $statement->bindValue(":storageNPWP", $storageNPWP);
+    $statement->bindValue(":oldCode", $oldCode);
+
+    try {
+        $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        $errorCode = $ex->getCode();
+        // MySQL error code for duplicate entry
+        if ($errorCode == 23000) {
+            // Duplicate entry or foreign key constraint error
+            $errorInfo = $ex->errorInfo;
+            if (strpos($errorInfo[2], 'Duplicate entry') !== false) {
+                return 'duplicate';
+            } elseif (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                return 'foreign_key';
+            }
+        }
+        return false;
+    }
+}
+
 function getstorageByCode($storageCode){
     global $db;
 

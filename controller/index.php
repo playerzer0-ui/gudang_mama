@@ -233,19 +233,57 @@ switch($action){
         switch($data){
             case "vendor":
                 $keyNames = getAllVendorsKeyNames();
+                $result = getVendorByCode($code);
                 break;
             case "product":
                 $keyNames = getAllProductsKeyNames();
+                $result = getProductByCode($code);
                 break;
             case "customer":
                 $keyNames = getAllCustomersKeyNames();
+                $result = getCustomerByCode($code);
                 break;
             case "storage":
                 $keyNames = getAllStoragesKeyNames();
+                $result = getstorageByCode($code);
                 break;
         }
 
-        require_once "../view/create.php";
+        require_once "../view/update.php";
+        break;
+
+    case "master_update_data":
+        $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $oldCode = filter_input(INPUT_POST, "oldCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $input_data = filter_input_array(INPUT_POST)["input_data"];
+
+        switch($data){
+            case "vendor":
+                $flag = updateVendor($input_data[0], $input_data[1], $input_data[2], $input_data[3], $oldCode);
+                break;
+            case "product":
+                $flag = updateProduct($input_data[0], $input_data[1], $oldCode);
+                break;
+            case "customer":
+                $flag = updateCustomer($input_data[0], $input_data[1], $input_data[2], $input_data[3], $oldCode);
+                break;
+            case "storage":
+                $flag = updateStorage($input_data[0], $input_data[1], $input_data[2], $input_data[3], $oldCode);
+                break;
+        }
+
+        if($flag){
+            header("Location:../controller/index.php?action=master_read&data=" . $data . "&msg=updated data");
+        }
+        else if($flag == "duplicate"){
+            header("Location:../controller/index.php?action=master_update&data=" . $data . "&msg=code existed already");
+        }
+        else if($flag == "foreign"){
+            header("Location:../controller/index.php?action=master_update&data=" . $data . "&msg=code is messing with the orders on the order products");
+        }
+        else{
+            header("Location:../controller/index.php?action=master_update&data=" . $data . "&msg=code update error");
+        }
         break;
 
     case "generate_LPB":

@@ -9,7 +9,7 @@
             <input type="text" name="input_data[]">
             <br>
         <?php } ?>
-        <button class="btn btn-success">submit</button>
+        <button type="submit" class="btn btn-success">submit</button>
     </form>
 </main>
 

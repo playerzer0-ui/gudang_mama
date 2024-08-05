@@ -59,6 +59,37 @@ function createCustomer($customerCode, $customerName, $customerAddress, $custome
     return true;
 }
 
+function updateCustomer($customerCode, $customerName, $customerAddress, $customerNPWP, $oldCode){
+    global $db;
+
+    $query = "UPDATE customers SET customerCode = :customerCode, customerName = :customerName, customerAddress = :customerAddress, customerNPWP = :customerNPWP WHERE customerCode = :oldCode";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":customerCode", $customerCode);
+    $statement->bindValue(":customerName", $customerName);
+    $statement->bindValue(":customerAddress", $customerAddress);
+    $statement->bindValue(":customerNPWP", $customerNPWP);
+    $statement->bindValue(":oldCode", $oldCode);
+
+    try {
+        $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        $errorCode = $ex->getCode();
+        // MySQL error code for duplicate entry
+        if ($errorCode == 23000) {
+            // Duplicate entry or foreign key constraint error
+            $errorInfo = $ex->errorInfo;
+            if (strpos($errorInfo[2], 'Duplicate entry') !== false) {
+                return 'duplicate';
+            } elseif (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                return 'foreign_key';
+            }
+        }
+        return false;
+    }
+}
+
 function getCustomerByCode($customerCode){
     global $db;
 

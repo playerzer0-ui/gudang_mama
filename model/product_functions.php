@@ -74,6 +74,35 @@ function createProduct($productCode, $productName){
     return true;
 }
 
+function updateProduct($productCode, $productName, $oldCode){
+    global $db;
+
+    $query = "UPDATE products SET productCode = :productCode, productName = :productName WHERE productCode = :oldCode";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":productCode", $productCode);
+    $statement->bindValue(":productName", $productName);
+    $statement->bindValue(":oldCode", $oldCode);
+
+    try {
+        $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        $errorCode = $ex->getCode();
+        // MySQL error code for duplicate entry
+        if ($errorCode == 23000) {
+            // Duplicate entry or foreign key constraint error
+            $errorInfo = $ex->errorInfo;
+            if (strpos($errorInfo[2], 'Duplicate entry') !== false) {
+                return 'duplicate';
+            } elseif (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                return 'foreign_key';
+            }
+        }
+        return false;
+    }
+}
+
 function getProductByCode($productCode) {
     global $db;
 
