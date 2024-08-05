@@ -40,6 +40,40 @@ function getAllProducts(){
     return $results;
 }
 
+function getAllProductsKeyNames(){
+    global $db;
+
+    $query = "SELECT * FROM products LIMIT 1";
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    } catch (PDOException $ex) {
+        return [];
+    }
+
+    $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return array_keys($results[0]);
+}
+
+function createProduct($productCode, $productName){
+    global $db;
+
+    $query = "INSERT INTO products VALUES (:productCode, :productName)";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":productCode", $productCode);
+    $statement->bindValue(":productName", $productName);
+
+    try {
+        $statement->execute();
+    } catch (PDOException $ex) {
+        return false;
+    }
+    $statement->closeCursor();
+    return true;
+}
+
 function getProductByCode($productCode) {
     global $db;
 

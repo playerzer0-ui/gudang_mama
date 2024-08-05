@@ -150,25 +150,102 @@ switch($action){
         break;
 
     case "master_read":
+        $title = "master read";
         $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         switch($data){
             case "vendor":
                 $result = getAllVendors();
+                $keyNames = getAllVendorsKeyNames();
                 break;
             case "product":
                 $result = getAllProducts();
+                $keyNames = getAllProductsKeyNames();
                 break;
             case "customer":
                 $result = getAllCustomers();
+                $keyNames = getAllCustomersKeyNames();
                 break;
             case "storage":
                 $result = getAllStorages();
+                $keyNames = getAllStoragesKeyNames();
                 break;
         }
 
         require_once "../view/read.php";
-        //echo "<pre>" . print_r($result, true) . "</pre>";
+        //echo "<pre>" . print_r(getAllStoragesKeyNames(), true) . "</pre>";
+        break;
+
+    case "master_create":
+        $title = "master create";
+        $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        switch($data){
+            case "vendor":
+                $keyNames = getAllVendorsKeyNames();
+                break;
+            case "product":
+                $keyNames = getAllProductsKeyNames();
+                break;
+            case "customer":
+                $keyNames = getAllCustomersKeyNames();
+                break;
+            case "storage":
+                $keyNames = getAllStoragesKeyNames();
+                break;
+        }
+
+        require_once "../view/create.php";
+        break;
+
+    case "master_create_data":
+        $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $input_data = filter_input_array(INPUT_POST)["input_data"];
+
+        switch($data){
+            case "vendor":
+                $flag = createVendor($input_data[0], $input_data[1], $input_data[2], $input_data[3]);
+                break;
+            case "product":
+                $flag = createProduct($input_data[0], $input_data[1]);
+                break;
+            case "customer":
+                $flag = createCustomer($input_data[0], $input_data[1], $input_data[2], $input_data[3]);
+                break;
+            case "storage":
+                $flag = createStorage($input_data[0], $input_data[1], $input_data[2], $input_data[3]);
+                break;
+        }
+
+        if(!$flag){
+            header("Location:../controller/index.php?action=master_create&data=" . $data . "&msg=code existed already");
+        }
+        else{
+            header("Location:../controller/index.php?action=master_read&data=" . $data . "&msg=created data");
+        }
+        break;
+
+    case "master_update":
+        $title = "master update";
+        $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $code = filter_input(INPUT_GET, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        switch($data){
+            case "vendor":
+                $keyNames = getAllVendorsKeyNames();
+                break;
+            case "product":
+                $keyNames = getAllProductsKeyNames();
+                break;
+            case "customer":
+                $keyNames = getAllCustomersKeyNames();
+                break;
+            case "storage":
+                $keyNames = getAllStoragesKeyNames();
+                break;
+        }
+
+        require_once "../view/create.php";
         break;
 
     case "generate_LPB":
