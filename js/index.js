@@ -1,4 +1,4 @@
-let rowCount = 0;
+let rowCount = document.querySelectorAll('#productTable tbody tr').length;
 let pageState = document.getElementById("pageState").value;
 
 document.addEventListener('DOMContentLoaded', function() {

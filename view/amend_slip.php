@@ -1,7 +1,7 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-    <form id="myForm" action="../controller/index.php?action=amend_update_data" method="post">
+    <form id="myForm" action="<?php echo "../controller/index.php?action=amend_update_data&data=" . $pageState; ?>" method="post">
         <h1>SLIP <?php echo $pageState; ?></h1>
         <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
         <table>
@@ -137,6 +137,7 @@
             <?php
             $count = 1;
             foreach($products as $key){ ?>
+            <tr>
                 <td><?php echo $count++; ?></td>
                 <td><input type="text" name="kd[]" placeholder="di isi" class="productCode" value="<?php echo $key["productCode"]; ?>" required></td>
                 <td><input style="width: 300px;" type="text" name="material_display[]" value="<?php echo $key["productName"]; ?>" readonly><input type="hidden" name="material[]"></td>
@@ -144,6 +145,7 @@
                 <td><input type="text" name="uom[]" placeholder="di isi" value="<?php echo $key["uom"]; ?>" required></td>
                 <td><input type="text" name="note[]" value="<?php echo $key["note"]; ?>" placeholder=""></td>
                 <td><button class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
             <?php } ?>
             </tbody>
         </table>
@@ -153,19 +155,7 @@
 </main>
 
 <script>
-    // <?php if($pageState == "amend_slip_in"){ ?>
-    // window.onload = function() {
-    //     getLPB();
-    // };
-    // <?php } else if($pageState == "amend_slip_out") { ?>
-    // window.onload = function() {
-    //     getSJ();
-    // };
-    // <?php } else { ?>
-    // window.onload = function() {
-    //     getSJT();
-    // };
-    // <?php } ?>
+
 </script>
 <script src="../js/index.js" async defer></script>
 
