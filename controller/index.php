@@ -110,11 +110,13 @@ switch($action){
 
     case "show_repack":
         $title = "repack";
+        $pageState = "repack";
         require_once "../view/repack.php";
         break;
 
     case "show_moving":
         $title = "moving";
+        $pageState = "moving";
         require_once "../view/moving.php";
         break;
 

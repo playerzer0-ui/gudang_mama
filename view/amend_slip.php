@@ -1,7 +1,7 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-    <form id="myForm" action="../controller/index.php?action=create_slip" method="post">
+    <form id="myForm" action="../controller/index.php?action=amend_update_data" method="post">
         <h1>SLIP <?php echo $pageState; ?></h1>
         <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
         <table>
@@ -81,7 +81,15 @@
             <?php } ?>
                 <td>Tgl Penerimaan</td>
                 <td>:</td>
-                <td><input name="order_date" type="date" id="tgl_penerimaan" placeholder="di isi" value="<?php echo $result["order_date"]; ?>"required></td>
+                <td>
+                <?php if($pageState == "amend_slip_in"){ ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" value="<?php echo $result["order_date"]; ?>" onchange="getLPB()" placeholder="di isi" required>
+                <?php } else if($pageState == "amend_slip_in") { ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" value="<?php echo $result["order_date"]; ?>" onchange="getSJ()" placeholder="di isi" required>
+                <?php } else { ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" value="<?php echo $result["order_date"]; ?>" onchange="getSJT()" placeholder="di isi" required>
+                <?php } ?>
+                </td>
             </tr>
             <tr class="highlight">
             <?php if($pageState == "amend_slip_in"){ ?>
@@ -126,6 +134,17 @@
             </thead>
             <tbody>
                 <!-- Rows will be added here dynamically -->
+            <?php
+            $count = 1;
+            foreach($products as $key){ ?>
+                <td><?php echo $count++; ?></td>
+                <td><input type="text" name="kd[]" placeholder="di isi" class="productCode" value="<?php echo $key["productCode"]; ?>" required></td>
+                <td><input style="width: 300px;" type="text" name="material_display[]" value="<?php echo $key["productName"]; ?>" readonly><input type="hidden" name="material[]"></td>
+                <td><input type="number" name="qty[]" placeholder="di isi" value="<?php echo $key["qty"]; ?>" required></td>
+                <td><input type="text" name="uom[]" placeholder="di isi" value="<?php echo $key["uom"]; ?>" required></td>
+                <td><input type="text" name="note[]" value="<?php echo $key["note"]; ?>" placeholder=""></td>
+                <td><button class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            <?php } ?>
             </tbody>
         </table>
         <button type="button" class="btn btn-success" onclick="addRow()">Add Row</button>

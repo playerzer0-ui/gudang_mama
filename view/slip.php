@@ -81,7 +81,15 @@
             <?php } ?>
                 <td>Tgl Penerimaan</td>
                 <td>:</td>
-                <td><input name="order_date" type="date" id="tgl_penerimaan" onchange="getLPB()" placeholder="di isi" required></td>
+                <td>
+                <?php if($pageState == "in"){ ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" onchange="getLPB()" placeholder="di isi" required>
+                <?php } else if($pageState == "out") { ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" onchange="getSJ()" placeholder="di isi" required>
+                <?php } else { ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" onchange="getSJT()" placeholder="di isi" required>
+                <?php } ?>
+                </td>
             </tr>
             <tr class="highlight">
             <?php if($pageState == "in"){ ?>

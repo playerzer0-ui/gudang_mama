@@ -1,4 +1,5 @@
 let rowCount = 0;
+let pageState = document.getElementById("pageState").value;
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('myForm');
@@ -11,22 +12,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-    let invoice_dateEl = document.getElementById("tgl_penerimaan");
-
-    // Get today's date
-    let today = new Date();
-
-    // Format the date to YYYY-MM-DD
-    let year = today.getFullYear();
-    let month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero if needed
-    let day = String(today.getDate()).padStart(2, '0'); // Pad day with zero if needed
-
-    let formattedDate = `${year}-${month}-${day}`;
-
-    // Set the value of the date input to today's date
-    invoice_dateEl.value = formattedDate;
-});
+if (!pageState.includes("amend")){
+    document.addEventListener("DOMContentLoaded", function() {
+        let invoice_dateEl = document.getElementById("tgl_penerimaan");
+    
+        // Get today's date
+        let today = new Date();
+    
+        // Format the date to YYYY-MM-DD
+        let year = today.getFullYear();
+        let month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero if needed
+        let day = String(today.getDate()).padStart(2, '0'); // Pad day with zero if needed
+    
+        let formattedDate = `${year}-${month}-${day}`;
+    
+        // Set the value of the date input to today's date
+        invoice_dateEl.value = formattedDate;
+    });
+}
 
 function addRow() {
     rowCount++;
