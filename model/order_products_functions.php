@@ -55,6 +55,11 @@ function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
     $statement->closeCursor();
 }
 
+/**
+ * delete order products on order_products
+ * @param string $no_id is the code for either order, repack or moving
+ * @param string $status can be 3 things, order, repack or moving
+ */
 function deleteOrderProducts($no_id, $status){
     global $db;
 
@@ -76,11 +81,20 @@ function deleteOrderProducts($no_id, $status){
 
     try {
         $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        $errorCode = $ex->getCode();
+        // MySQL error code for foreign key constraint violation
+        if ($errorCode == 23000) {
+            // Foreign key constraint error
+            $errorInfo = $ex->errorInfo;
+            if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                return 'foreign_key';
+            }
+        }
+        return false;
     }
-    catch(PDOException $ex){
-        $ex->getMessage();
-    }
-    $statement->closeCursor();
 }
 
 function getOrderProductsFromNoID($no_id, $status){

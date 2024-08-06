@@ -16,6 +16,8 @@ require_once "../model/order_products_functions.php";
 require_once "../fpdf/fpdf.php";
 require_once "../model/pdf_creation.php";
 
+global $db;
+
 $action = filter_input(INPUT_GET, "action");
 $title = "";
 $pageState = "";
@@ -324,6 +326,69 @@ switch($action){
 
         require_once "../view/delete.php";
         break;
+
+    case "amend_delete_data":
+        $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $code = filter_input(INPUT_POST, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        
+        // Assuming $db is your PDO instance
+        $db->beginTransaction();
+    
+        try {
+            switch ($data) {
+                case "slip":
+                    if (!deleteOrderProducts($code, "order")) {
+                        throw new Exception("Failed to delete order products");
+                    }
+                    if (!deletePayment($code)) {
+                        throw new Exception("Failed to delete payment");
+                    }
+                    if (!deleteInvoice($code)) {
+                        throw new Exception("Failed to delete invoice");
+                    }
+                    if (!deleteOrder($code)) {
+                        throw new Exception("Failed to delete order");
+                    }
+                    break;
+    
+                case "invoice":
+                    $result = getOrderProductsFromNoID($code, "in");
+                    foreach ($result as $key) {
+                        if (!updatePriceForProducts($code, $key["productCode"], 0)) {
+                            throw new Exception("Failed to update price for product " . $key["productCode"]);
+                        }
+                    }
+                    if (!deleteInvoice($code)) {
+                        throw new Exception("Failed to delete invoice");
+                    }
+                    break;
+    
+                case "payment":
+                    if (!deletePayment($code)) {
+                        throw new Exception("Failed to delete payment");
+                    }
+                    break;
+    
+                case "repack":
+                    if (!deleteRepack($code)) {
+                        throw new Exception("Failed to delete repack");
+                    }
+                    break;
+    
+                case "moving":
+                    if (!deleteMoving($code)) {
+                        throw new Exception("Failed to delete moving");
+                    }
+                    break;
+            }
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            header("Location:../controller/index.php?action=show_amends&state=" . $data . "&msg=" . $e->getMessage());
+        }
+        header("Location:../controller/index.php?action=show_amends&state=" . $data . "&msg=record deleted");
+        break;
+        
 
     case "generate_LPB":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -641,6 +706,11 @@ switch($action){
         $year = filter_input(INPUT_GET, "year");
         $storageCode = filter_input(INPUT_GET, "storageCode");
         echo json_encode(generateSaldo($storageCode, $month, $year));
+        break;
+
+    case "amendDelete":
+        $no_id = filter_input(INPUT_GET, "no_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         break;
 }
 

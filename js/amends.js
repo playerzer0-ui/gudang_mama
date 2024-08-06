@@ -1,3 +1,4 @@
 function setHref(button){
-    document.getElementById("deleteButton").href = "../controller/index.php?action=deleteNo&no_id=" + button.value;
+    let state = document.getElementById("state").value;
+    document.getElementById("deleteButton").href = "../controller/index.php?action=amendDelete&no_id=" + button.value + "&state=" + state;
 }
