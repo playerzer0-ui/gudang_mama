@@ -327,11 +327,37 @@ switch($action){
         require_once "../view/delete.php";
         break;
 
+    case "amend_update":
+        $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $code = filter_input(INPUT_POST, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        switch($data){
+            case "slip":
+                getOrderByNoSJ($code);
+                getOrderProductsFromNoID($code, "in");
+                break;
+            case "invoice":
+                $flag = deleteProduct($code);
+                break;
+            case "payment":
+                $flag = deleteCustomer($code);
+                break;
+            case "repack":
+                $flag = deleteStorage($code);
+                break;
+            case "moving":
+                $flag = deleteStorage($code);
+                break;
+        }
+        break;
+
+    case "amend_update_data":
+        break;
+    
     case "amend_delete_data":
         $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $code = filter_input(INPUT_POST, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        
-        // Assuming $db is your PDO instance
+
         $db->beginTransaction();
     
         try {

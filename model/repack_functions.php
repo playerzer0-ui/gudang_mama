@@ -62,6 +62,33 @@
         $statement->closeCursor();
     }
 
+    function updateRepack($no_repack, $repack_date, $storageCode){
+        global $db;
+
+        $query = "UPDATE repacks SET repack_date = :repack_date, storageCode = :storageCode WHERE no_repack = :no_sj";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":repack_date", $repack_date);
+        $statement->bindValue(":storageCode", $storageCode);
+        $statement->bindValue(":no_repack", $no_repack);
+
+        try {
+            $statement->execute();
+            $statement->closeCursor();
+            return true;
+        } catch (PDOException $ex) {
+            $errorCode = $ex->getCode();
+            // MySQL error code for foreign key constraint violation
+            if ($errorCode == 23000) {
+                // Foreign key constraint error
+                $errorInfo = $ex->errorInfo;
+                if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                    return 'foreign_key';
+                }
+            }
+            return false;
+        }
+    }
+
     function deleteRepack($no_sj){
         global $db;
     

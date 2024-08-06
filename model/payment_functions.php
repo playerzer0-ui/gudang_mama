@@ -80,6 +80,33 @@
         return $result;
     }
 
+    function updatePayment($nomor_surat_jalan, $payment_date, $payment_amount){
+        global $db;
+    
+        $query = "UPDATE payments SET payment_date = :payment_date, payment_amount = :payment_amount WHERE nomor_surat_jalan = :nomor_surat_jalan";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":payment_date", $payment_date);
+        $statement->bindValue(":payment_amount", $payment_amount);
+        $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+    
+        try {
+            $statement->execute();
+            $statement->closeCursor();
+            return true;
+        } catch (PDOException $ex) {
+            $errorCode = $ex->getCode();
+            // MySQL error code for foreign key constraint violation
+            if ($errorCode == 23000) {
+                // Foreign key constraint error
+                $errorInfo = $ex->errorInfo;
+                if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                    return 'foreign_key';
+                }
+            }
+            return false;
+        }
+    }
+
     function deletePayment($no_sj){
         global $db;
     

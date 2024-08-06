@@ -63,6 +63,34 @@
         $statement->closeCursor();
     }
 
+    function updateMoving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver){
+        global $db;
+    
+        $query = "UPDATE movings SET moving_date = :moving_date, storageCodeSender = :storageCodeSender, storageCodeReceiver = :storageCodeReceiver WHERE no_moving = :no_moving";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":moving_date", $moving_date);
+        $statement->bindValue(":storageCodeSender", $storageCodeSender);
+        $statement->bindValue(":storageCodeReceiver", $storageCodeReceiver);
+        $statement->bindValue(":no_moving", $no_moving);
+    
+        try {
+            $statement->execute();
+            $statement->closeCursor();
+            return true;
+        } catch (PDOException $ex) {
+            $errorCode = $ex->getCode();
+            // MySQL error code for foreign key constraint violation
+            if ($errorCode == 23000) {
+                // Foreign key constraint error
+                $errorInfo = $ex->errorInfo;
+                if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                    return 'foreign_key';
+                }
+            }
+            return false;
+        }
+    }
+
     function deleteMoving($no_sj){
         global $db;
     

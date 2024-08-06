@@ -128,6 +128,38 @@ function generateTaxSJ($storageCode){
     return $no . "/SJT/" . $storageCode . "/" . date("m") . "/" . date("Y");
 }
 
+function updateOrder($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order){
+    global $db;
+
+    $query = "UPDATE orders SET storageCode = :storageCode, no_LPB = :no_LPB, no_truk = :no_truk, vendorCode = :vendorCode, customerCode = :customerCode, order_date = :order_date, purchase_order = :purchase_order WHERE nomor_surat_jalan = :nomor_surat_jalan";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":storageCode", $storageCode);
+    $statement->bindValue(":no_LPB", $no_LPB);
+    $statement->bindValue(":no_truk", $no_truk);
+    $statement->bindValue(":vendorCode", $vendorCode);
+    $statement->bindValue(":customerCode", $customerCode);
+    $statement->bindValue(":order_date", $order_date);
+    $statement->bindValue(":purchase_order", $purchase_order);
+    $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+
+    try {
+        $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        $errorCode = $ex->getCode();
+        // MySQL error code for foreign key constraint violation
+        if ($errorCode == 23000) {
+            // Foreign key constraint error
+            $errorInfo = $ex->errorInfo;
+            if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                return 'foreign_key';
+            }
+        }
+        return false;
+    }
+}
+
 function deleteOrder($no_sj){
     global $db;
 

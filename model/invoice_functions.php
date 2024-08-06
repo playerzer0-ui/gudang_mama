@@ -221,6 +221,34 @@
         return array_values($groupData);
     }
 
+    function updateInvoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur){
+        global $db;
+    
+        $query = "UPDATE invoices SET invoice_date = :invoice_date, no_invoice = :no_invoice, no_faktur = :no_faktur WHERE nomor_surat_jalan = :nomor_surat_jalan";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":invoice_date", $invoice_date);
+        $statement->bindValue(":no_invoice", $no_invoice);
+        $statement->bindValue(":no_faktur", $no_faktur);
+        $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+    
+        try {
+            $statement->execute();
+            $statement->closeCursor();
+            return true;
+        } catch (PDOException $ex) {
+            $errorCode = $ex->getCode();
+            // MySQL error code for foreign key constraint violation
+            if ($errorCode == 23000) {
+                // Foreign key constraint error
+                $errorInfo = $ex->errorInfo;
+                if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                    return 'foreign_key';
+                }
+            }
+            return false;
+        }
+    }
+
     function deleteInvoice($no_sj){
         global $db;
     
