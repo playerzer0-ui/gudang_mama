@@ -328,19 +328,32 @@ switch($action){
         break;
 
     case "amend_update":
-        $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $code = filter_input(INPUT_POST, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $code = filter_input(INPUT_GET, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         switch($data){
             case "slip":
-                getOrderByNoSJ($code);
-                getOrderProductsFromNoID($code, "in");
+                $title = "amend slip";
+                $result = getOrderByNoSJ($code);
+                if($result["status_mode"] == 1){
+                    $pageState = "amend_slip_in";
+                }
+                else if($result["status_mode"] == 2){
+                    $pageState = "amend_slip_out";
+                }
+                else{
+                    $pageState = "amend_slip_out_tax";
+                }
+                $products = getOrderProductsFromNoID($code, "in");
+                require_once "../view/amend_slip.php";
                 break;
             case "invoice":
-                $flag = deleteProduct($code);
+                $result = getInvoiceByNoSJ($code);
+                $products = getOrderProductsFromNoID($code, "in");
                 break;
             case "payment":
-                $flag = deleteCustomer($code);
+                $result = getPaymentByNoSJ($code);
+                $products = getOrderProductsFromNoID($code, "in");
                 break;
             case "repack":
                 $flag = deleteStorage($code);

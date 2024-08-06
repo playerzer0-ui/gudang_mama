@@ -5,7 +5,7 @@ require_once "database.php";
 function getAllVendors(){
     global $db;
 
-    $query = "SELECT * FROM vendors WHERE vendorCode != 'NON'";
+    $query = "SELECT * FROM vendors";
     $statement = $db->prepare($query);
 
     try {

@@ -5,7 +5,7 @@ require_once "database.php";
 function getAllStorages(){
     global $db;
 
-    $query = "SELECT * FROM storages WHERE storageCode != 'NON'";
+    $query = "SELECT * FROM storages";
     $statement = $db->prepare($query);
 
     try {
