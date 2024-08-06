@@ -20,7 +20,7 @@
             </td>
             <td>Tgl Repack</td>
             <td>:</td>
-            <td><input name="repack_date" type="date" required></td>
+            <td><input name="repack_date" id="repack_date" onchange="getRepackNO()" type="date" required></td>
         </tr>
         <tr>
             <td>NO. Repack</td>

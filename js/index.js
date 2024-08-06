@@ -11,6 +11,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    let invoice_dateEl = document.getElementById("tgl_penerimaan");
+
+    // Get today's date
+    let today = new Date();
+
+    // Format the date to YYYY-MM-DD
+    let year = today.getFullYear();
+    let month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero if needed
+    let day = String(today.getDate()).padStart(2, '0'); // Pad day with zero if needed
+
+    let formattedDate = `${year}-${month}-${day}`;
+
+    // Set the value of the date input to today's date
+    invoice_dateEl.value = formattedDate;
+});
+
 function addRow() {
     rowCount++;
     const table = document.getElementById('productTable').getElementsByTagName('tbody')[0];
@@ -92,10 +109,21 @@ function getLPB(){
     let storageCodeEl = document.getElementById('storageCode').value;
     let noLPBEl = document.getElementById('no_lpb_display');
     let noLPBHiddenEl = document.getElementById('no_LPB');
+    let order_date = document.getElementById("tgl_penerimaan").value;
+    let date = new Date(order_date);
+
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
 
     $.ajax({
         type: "get",
-        url: "../controller/index.php?action=generate_LPB&storageCode=" + storageCodeEl,
+        url: "../controller/index.php",
+        data: {
+            action: "generate_LPB",
+            storageCode: storageCodeEl,
+            month: month,
+            year: year
+        },
         success: function (response) {
             noLPBEl.value = response;
             noLPBHiddenEl.value = response;
@@ -109,10 +137,21 @@ function getLPB(){
 function getSJ(){
     let storageCodeEl = document.getElementById('storageCode').value;
     let no_sjEl = document.getElementById('no_sj');
+    let order_date = document.getElementById("tgl_penerimaan").value;
+    let date = new Date(order_date);
+
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
 
     $.ajax({
         type: "get",
-        url: "../controller/index.php?action=generate_SJ&storageCode=" + storageCodeEl,
+        url: "../controller/index.php",
+        data: {
+            action: "generate_SJ",
+            storageCode: storageCodeEl,
+            month: month,
+            year: year
+        },
         success: function (response) {
             no_sjEl.value = response;
         },
@@ -125,10 +164,21 @@ function getSJ(){
 function getSJT(){
     let storageCodeEl = document.getElementById('storageCode').value;
     let no_sjEl = document.getElementById('no_sj');
+    let order_date = document.getElementById("tgl_penerimaan").value;
+    let date = new Date(order_date);
+
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
 
     $.ajax({
         type: "get",
-        url: "../controller/index.php?action=generate_SJT&storageCode=" + storageCodeEl,
+        url: "../controller/index.php",
+        data: {
+            action: "generate_SJT",
+            storageCode: storageCodeEl,
+            month: month,
+            year: year
+        },
         success: function (response) {
             no_sjEl.value = response;
         },

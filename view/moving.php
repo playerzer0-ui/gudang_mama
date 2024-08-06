@@ -21,7 +21,7 @@
             <td>PT Penerima</td>
             <td>:</td>
             <td>
-            <select name="storageCodeReceiver" id="storageCodeReceiver" onchange="getRepackNO()" readonly>
+            <select name="storageCodeReceiver" id="storageCodeReceiver" readonly>
                 <?php foreach (getAllStorages() as $key) { ?>
                     <?php if($key["storageCode"] == "NON") { ?>
                         <option value="<?php echo $key["storageCode"]; ?>" selected><?php echo $key["storageName"]; ?></option>
@@ -38,7 +38,7 @@
             <td><input name="no_moving" id="no_moving" type="text" readonly></td>
             <td>Tgl. moving</td>
             <td>:</td>
-            <td><input name="moving_date" id="moving_date" type="date" required></td>
+            <td><input name="moving_date" id="moving_date" onchange="getMovingNO()" type="date" required></td>
         </tr>
     </table>
 

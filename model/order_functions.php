@@ -68,7 +68,7 @@ function getOrderByNoSJ($no_sj){
     return $result;
 }
 
-function generateNoLPB($storageCode, $status){
+function generateNoLPB($storageCode, $month, $year, $status){
     global $db;
 
     if($status == 1){
@@ -78,8 +78,8 @@ function generateNoLPB($storageCode, $status){
         $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND nomor_surat_jalan LIKE :storageCode';
     }
     $statement = $db->prepare($query);
-    $statement->bindValue(":mon", date("m"));
-    $statement->bindValue(":yea", date("Y"));
+    $statement->bindValue(":mon", $month);
+    $statement->bindValue(":yea", $year);
     $statement->bindValue(":stat", $status);
     $statement->bindValue(":storageCode", "%" . $storageCode . "%");
 
@@ -96,20 +96,20 @@ function generateNoLPB($storageCode, $status){
     $statement->closeCursor();
 
     if($status == 1){
-        return $no . "/LPB/" . $storageCode . "/" . date("m") . "/" . date("Y");
+        return $no . "/LPB/" . $storageCode . "/" . $month . "/" . $year;
     }
     else{
-        return $no . "/SJK/" . $storageCode . "/" . date("m") . "/" . date("Y");
+        return $no . "/SJK/" . $storageCode . "/" . $month . "/" . $year;
     }
 }
 
-function generateTaxSJ($storageCode){
+function generateTaxSJ($storageCode, $month, $year){
     global $db;
 
     $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND nomor_surat_jalan LIKE "%SJT%" AND nomor_surat_jalan LIKE :storageCode';
     $statement = $db->prepare($query);
-    $statement->bindValue(":mon", date("m"));
-    $statement->bindValue(":yea", date("Y"));
+    $statement->bindValue(":mon", $month);
+    $statement->bindValue(":yea", $year);
     $statement->bindValue(":stat", 3);
     $statement->bindValue(":storageCode", "%" . $storageCode . "%");
 
@@ -125,7 +125,7 @@ function generateTaxSJ($storageCode){
 
     $statement->closeCursor();
 
-    return $no . "/SJT/" . $storageCode . "/" . date("m") . "/" . date("Y");
+    return $no . "/SJT/" . $storageCode . "/" . $month . "/" . $year;
 }
 
 function updateOrder($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order){

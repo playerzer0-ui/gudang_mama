@@ -81,7 +81,7 @@
             <?php } ?>
                 <td>Tgl Penerimaan</td>
                 <td>:</td>
-                <td><input name="order_date" type="date" id="tgl_penerimaan" placeholder="di isi" required></td>
+                <td><input name="order_date" type="date" id="tgl_penerimaan" onchange="getLPB()" placeholder="di isi" required></td>
             </tr>
             <tr class="highlight">
             <?php if($pageState == "in"){ ?>

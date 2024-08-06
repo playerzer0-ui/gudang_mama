@@ -9,6 +9,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    let invoice_dateEl = document.getElementById("repack_date");
+
+    // Get today's date
+    let today = new Date();
+
+    // Format the date to YYYY-MM-DD
+    let year = today.getFullYear();
+    let month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero if needed
+    let day = String(today.getDate()).padStart(2, '0'); // Pad day with zero if needed
+
+    let formattedDate = `${year}-${month}-${day}`;
+
+    // Set the value of the date input to today's date
+    invoice_dateEl.value = formattedDate;
+});
+
 function addRow(tableId) {
     var table = document.getElementById(tableId);
     var rowCount = table.rows.length;
@@ -112,10 +129,21 @@ function getProductDetails(input) {
 function getRepackNO() {
     let storageCodeEl = document.getElementById('storageCode').value;
     let noRepackEl = document.getElementById('no_repack');
+    let order_date = document.getElementById("repack_date").value;
+    let date = new Date(order_date);
+
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
 
     $.ajax({
         type: "get",
-        url: "../controller/index.php?action=generate_SJR&storageCode=" + storageCodeEl,
+        url: "../controller/index.php",
+        data: {
+            action: "generate_SJR",
+            storageCode: storageCodeEl,
+            month: month,
+            year: year
+        },
         success: function(response) {
             noRepackEl.value = response;
         },
