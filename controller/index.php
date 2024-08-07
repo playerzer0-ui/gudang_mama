@@ -386,6 +386,7 @@ switch($action){
         $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_LPB = filter_input(INPUT_POST, "no_LPB", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_sj = filter_input(INPUT_POST, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $old_sj = filter_input(INPUT_POST, "old_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_truk = filter_input(INPUT_POST, "no_truk", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $vendorCode = filter_input(INPUT_POST, "vendorCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $customerCode = filter_input(INPUT_POST, "customerCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -421,25 +422,32 @@ switch($action){
                 deleteOrderProducts($no_sj, "order");
             
                 if ($pageState == "amend_slip_in") {
-                    updateOrder($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order);
-                    for ($i = 0; $i < count($productCodes); $i++) {
-                        $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
-                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "in");
+                    $result = updateOrderWithDependencies($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, $old_sj);
+                    if ($result === true) {
+                        for ($i = 0; $i < count($productCodes); $i++) {
+                            $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
+                            addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "in");
+                        }
                     }
                 } else if ($pageState == "amend_slip_out") {
-                    updateOrder($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order);
-                    for ($i = 0; $i < count($productCodes); $i++) {
-                        $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
-                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "out");
+                    $result = updateOrderWithDependencies($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, $old_sj);
+                    if ($result === true) {
+                        for ($i = 0; $i < count($productCodes); $i++) {
+                            $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
+                            addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "out");
+                        }
                     }
                 } else {
-                    updateOrder($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order);
-                    for ($i = 0; $i < count($productCodes); $i++) {
-                        $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
-                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "out_tax");
+                    $result = updateOrderWithDependencies($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $old_sj);
+                    if ($result === true) {
+                        for ($i = 0; $i < count($productCodes); $i++) {
+                            $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
+                            addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "out_tax");
+                        }
                     }
                 }
                 break;
+            
             
             case "invoice":
                 $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);

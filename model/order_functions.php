@@ -128,37 +128,73 @@ function generateTaxSJ($storageCode, $month, $year){
     return $no . "/SJT/" . $storageCode . "/" . $month . "/" . $year;
 }
 
-function updateOrder($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order){
+function updateOrderWithDependencies($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $old_surat_jalan) {
     global $db;
 
-    $query = "UPDATE orders SET storageCode = :storageCode, no_LPB = :no_LPB, no_truk = :no_truk, vendorCode = :vendorCode, customerCode = :customerCode, order_date = :order_date, purchase_order = :purchase_order WHERE nomor_surat_jalan = :nomor_surat_jalan";
-    $statement = $db->prepare($query);
-    $statement->bindValue(":storageCode", $storageCode);
-    $statement->bindValue(":no_LPB", $no_LPB);
-    $statement->bindValue(":no_truk", $no_truk);
-    $statement->bindValue(":vendorCode", $vendorCode);
-    $statement->bindValue(":customerCode", $customerCode);
-    $statement->bindValue(":order_date", $order_date);
-    $statement->bindValue(":purchase_order", $purchase_order);
-    $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
-
     try {
-        $statement->execute();
-        $statement->closeCursor();
+        // Begin transaction
+        $db->beginTransaction();
+
+        // Disable foreign key checks
+        $db->exec('SET FOREIGN_KEY_CHECKS=0');
+
+        // Update orders table
+        $queryOrder = "UPDATE orders SET nomor_surat_jalan = :nomor_surat_jalan, storageCode = :storageCode, no_LPB = :no_LPB, no_truk = :no_truk, vendorCode = :vendorCode, customerCode = :customerCode, order_date = :order_date, purchase_order = :purchase_order WHERE nomor_surat_jalan = :old_surat_jalan";
+        $statementOrder = $db->prepare($queryOrder);
+        $statementOrder->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        $statementOrder->bindValue(":storageCode", $storageCode);
+        $statementOrder->bindValue(":no_LPB", $no_LPB);
+        $statementOrder->bindValue(":no_truk", $no_truk);
+        $statementOrder->bindValue(":vendorCode", $vendorCode);
+        $statementOrder->bindValue(":customerCode", $customerCode);
+        $statementOrder->bindValue(":order_date", $order_date);
+        $statementOrder->bindValue(":purchase_order", $purchase_order);
+        $statementOrder->bindValue(":old_surat_jalan", $old_surat_jalan);
+        $statementOrder->execute();
+
+        // Update invoices table
+        $queryInvoice = "UPDATE invoices SET nomor_surat_jalan = :nomor_surat_jalan WHERE nomor_surat_jalan = :old_surat_jalan";
+        $statementInvoice = $db->prepare($queryInvoice);
+        $statementInvoice->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        $statementInvoice->bindValue(":old_surat_jalan", $old_surat_jalan);
+        $statementInvoice->execute();
+
+        // Update payment table
+        $queryPayment = "UPDATE payments SET nomor_surat_jalan = :nomor_surat_jalan WHERE nomor_surat_jalan = :old_surat_jalan";
+        $statementPayment = $db->prepare($queryPayment);
+        $statementPayment->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        $statementPayment->bindValue(":old_surat_jalan", $old_surat_jalan);
+        $statementPayment->execute();
+
+        // Re-enable foreign key checks
+        $db->exec('SET FOREIGN_KEY_CHECKS=1');
+
+        // Commit transaction
+        $db->commit();
+
         return true;
     } catch (PDOException $ex) {
+        // Roll back transaction if any update fails
+        $db->rollBack();
+
+        // Enable foreign key checks in case of error
+        $db->exec("SET FOREIGN_KEY_CHECKS=1");
+
         $errorCode = $ex->getCode();
-        // MySQL error code for foreign key constraint violation
         if ($errorCode == 23000) {
-            // Foreign key constraint error
             $errorInfo = $ex->errorInfo;
             if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
                 return 'foreign_key';
+            } elseif (strpos($errorInfo[2], 'Duplicate entry') !== false) {
+                return 'duplicate';
             }
         }
+
         return false;
     }
 }
+
+
 
 function deleteOrder($no_sj){
     global $db;

@@ -4,6 +4,7 @@
     <form id="myForm" action="../controller/index.php?action=amend_update_data&data=slip" method="post">
         <h1>SLIP <?php echo $pageState; ?></h1>
         <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
+        <input name="old_sj" type="hidden" id="old_sj" value="<?php echo $result["nomor_surat_jalan"]; ?>">
         <table>
             <!-- Your form header table here -->
             <tr class="form-header">
