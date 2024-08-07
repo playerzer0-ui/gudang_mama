@@ -8,7 +8,7 @@ $global_repackOut_price_per_qty = 0;
 // $data = [];
 // $productCode = "";
 
-function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
+function addOrderProducts($no_id, $productCode, $qty, $UOM, $price_per_UOM, $note, $status){
     global $db;
 
     switch($status){
@@ -42,7 +42,7 @@ function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
     $statement->bindValue(":productCode", $productCode);
     $statement->bindValue(":qty", $qty);
     $statement->bindValue(":UOM", $UOM);
-    $statement->bindValue(":price_per_UOM", 0);
+    $statement->bindValue(":price_per_UOM", $price_per_UOM);
     $statement->bindValue(":note", $note);
 
     try {

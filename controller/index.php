@@ -381,7 +381,7 @@ switch($action){
         break;
 
     case "amend_update_data":
-        $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_LPB = filter_input(INPUT_POST, "no_LPB", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -393,46 +393,69 @@ switch($action){
         $npwp = filter_input(INPUT_POST, "npwp", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $order_date = filter_input(INPUT_POST, "order_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $purchase_order = filter_input(INPUT_POST, "purchase_order", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $productCodes = filter_input_array(INPUT_POST)["kd"];
         $productNames = filter_input_array(INPUT_POST)["material"];
         $qtys = filter_input_array(INPUT_POST)["qty"];
         $uoms = filter_input_array(INPUT_POST)["uom"];
-        $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
+        // $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
         $notes = filter_input_array(INPUT_POST)["note"];
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         switch($data){
             case "slip":
+                // Retrieve current order products and their prices
+                $currentOrderProducts = getOrderProductsFromNoID($no_sj, "in");
+            
+                // Create an associative array to store product prices
+                $productPrices = [];
+                foreach ($currentOrderProducts as $product) {
+                    $productPrices[$product['productCode']] = $product['price_per_UOM'];
+                }
+            
+                // Delete existing order products
                 deleteOrderProducts($no_sj, "order");
-                updateOrder($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order);
-                if($pageState == "amend_slip_in"){
-                    for($i = 0; $i < count($productCodes); $i++){
-                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "in");
+            
+                if ($pageState == "amend_slip_in") {
+                    updateOrder($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order);
+                    for ($i = 0; $i < count($productCodes); $i++) {
+                        $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
+                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "in");
                     }
-                }
-                else if($pageState == "amend_slip_out"){
-                    for($i = 0; $i < count($productCodes); $i++){
-                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "out");
+                } else if ($pageState == "amend_slip_out") {
+                    updateOrder($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order);
+                    for ($i = 0; $i < count($productCodes); $i++) {
+                        $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
+                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "out");
                     }
-                }
-                else{
-                    for($i = 0; $i < count($productCodes); $i++){
-                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "out_tax");
+                } else {
+                    updateOrder($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order);
+                    for ($i = 0; $i < count($productCodes); $i++) {
+                        $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
+                        addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $price, $notes[$i], "out_tax");
                     }
                 }
                 break;
+            
             case "invoice":
+                $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
+
                 updateInvoice($no_sj, $invoice_date, $no_invoice, $no_faktur);
                 for($i = 0; $i < count($productCodes); $i++){
                     updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
                 }
                 break;
             case "payment":
+                $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
                 updatePayment($no_sj, $payment_date, $payment_amount);
                 break;
             case "repack":
@@ -442,6 +465,7 @@ switch($action){
                 
                 break;
         }
+        header("Location:../controller/index.php?action=show_amends&state=" . $data);
         break;
     
     case "amend_delete_data":
@@ -592,19 +616,19 @@ switch($action){
         if($pageState == "in"){
             create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, 1);
             for($i = 0; $i < count($productCodes); $i++){
-                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "in");
+                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "in");
             }
         }
         else if($pageState == "out"){
             create_slip($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, 2);
             for($i = 0; $i < count($productCodes); $i++){
-                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "out");
+                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "out");
             }
         }
         else{
             create_slip($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, 3);
             for($i = 0; $i < count($productCodes); $i++){
-                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], $notes[$i], "out_tax");
+                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "out_tax");
             }
         }
 
@@ -756,10 +780,10 @@ switch($action){
         create_repack($storageCode, $repack_date, $no_repack);
 
         for($i = 0; $i < count($kd_awal); $i++){
-            addOrderProducts($no_repack, $kd_awal[$i], $qty_awal[$i], $uom_awal[$i], $note_awal[$i], "repack_awal");
+            addOrderProducts($no_repack, $kd_awal[$i], $qty_awal[$i], $uom_awal[$i], 0, $note_awal[$i], "repack_awal");
         }
         for($i = 0; $i < count($kd_akhir); $i++){
-            addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], $note_akhir[$i], "repack_akhir");
+            addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], 0, $note_akhir[$i], "repack_akhir");
         }
 
 
@@ -784,7 +808,7 @@ switch($action){
         create_moving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver);
 
         for($i = 0; $i < count($productCodes); $i++){
-            addOrderProducts($no_moving, $productCodes[$i], $qtys[$i], $uoms[$i], "", "moving");
+            addOrderProducts($no_moving, $productCodes[$i], $qtys[$i], $uoms[$i], 0, "", "moving");
         }
 
         // for($i = 0; $i < count($productCodes); $i++){

@@ -1,7 +1,7 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-    <form id="myForm" action="<?php echo "../controller/index.php?action=amend_update_data&data=" . $pageState; ?>" method="post">
+    <form id="myForm" action="../controller/index.php?action=amend_update_data&data=slip" method="post">
         <h1>SLIP <?php echo $pageState; ?></h1>
         <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
         <table>
@@ -72,7 +72,7 @@
                 <td>:</td>
                 <td colspan="2">
                     <input name="no_lpb_display" type="text" id="no_lpb_display" placeholder="Otomatis dari sistem" value="<?php echo $result["no_LPB"]; ?>" readonly>
-                    <input name="no_LPB" type="hidden" id="no_LPB">
+                    <input name="no_LPB" type="hidden" id="no_LPB" value="<?php echo $result["no_LPB"]; ?>">
                 </td>
             <?php } else { ?>
                 <td>No SJ</td>
