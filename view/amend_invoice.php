@@ -1,9 +1,10 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-    <form id="myForm" action="<?php echo "../controller/index.php?action=amend_update_data&data=" . $pageState; ?>" target="_blank" method="post">
+    <form id="myForm" action="../controller/index.php?action=amend_update_data&data=invoice" method="post">
         <h1>INVOICE <?php echo $pageState; ?></h1>
         <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
+        <input name="old_sj" type="hidden" id="old_sj" value="<?php echo $result["nomor_surat_jalan"]; ?>">
         <table>
             <tr class="form-header">
                 <td>PT</td>
