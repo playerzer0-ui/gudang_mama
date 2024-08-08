@@ -368,8 +368,21 @@ switch($action){
                 break;
             case "payment":
                 $title = "amend payment";
-                $result = getPaymentByNoSJ($code);
+                $result = getOrderByNoSJ($code);
+                $invoice = getInvoiceByNoSJ($code);
+                $payment = getPaymentByNoSJ($code);
+
+                if($result["status_mode"] == 1){
+                    $pageState = "amend_payment_in";
+                }
+                else if($result["status_mode"] == 2){
+                    $pageState = "amend_payment_out";
+                }
+                else{
+                    $pageState = "amend_payment_out_tax";
+                }
                 $products = getOrderProductsFromNoID($code, "in");
+                require_once "../view/amend_payment.php";
                 break;
             case "repack":
                 $flag = deleteStorage($code);

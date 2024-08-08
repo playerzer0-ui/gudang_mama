@@ -87,6 +87,7 @@
                 <!-- Rows will be added here dynamically -->
                 <?php
                 $count = 1;
+                $totalNominal = 0;
                 foreach($products as $key){ ?>
                 <tr>
                     <td><?php echo $count++; ?></td>
@@ -97,7 +98,9 @@
                     <td><input type="number" value="<?php echo $key["price_per_UOM"]; ?>" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
                     <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" value="<?php echo (int)$key["qty"] * (double)$key["price_per_UOM"]; ?>" readonly></td>
                 </tr>
-                <?php } ?>
+                <?php 
+                    $totalNominal += (int)$key["qty"] * (double)$key["price_per_UOM"];
+                } ?>
             </tbody>
         </table>
 
@@ -106,19 +109,19 @@
                 <th>No. Faktur: </th>
                 <td><input type="text" name="no_faktur" id="no_faktur" value="<?php echo $invoice["no_faktur"]; ?>" placeholder="di isi" required></td>
                 <th>Total Nilai Barang: </th>
-                <td><input type="number" inputmode="numeric" name="totalNominal" id="totalNominal" disabled></td>
+                <td><input type="number" inputmode="numeric" name="totalNominal" id="totalNominal" value="<?php echo $totalNominal; ?>" disabled></td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td>PPN (11%): </td>
-                <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" disabled></td>
+                <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" value="<?php echo ($totalNominal * 0.11); ?>" disabled></td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td>Nilai Dibayar: </td>
-                <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" disabled></td>
+                <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" value="<?php echo (($totalNominal * 0.11) + $totalNominal); ?>" disabled></td>
             </tr>
         </table>
         <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>

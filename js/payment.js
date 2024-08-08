@@ -1,5 +1,9 @@
 let pageState = document.getElementById("pageState").value;
 
+$(document).ready(function () {
+    calculateHutang();
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('myForm');
 
