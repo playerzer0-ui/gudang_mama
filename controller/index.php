@@ -385,10 +385,18 @@ switch($action){
                 require_once "../view/amend_payment.php";
                 break;
             case "repack":
-                $flag = deleteStorage($code);
+                $title = "amend repack";
+                $pageState = "amend_repack";
+                $result = getRepackByCode($code);
+                $products = getOrderProductsFromNoID($code, "repack");
+                require_once "../view/amend_repack.php";
                 break;
             case "moving":
-                $flag = deleteStorage($code);
+                $title = "amend moving";
+                $pageState = "amend_moving";
+                $result = getMovingByCode($code);
+                $products = getOrderProductsFromNoID($code, "moving");
+                require_once "../view/amend_moving.php";
                 break;
         }
         break;
@@ -407,21 +415,16 @@ switch($action){
         $npwp = filter_input(INPUT_POST, "npwp", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $order_date = filter_input(INPUT_POST, "order_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $purchase_order = filter_input(INPUT_POST, "purchase_order", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        // $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        // $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        // $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $productCodes = filter_input_array(INPUT_POST)["kd"];
-        $productNames = filter_input_array(INPUT_POST)["material"];
-        $qtys = filter_input_array(INPUT_POST)["qty"];
-        $uoms = filter_input_array(INPUT_POST)["uom"];
-        // $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
-        $notes = filter_input_array(INPUT_POST)["note"];
+
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        // $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        // $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         switch($data){
             case "slip":
+                $productCodes = filter_input_array(INPUT_POST)["kd"];
+                $productNames = filter_input_array(INPUT_POST)["material"];
+                $qtys = filter_input_array(INPUT_POST)["qty"];
+                $uoms = filter_input_array(INPUT_POST)["uom"];
+                $notes = filter_input_array(INPUT_POST)["note"];
                 // Retrieve current order products and their prices
                 $currentOrderProducts = getOrderProductsFromNoID($no_sj, "in");
             
@@ -480,10 +483,39 @@ switch($action){
                 updatePayment($no_sj, $payment_date, $payment_amount);
                 break;
             case "repack":
-                
+                $repack_date = filter_input(INPUT_POST, "repack_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $no_repack = filter_input(INPUT_POST, "no_repack", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+                $kd_awal = filter_input_array(INPUT_POST)["kd_awal"];
+                $qty_awal = filter_input_array(INPUT_POST)["qty_awal"];
+                $uom_awal = filter_input_array(INPUT_POST)["uom_awal"];
+                $note_awal = filter_input_array(INPUT_POST)["note_awal"];
+
+                $kd_akhir = filter_input_array(INPUT_POST)["kd_akhir"];
+                $qty_akhir = filter_input_array(INPUT_POST)["qty_akhir"];
+                $uom_akhir = filter_input_array(INPUT_POST)["uom_akhir"];
+                $note_akhir = filter_input_array(INPUT_POST)["note_akhir"];
+
+                deleteOrderProducts($no_repack, "repack");
+                updateRepack($no_repack, $repack_date, $storageCode);
+                for($i = 0; $i < count($kd_awal); $i++){
+                    addOrderProducts($no_repack, $kd_awal[$i], $qty_awal[$i], $uom_awal[$i], 0, $note_awal[$i], "repack_awal");
+                }
+                for($i = 0; $i < count($kd_akhir); $i++){
+                    addOrderProducts($no_repack, $kd_akhir[$i], $qty_akhir[$i], $uom_akhir[$i], 0, $note_akhir[$i], "repack_akhir");
+                }
                 break;
             case "moving":
-                
+                $storageCodeSender = filter_input(INPUT_POST, "storageCodeSender", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $storageCodeReceiver = filter_input(INPUT_POST, "storageCodeReceiver", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $moving_date = filter_input(INPUT_POST, "moving_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+                updateMoving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver);
+                deleteOrderProducts($no_moving, "moving");
+                for($i = 0; $i < count($productCodes); $i++){
+                    updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+                }
                 break;
         }
         header("Location:../controller/index.php?action=show_amends&state=" . $data);

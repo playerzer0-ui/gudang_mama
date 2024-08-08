@@ -22,8 +22,30 @@
         $no = $result["totalIN"] + 1;
 
         $statement->closeCursor();
+        if($month < 10){
+            $month = "0" . $month;
+        }
 
         return $no . "/SJP/" . $storageCode . "/" . $month . "/" . $year;
+    }
+
+    function getMovingByCode($no_moving){
+        global $db;
+
+        $query = "SELECT * FROM movings WHERE no_moving = :no_moving";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":no_moving", $no_moving);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
     }
 
     function getAllMovings(){

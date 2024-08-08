@@ -94,6 +94,9 @@ function generateNoLPB($storageCode, $month, $year, $status){
     $no = $result["totalIN"] + 1;
 
     $statement->closeCursor();
+    if($month < 10){
+        $month = "0" . $month;
+    }
 
     if($status == 1){
         return $no . "/LPB/" . $storageCode . "/" . $month . "/" . $year;
@@ -124,6 +127,9 @@ function generateTaxSJ($storageCode, $month, $year){
     $no = $result["totalIN"] + 1;
 
     $statement->closeCursor();
+    if($month < 10){
+        $month = "0" . $month;
+    }
 
     return $no . "/SJT/" . $storageCode . "/" . $month . "/" . $year;
 }

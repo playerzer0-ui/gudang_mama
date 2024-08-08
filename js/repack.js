@@ -149,7 +149,19 @@ function getRepackNO() {
             year: year
         },
         success: function(response) {
-            noRepackEl.value = response;
+            let arr = response.split("/");
+            if(pageState == "amend_repack"){
+                let old_repack = document.getElementById("old_rpeack").value.split("/");
+                if(old_repack[2] == arr[2] && parseInt(old_repack[3]) === parseInt(arr[3]) && parseInt(old_repack[4]) === parseInt(arr[4])){
+                    noRepackEl.value = document.getElementById("old_rpeack").value;
+                }
+                else{
+                    noRepackEl.value = response;
+                }
+            }
+            else{
+                noRepackEl.value = response;
+            }
         },
         error: function(xhr, status, error) {
             console.error("Error: " + error);

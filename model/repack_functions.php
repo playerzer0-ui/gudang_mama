@@ -22,8 +22,30 @@
         $no = $result["totalIN"] + 1;
 
         $statement->closeCursor();
+        if($month < 10){
+            $month = "0" . $month;
+        }
 
         return $no . "/SJR/" . $storageCode . "/" . $month . "/" . $year;
+    }
+
+    function getRepackByCode($no_repack){
+        global $db;
+
+        $query = "SELECT * FROM repacks WHERE no_repack = :no_repack";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":no_repack", $no_repack);
+
+        try {
+            $statement->execute();
+        }
+        catch(PDOException $ex){
+            $ex->getMessage();
+        }
+    
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
     }
 
     function getAllRepacks(){
@@ -66,7 +88,7 @@
     function updateRepack($no_repack, $repack_date, $storageCode){
         global $db;
 
-        $query = "UPDATE repacks SET repack_date = :repack_date, storageCode = :storageCode WHERE no_repack = :no_sj";
+        $query = "UPDATE repacks SET repack_date = :repack_date, storageCode = :storageCode WHERE no_repack = :no_repack";
         $statement = $db->prepare($query);
         $statement->bindValue(":repack_date", $repack_date);
         $statement->bindValue(":storageCode", $storageCode);

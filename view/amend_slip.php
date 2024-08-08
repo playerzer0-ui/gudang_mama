@@ -140,7 +140,7 @@
             foreach($products as $key){ ?>
             <tr>
                 <td><?php echo $count++; ?></td>
-                <td><input type="text" name="kd[]" placeholder="di isi" class="productCode" value="<?php echo $key["productCode"]; ?>" required></td>
+                <td><input type="text" name="kd[]" placeholder="di isi" class="productCode" oninput="applyAutocomplete(this)" value="<?php echo $key["productCode"]; ?>" required></td>
                 <td><input style="width: 300px;" type="text" name="material_display[]" value="<?php echo $key["productName"]; ?>" readonly><input type="hidden" name="material[]"></td>
                 <td><input type="number" name="qty[]" placeholder="di isi" value="<?php echo $key["qty"]; ?>" required></td>
                 <td><input type="text" name="uom[]" placeholder="di isi" value="<?php echo $key["uom"]; ?>" required></td>
