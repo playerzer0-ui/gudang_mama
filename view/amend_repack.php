@@ -27,7 +27,7 @@
             <td>NO. Repack</td>
             <td>:</td>
             <td><input name="no_repack" id="no_repack" type="text" value="<?php echo $result["no_repack"]; ?>" readonly></td>
-            <input type="hidden" id="old_rpeack" value="<?php echo $result["no_repack"]; ?>">
+            <input type="hidden" id="old_rpeack" name="old_repack" value="<?php echo $result["no_repack"]; ?>">
         </tr>
     </table>
 

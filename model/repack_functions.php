@@ -85,14 +85,15 @@
         $statement->closeCursor();
     }
 
-    function updateRepack($no_repack, $repack_date, $storageCode){
+    function updateRepack($no_repack, $repack_date, $storageCode, $old_repack){
         global $db;
 
-        $query = "UPDATE repacks SET repack_date = :repack_date, storageCode = :storageCode WHERE no_repack = :no_repack";
+        $query = "UPDATE repacks SET no_repack = :no_repack, repack_date = :repack_date, storageCode = :storageCode WHERE no_repack = :old_repack";
         $statement = $db->prepare($query);
+        $statement->bindValue(":no_repack", $no_repack);
         $statement->bindValue(":repack_date", $repack_date);
         $statement->bindValue(":storageCode", $storageCode);
-        $statement->bindValue(":no_repack", $no_repack);
+        $statement->bindValue(":old_repack", $old_repack);
 
         try {
             $statement->execute();

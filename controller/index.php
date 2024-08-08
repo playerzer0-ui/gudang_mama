@@ -485,6 +485,7 @@ switch($action){
             case "repack":
                 $repack_date = filter_input(INPUT_POST, "repack_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $no_repack = filter_input(INPUT_POST, "no_repack", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $old_repack = filter_input(INPUT_POST, "old_repack", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
                 $kd_awal = filter_input_array(INPUT_POST)["kd_awal"];
                 $qty_awal = filter_input_array(INPUT_POST)["qty_awal"];
@@ -496,8 +497,8 @@ switch($action){
                 $uom_akhir = filter_input_array(INPUT_POST)["uom_akhir"];
                 $note_akhir = filter_input_array(INPUT_POST)["note_akhir"];
 
-                deleteOrderProducts($no_repack, "repack");
-                updateRepack($no_repack, $repack_date, $storageCode);
+                deleteOrderProducts($old_repack, "repack");
+                updateRepack($no_repack, $repack_date, $storageCode, $old_repack);
                 for($i = 0; $i < count($kd_awal); $i++){
                     addOrderProducts($no_repack, $kd_awal[$i], $qty_awal[$i], $uom_awal[$i], 0, $note_awal[$i], "repack_awal");
                 }
