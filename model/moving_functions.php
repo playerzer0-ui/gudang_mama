@@ -86,15 +86,16 @@
         $statement->closeCursor();
     }
 
-    function updateMoving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver){
+    function updateMoving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver, $old_moving){
         global $db;
     
-        $query = "UPDATE movings SET moving_date = :moving_date, storageCodeSender = :storageCodeSender, storageCodeReceiver = :storageCodeReceiver WHERE no_moving = :no_moving";
+        $query = "UPDATE movings SET no_moving = :no_moving, moving_date = :moving_date, storageCodeSender = :storageCodeSender, storageCodeReceiver = :storageCodeReceiver WHERE no_moving = :old_moving";
         $statement = $db->prepare($query);
+        $statement->bindValue(":no_moving", $no_moving);
         $statement->bindValue(":moving_date", $moving_date);
         $statement->bindValue(":storageCodeSender", $storageCodeSender);
         $statement->bindValue(":storageCodeReceiver", $storageCodeReceiver);
-        $statement->bindValue(":no_moving", $no_moving);
+        $statement->bindValue(":old_moving", $old_moving);
     
         try {
             $statement->execute();

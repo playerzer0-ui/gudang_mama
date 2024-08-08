@@ -1,7 +1,7 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-<form id="myForm" action="../controller/index.php?action=create_moving" method="post">
+<form id="myForm" action="../controller/index.php?action=amend_update_data&data=moving" method="post">
     <h1 style="text-align:center;">AMEND MOVING BARANG</h1>
     <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
     <table class="header-table">
@@ -37,6 +37,7 @@
             <td>NO. moving</td>
             <td>:</td>
             <td><input name="no_moving" id="no_moving" type="text" value="<?php echo $result["no_moving"]; ?>" readonly></td>
+            <input name="old_moving" id="old_moving" type="hidden" value="<?php echo $result["no_moving"]; ?>" readonly>
             <td>Tgl. moving</td>
             <td>:</td>
             <td><input name="moving_date" id="moving_date" onchange="getMovingNO()" type="date" value="<?php echo $result["moving_date"]; ?>" required></td>
@@ -57,16 +58,20 @@
             </tr>
         </thead>
         <tbody>
+            <?php
+            $count = 1;
+            foreach($products as $key){ ?>
             <tr>
-                <td>1</td>
-                <td><input name="kd[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
-                <td><input name="productName[]" type="text" placeholder="Otomatis" readonly/></td>
-                <td><input name="qty[]" type="text" placeholder="di isi" oninput="calculateNominal(this)" required/></td>
-                <td><input name="uom[]" type="text" placeholder="di isi" required/></td>
-                <td><input name="price_per_uom[]" type="text" placeholder="otomatis" readonly/></td>
-                <td><input type="number" inputmode="numeric" name="nominal[]" placeholder="Otomatis" readonly></td>
+                <td><?php echo $count++; ?></td>
+                <td><input name="kd[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" value="<?php echo $key["productCode"]; ?>" required/></td>
+                <td><input name="productName[]" type="text" placeholder="Otomatis" value="<?php echo $key["productName"]; ?>" readonly/></td>
+                <td><input name="qty[]" type="text" placeholder="di isi" oninput="calculateNominal(this)" value="<?php echo $key["qty"]; ?>"required/></td>
+                <td><input name="uom[]" type="text" placeholder="di isi" value="<?php echo $key["uom"]; ?>" required/></td>
+                <td><input name="price_per_uom[]" type="text" placeholder="otomatis" value="<?php echo $key["price_per_UOM"]; ?>" readonly/></td>
+                <td><input type="number" inputmode="numeric" name="nominal[]" placeholder="Otomatis" value="<?php echo (int)$key["qty"] * (double)$key["price_per_UOM"]; ?>"readonly></td>
                 <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
             </tr>
+            <?php } ?>
         </tbody>
     </table>
     <p>

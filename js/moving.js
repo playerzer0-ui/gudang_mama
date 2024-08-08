@@ -112,6 +112,11 @@ function getHPP(input){
     const productCode = input.value;
     const row = input.parentElement.parentElement;
     const storageCode = document.getElementById("storageCodeSender").value;
+    let order_date = document.getElementById("moving_date").value;
+    let date = new Date(order_date);
+
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
 
     $.ajax({
         type: "get",
@@ -120,7 +125,9 @@ function getHPP(input){
         data: {
             action: 'getHPP',
             productCode: productCode,
-            storageCode: storageCode
+            storageCode: storageCode,
+            month: month,
+            year: year
         },
         success: function (data) {
             row.querySelector('input[name="price_per_uom[]"]').value = data;
@@ -160,7 +167,19 @@ function getMovingNO() {
             year: year
         },
         success: function(response) {
-            noMovingEl.value = response;
+            let arr = response.split("/");
+            if(pageState == "amend_moving"){
+                let old_moving = document.getElementById("old_moving").value.split("/");
+                if(old_moving[2] == arr[2] && parseInt(old_moving[3]) === parseInt(arr[3]) && parseInt(old_moving[4]) === parseInt(arr[4])){
+                    noMovingEl.value = document.getElementById("old_moving").value;
+                }
+                else{
+                    noMovingEl.value = response;
+                }
+            }
+            else{
+                noMovingEl.value = response;
+            }
         },
         error: function(xhr, status, error) {
             console.error("Error: " + error);

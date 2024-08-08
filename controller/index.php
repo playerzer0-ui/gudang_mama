@@ -507,15 +507,21 @@ switch($action){
                 }
                 break;
             case "moving":
+                $productCodes = filter_input_array(INPUT_POST)["kd"];
+                $productNames = filter_input_array(INPUT_POST)["material"];
+                $qtys = filter_input_array(INPUT_POST)["qty"];
+                $uoms = filter_input_array(INPUT_POST)["uom"];
+
                 $storageCodeSender = filter_input(INPUT_POST, "storageCodeSender", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $storageCodeReceiver = filter_input(INPUT_POST, "storageCodeReceiver", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $old_moving = filter_input(INPUT_POST, "old_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $moving_date = filter_input(INPUT_POST, "moving_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-                updateMoving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver);
-                deleteOrderProducts($no_moving, "moving");
+                deleteOrderProducts($old_moving, "moving");
+                updateMoving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver, $old_moving);
                 for($i = 0; $i < count($productCodes); $i++){
-                    updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+                    addOrderProducts($no_moving, $productCodes[$i], $qtys[$i], $uoms[$i], 0, "", "moving");
                 }
                 break;
         }
@@ -884,12 +890,17 @@ switch($action){
 
     case "getHPP":
         $storageCode = filter_input(INPUT_GET, "storageCode");
-        $month = date("m");
-        $year = date("Y");
+        $month = filter_input(INPUT_GET, "month");
+        $year = filter_input(INPUT_GET, "year");
         $productCode = filter_input(INPUT_GET, "productCode");
         
         $data = generateSaldo($storageCode, $month, $year);
-        echo $data[$productCode]["barang_siap_dijual"]["price_per_qty"];
+        if(isset($data[$productCode]["barang_siap_dijual"]["price_per_qty"])){
+            echo $data[$productCode]["barang_siap_dijual"]["price_per_qty"];
+        }
+        else{
+            echo 0;
+        }
         break;
 
     case "getLaporanHutang":
