@@ -466,6 +466,12 @@ switch($action){
             
             
             case "invoice":
+                $productCodes = filter_input_array(INPUT_POST)["kd"];
+                $productNames = filter_input_array(INPUT_POST)["material"];
+                $qtys = filter_input_array(INPUT_POST)["qty"];
+                $uoms = filter_input_array(INPUT_POST)["uom"];
+                $notes = filter_input_array(INPUT_POST)["note"];
+                
                 $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);

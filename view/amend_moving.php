@@ -82,11 +82,6 @@
 </form>
 </main>
 
-<script>
-    window.onload = function() {
-        getMovingNO();
-    };
-</script>
 <script src="../js/moving.js"></script>
 
 <?php include "footer.php"; ?>

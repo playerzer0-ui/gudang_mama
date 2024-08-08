@@ -517,9 +517,15 @@ function updateSaldoAwal(&$productData, $saldos_awal) {
     if (isset($saldos_awal[$productCode])) {
         $productData["saldo_awal"]["totalQty"] = $saldos_awal[$productCode]["totalQty"];
         $productData["saldo_awal"]["totalPrice"] = $saldos_awal[$productCode]["totalPrice"];
-        $productData["saldo_awal"]["price_per_qty"] = $saldos_awal[$productCode]["totalPrice"] / $saldos_awal[$productCode]["totalQty"];
+        
+        if ($saldos_awal[$productCode]["totalQty"] > 0) {
+            $productData["saldo_awal"]["price_per_qty"] = $saldos_awal[$productCode]["totalPrice"] / $saldos_awal[$productCode]["totalQty"];
+        } else {
+            $productData["saldo_awal"]["price_per_qty"] = 0; // or handle this case as needed
+        }
     }
 }
+
 
 function updatePenerimaan(&$productData, $key, $type) {
     global $global_repackOut_price_per_qty;
@@ -528,57 +534,63 @@ function updatePenerimaan(&$productData, $key, $type) {
     $productData["penerimaan"][$type]["price_per_qty"] = $key["avgPrice"];
     $productData["penerimaan"][$type]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
 
-    if($type == "repackIn" || $type == "movingIn"){
+    if ($type == "repackIn" || $type == "movingIn") {
         $productData["penerimaan"][$type]["price_per_qty"] = $global_repackOut_price_per_qty;
         $productData["penerimaan"][$type]["totalPrice"] = $key["totalQty"] * $global_repackOut_price_per_qty;
     }
 
     $productData["penerimaan"]["totalIn"]["totalQty"] += $key["totalQty"];
     $productData["penerimaan"]["totalIn"]["totalPrice"] += $productData["penerimaan"][$type]["totalPrice"];
-    $productData["penerimaan"]["totalIn"]["price_per_qty"] = $productData["penerimaan"]["totalIn"]["totalPrice"] / $productData["penerimaan"]["totalIn"]["totalQty"];
+    
+    if ($productData["penerimaan"]["totalIn"]["totalQty"] > 0) {
+        $productData["penerimaan"]["totalIn"]["price_per_qty"] = $productData["penerimaan"]["totalIn"]["totalPrice"] / $productData["penerimaan"]["totalIn"]["totalQty"];
+    } else {
+        $productData["penerimaan"]["totalIn"]["price_per_qty"] = 0;
+    }
 }
+
 
 function updatePengeluaran(&$productData, $key, $type) {
     global $global_repackOut_price_per_qty;
 
-    // Use price_per_qty of barang_siap_dijual
     $price_per_qty = $productData["barang_siap_dijual"]["price_per_qty"];
 
-    // Update the pengeluaran values
     $productData["pengeluaran"][$type]["totalQty"] = $key["totalQty"];
     $productData["pengeluaran"][$type]["price_per_qty"] = $price_per_qty;
     $productData["pengeluaran"][$type]["totalPrice"] = $key["totalQty"] * $price_per_qty;
 
     $global_repackOut_price_per_qty = $productData["pengeluaran"][$type]["price_per_qty"];
 
-    // Update the totalOut values
     $productData["pengeluaran"]["totalOut"]["totalQty"] += $key["totalQty"];
     $productData["pengeluaran"]["totalOut"]["totalPrice"] += $productData["pengeluaran"][$type]["totalPrice"];
-    $productData["pengeluaran"]["totalOut"]["price_per_qty"] = $price_per_qty;
+    
+    if ($productData["pengeluaran"]["totalOut"]["totalQty"] > 0) {
+        $productData["pengeluaran"]["totalOut"]["price_per_qty"] = $productData["pengeluaran"]["totalOut"]["totalPrice"] / $productData["pengeluaran"]["totalOut"]["totalQty"];
+    } else {
+        $productData["pengeluaran"]["totalOut"]["price_per_qty"] = 0;
+    }
 }
 
 function updateBarangSiapDijual(&$productData) {
     $productData["barang_siap_dijual"]["totalQty"] = $productData["penerimaan"]["totalIn"]["totalQty"] + $productData["saldo_awal"]["totalQty"];
     $productData["barang_siap_dijual"]["totalPrice"] = $productData["penerimaan"]["totalIn"]["totalPrice"] + $productData["saldo_awal"]["totalPrice"];
-    $productData["barang_siap_dijual"]["price_per_qty"] = $productData["barang_siap_dijual"]["totalPrice"] / $productData["barang_siap_dijual"]["totalQty"];
+    
+    if ($productData["barang_siap_dijual"]["totalQty"] > 0) {
+        $productData["barang_siap_dijual"]["price_per_qty"] = $productData["barang_siap_dijual"]["totalPrice"] / $productData["barang_siap_dijual"]["totalQty"];
+    } else {
+        $productData["barang_siap_dijual"]["price_per_qty"] = 0;
+    }
 }
 
 function updateSaldoAkhir(&$productData) {
-    // Calculate saldo_akhir based on updated values
     $productData["saldo_akhir"]["totalQty"] = $productData["barang_siap_dijual"]["totalQty"] - $productData["pengeluaran"]["totalOut"]["totalQty"];
     $productData["saldo_akhir"]["totalPrice"] = $productData["barang_siap_dijual"]["totalPrice"] - $productData["pengeluaran"]["totalOut"]["totalPrice"];
-    $productData["saldo_akhir"]["price_per_qty"] = $productData["barang_siap_dijual"]["price_per_qty"];
-}
-
-
-
-// function generateSaldo($storageCode, $month, $year){
-//     $date = new DateTime($year . "-" . $month . "-" . "01");
-//     $date->modify('-1 month');
-//     $prevMonth = $date->format('m');
-//     $prevYear = $date->format('Y');
     
-//     echo "<pre>RESULTTT" . print_r(combineForReportStock($storageCode, $month, $year), true) . "</pre>";
-// }
+    if ($productData["saldo_akhir"]["totalQty"] > 0) {
+        $productData["saldo_akhir"]["price_per_qty"] = $productData["saldo_akhir"]["totalPrice"] / $productData["saldo_akhir"]["totalQty"];
+    } else {
+        $productData["saldo_akhir"]["price_per_qty"] = 0;
+    }
+}
 
 ?>

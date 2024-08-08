@@ -89,16 +89,18 @@
             $count = 1;
             $totalNominal = 0;
             foreach($products as $key){ ?>
+            <tr>
                 <td><?php echo $count++; ?></td>
                 <td><input type="text" name="kd[]" value="<?php echo $key["productCode"]; ?>" class="productCode" readonly></td>
                 <td><input style="width: 300px;" value="<?php echo $key["productName"]; ?>" type="text" name="material_display[]" readonly><input type="hidden" value="<?php echo $key["productName"]; ?>" name="material[]"></td>
                 <td><input type="number" value="<?php echo $key["qty"]; ?>" name="qty[]" readonly></td>
                 <td><input type="text" value="<?php echo $key["uom"]; ?>" name="uom[]" readonly></td>
-                <td><input type="number" value="<?php echo $key["price_per_UOM"]; ?>" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
+                <td><input type="number" value="<?php echo $key["price_per_UOM"]; ?>" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" readonly></td>
                 <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" value="<?php echo (int)$key["qty"] * (double)$key["price_per_UOM"]; ?>" readonly></td>
             <?php 
                 $totalNominal += (int)$key["qty"] * (double)$key["price_per_UOM"];
             } ?>
+            </tr>
         </tbody>
     </table>
 

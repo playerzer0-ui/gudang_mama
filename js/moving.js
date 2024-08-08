@@ -1,5 +1,12 @@
 let pageState = document.getElementById("pageState").value;
 
+window.onload = function() {
+    getMovingNO();
+    if (pageState === "amend_moving") {
+        updateCOGSAndNominals();
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('myForm');
 
@@ -10,6 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+document.getElementById('storageCodeSender').addEventListener('change', updateAllHPP);
+document.getElementById('moving_date').addEventListener('change', updateAllHPP);
+
 
 if (!pageState.includes("amend")){
     document.addEventListener("DOMContentLoaded", function() {
@@ -108,6 +119,19 @@ function getProductDetails(input) {
     });
 }
 
+function updateCOGSAndNominals() {
+    const rows = document.querySelectorAll("#materialTable tbody tr");
+    
+    rows.forEach(row => {
+        const productCodeInput = row.querySelector('.productCode');
+        const productCode = productCodeInput.value;
+
+        if (productCode) {
+            getHPP(productCodeInput, updateNominal);
+        }
+    });
+}
+
 function getHPP(input){
     const productCode = input.value;
     const row = input.parentElement.parentElement;
@@ -131,9 +155,34 @@ function getHPP(input){
         },
         success: function (data) {
             row.querySelector('input[name="price_per_uom[]"]').value = data;
+            calculateNominal(row.querySelector('input[name="qty[]"]'));
         }
     });
 }
+
+function updateNominal(row) {
+    const qty = parseFloat(row.querySelector('input[name="qty[]"]').value); // Get the quantity value
+    const price = parseFloat(row.querySelector('input[name="price_per_uom[]"]').value); // Get the updated COGS value
+
+    if (!isNaN(qty) && !isNaN(price)) {
+        const nominal = qty * price; // Calculate the nominal value
+        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(2); // Update the nominal field
+    } else {
+        row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
+    }
+}
+
+function updateAllHPP() {
+    let rows = document.querySelectorAll('#materialTable tbody tr');
+    
+    rows.forEach(row => {
+        let productCodeInput = row.querySelector('input[name="kd[]"]');
+        if (productCodeInput && productCodeInput.value) {
+            getHPP(productCodeInput);
+        }
+    });
+}
+
 
 function calculateNominal(priceInput) {
     const row = priceInput.closest('tr'); // Get the closest row to the input
