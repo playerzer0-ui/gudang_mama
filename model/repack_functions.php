@@ -2,13 +2,14 @@
 
     require_once "database.php";
 
-    function generate_SJR($storageCode){
+    function generate_SJR($storageCode, $month, $year){
         global $db;
 
-        $query = 'SELECT count(*) AS totalIN FROM repacks WHERE month(repack_date) = :mon AND year(repack_date) = :yea AND no_repack LIKE "%SJR%"';
+        $query = 'SELECT count(*) AS totalIN FROM repacks WHERE month(repack_date) = :mon AND year(repack_date) = :yea AND storageCode = :storageCode';
         $statement = $db->prepare($query);
-        $statement->bindValue(":mon", date("m"));
-        $statement->bindValue(":yea", date("Y"));
+        $statement->bindValue(":mon", $month);
+        $statement->bindValue(":yea", $year);
+        $statement->bindValue(":storageCode", $storageCode);
 
         try {
             $statement->execute();
@@ -22,7 +23,7 @@
 
         $statement->closeCursor();
 
-        return $no . "/SJR/" . $storageCode . "/" . date("m") . "/" . date("Y");
+        return $no . "/SJR/" . $storageCode . "/" . $month . "/" . $year;
     }
 
     function getAllRepacks(){

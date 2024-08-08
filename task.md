@@ -178,3 +178,6 @@ APA: {
 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setHref(this)" value=<?php echo $key["nomor_surat_jalan"]; ?>>
                     DELETE
                     </button>
+
+delete from invoices WHERE nomor_surat_jalan = "h000001"; 
+insert INTO invoices VALUES ("h000001", "2024-07-23", "INV01", "11.111.111.100-1221"); 

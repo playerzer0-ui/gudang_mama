@@ -2,13 +2,14 @@
 
     require_once "database.php";
 
-    function generate_SJP($storageCode){
+    function generate_SJP($storageCode, $month, $year){
         global $db;
 
-        $query = 'SELECT count(*) AS totalIN FROM movings WHERE month(moving_date) = :mon AND year(moving_date) = :yea';
+        $query = 'SELECT count(*) AS totalIN FROM movings WHERE month(moving_date) = :mon AND year(moving_date) = :yea AND storageCodeSender = :storageCode';
         $statement = $db->prepare($query);
-        $statement->bindValue(":mon", date("m"));
-        $statement->bindValue(":yea", date("Y"));
+        $statement->bindValue(":mon", $month);
+        $statement->bindValue(":yea", $year);
+        $statement->bindValue(":storageCode", $storageCode);
 
         try {
             $statement->execute();
@@ -22,7 +23,7 @@
 
         $statement->closeCursor();
 
-        return $no . "/SJP/" . $storageCode . "/" . date("m") . "/" . date("Y");
+        return $no . "/SJP/" . $storageCode . "/" . $month . "/" . $year;
     }
 
     function getAllMovings(){

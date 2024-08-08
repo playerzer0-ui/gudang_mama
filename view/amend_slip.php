@@ -1,9 +1,10 @@
 <?php include "header.php"; ?>
 
 <main class="main-container">
-    <form id="myForm" action="../controller/index.php?action=create_slip" method="post">
+    <form id="myForm" action="../controller/index.php?action=amend_update_data&data=slip" method="post">
         <h1>SLIP <?php echo $pageState; ?></h1>
         <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
+        <input name="old_sj" type="hidden" id="old_sj" value="<?php echo $result["nomor_surat_jalan"]; ?>">
         <table>
             <!-- Your form header table here -->
             <tr class="form-header">
@@ -72,7 +73,7 @@
                 <td>:</td>
                 <td colspan="2">
                     <input name="no_lpb_display" type="text" id="no_lpb_display" placeholder="Otomatis dari sistem" value="<?php echo $result["no_LPB"]; ?>" readonly>
-                    <input name="no_LPB" type="hidden" id="no_LPB">
+                    <input name="no_LPB" type="hidden" id="no_LPB" value="<?php echo $result["no_LPB"]; ?>">
                 </td>
             <?php } else { ?>
                 <td>No SJ</td>
@@ -81,7 +82,15 @@
             <?php } ?>
                 <td>Tgl Penerimaan</td>
                 <td>:</td>
-                <td><input name="order_date" type="date" id="tgl_penerimaan" placeholder="di isi" value="<?php echo $result["order_date"]; ?>"required></td>
+                <td>
+                <?php if($pageState == "amend_slip_in"){ ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" value="<?php echo $result["order_date"]; ?>" onchange="getLPB()" placeholder="di isi" required>
+                <?php } else if($pageState == "amend_slip_in") { ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" value="<?php echo $result["order_date"]; ?>" onchange="getSJ()" placeholder="di isi" required>
+                <?php } else { ?>
+                    <input name="order_date" type="date" id="tgl_penerimaan" value="<?php echo $result["order_date"]; ?>" onchange="getSJT()" placeholder="di isi" required>
+                <?php } ?>
+                </td>
             </tr>
             <tr class="highlight">
             <?php if($pageState == "amend_slip_in"){ ?>
@@ -126,6 +135,19 @@
             </thead>
             <tbody>
                 <!-- Rows will be added here dynamically -->
+            <?php
+            $count = 1;
+            foreach($products as $key){ ?>
+            <tr>
+                <td><?php echo $count++; ?></td>
+                <td><input type="text" name="kd[]" placeholder="di isi" class="productCode" value="<?php echo $key["productCode"]; ?>" required></td>
+                <td><input style="width: 300px;" type="text" name="material_display[]" value="<?php echo $key["productName"]; ?>" readonly><input type="hidden" name="material[]"></td>
+                <td><input type="number" name="qty[]" placeholder="di isi" value="<?php echo $key["qty"]; ?>" required></td>
+                <td><input type="text" name="uom[]" placeholder="di isi" value="<?php echo $key["uom"]; ?>" required></td>
+                <td><input type="text" name="note[]" value="<?php echo $key["note"]; ?>" placeholder=""></td>
+                <td><button class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
+            <?php } ?>
             </tbody>
         </table>
         <button type="button" class="btn btn-success" onclick="addRow()">Add Row</button>
@@ -134,19 +156,7 @@
 </main>
 
 <script>
-    // <?php if($pageState == "amend_slip_in"){ ?>
-    // window.onload = function() {
-    //     getLPB();
-    // };
-    // <?php } else if($pageState == "amend_slip_out") { ?>
-    // window.onload = function() {
-    //     getSJ();
-    // };
-    // <?php } else { ?>
-    // window.onload = function() {
-    //     getSJT();
-    // };
-    // <?php } ?>
+
 </script>
 <script src="../js/index.js" async defer></script>
 

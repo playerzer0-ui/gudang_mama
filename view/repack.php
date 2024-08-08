@@ -3,6 +3,7 @@
 <main class="main-container">
 <form id="myForm" action="../controller/index.php?action=create_repack" method="post">
     <h1 style="text-align:center;">SLIP REPACK BARANG</h1>
+    <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
     <table class="header-table">
         <tr>
             <td>PT</td>
@@ -20,7 +21,7 @@
             </td>
             <td>Tgl Repack</td>
             <td>:</td>
-            <td><input name="repack_date" type="date" required></td>
+            <td><input name="repack_date" id="repack_date" onchange="getRepackNO()" type="date" required></td>
         </tr>
         <tr>
             <td>NO. Repack</td>

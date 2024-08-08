@@ -8,7 +8,7 @@ $global_repackOut_price_per_qty = 0;
 // $data = [];
 // $productCode = "";
 
-function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
+function addOrderProducts($no_id, $productCode, $qty, $UOM, $price_per_UOM, $note, $status){
     global $db;
 
     switch($status){
@@ -42,7 +42,7 @@ function addOrderProducts($no_id, $productCode, $qty, $UOM, $note, $status){
     $statement->bindValue(":productCode", $productCode);
     $statement->bindValue(":qty", $qty);
     $statement->bindValue(":UOM", $UOM);
-    $statement->bindValue(":price_per_UOM", 0);
+    $statement->bindValue(":price_per_UOM", $price_per_UOM);
     $statement->bindValue(":note", $note);
 
     try {
@@ -99,23 +99,23 @@ function deleteOrderProducts($no_id, $status){
 
 /**
  * delete order products on order_products
- * @param string $no_id is the code for either order, repack or moving
- * @param string $status can be 3 things, order, repack or moving
+ * @param string $no_id is the code for either in(order), repack or moving
+ * @param string $status can be 3 things, in(order), repack or moving
  */
 function getOrderProductsFromNoID($no_id, $status){
     global $db;
 
     switch($status){
         case "in":
-            $query = 'SELECT op.nomor_surat_jalan, op.productCode, p.productName, op.qty, op.uom, op.price_per_UOM FROM order_products op, products p WHERE op.nomor_surat_jalan = :no_id AND op.productCode = p.productCode';
+            $query = 'SELECT op.nomor_surat_jalan, op.productCode, p.productName, op.qty, op.uom, op.price_per_UOM, op.note FROM order_products op, products p WHERE op.nomor_surat_jalan = :no_id AND op.productCode = p.productCode';
             break;
 
         case "repack":
-            $query = 'SELECT op.repack_no_repack, op.productCode, p.productName, op.qty, op.uom, op.price_per_UOM FROM order_products op, products p WHERE op.repack_no_repack = :no_id AND op.productCode = p.productCode';
+            $query = 'SELECT op.repack_no_repack, op.productCode, p.productName, op.qty, op.uom, op.price_per_UOM, op.note FROM order_products op, products p WHERE op.repack_no_repack = :no_id AND op.productCode = p.productCode';
             break;
         
         case "moving":
-            $query = 'SELECT op.repack_no_repack, op.productCode, p.productName, op.qty, op.uom, op.price_per_UOM FROM order_products op, products p WHERE op.moving_no_moving = :no_id AND op.productCode = p.productCode';
+            $query = 'SELECT op.repack_no_repack, op.productCode, p.productName, op.qty, op.uom, op.price_per_UOM, op.note FROM order_products op, products p WHERE op.moving_no_moving = :no_id AND op.productCode = p.productCode';
             break; 
     }
     $statement = $db->prepare($query);
