@@ -3,17 +3,18 @@
     require_once "database.php";
     require_once "../model/order_products_functions.php";
 
-    function create_invoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur){
+    function create_invoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur, $no_moving){
         global $db;
     
         $query = 'INSERT INTO invoices
-            VALUES (:nomor_surat_jalan, :invoice_date, :no_invoice, :no_faktur)';
+            VALUES (:nomor_surat_jalan, :invoice_date, :no_invoice, :no_faktur, :no_moving)';
     
         $statement = $db->prepare($query);
         $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
         $statement->bindValue(":invoice_date", $invoice_date);
         $statement->bindValue(":no_invoice", $no_invoice);
         $statement->bindValue(":no_faktur", $no_faktur);
+        $statement->bindValue(":no_moving", $no_moving);
     
         try {
             $statement->execute();

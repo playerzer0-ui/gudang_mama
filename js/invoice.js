@@ -1,4 +1,4 @@
-let pageState = document.getElementById("pageState").value;
+var pageState = document.getElementById("pageState").value;
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('myForm');
@@ -33,7 +33,14 @@ if (!pageState.includes("amend")){
 
 function handleFormSubmit(event) {
     let pageState = document.getElementById("pageState").value;
-    let no_sj = document.getElementById("no_sj").value;
+    let no_sj;
+    if(pageState == "moving"){
+        no_sj = document.getElementById("no_moving").value;
+    }
+    else{
+        no_sj = document.getElementById("no_sj").value;
+    }
+    
     event.preventDefault(); // Prevent the default form submission
 
     var form = document.getElementById('myForm');
@@ -74,6 +81,61 @@ function handleFormSubmit(event) {
             console.error('Error:', error);
         });
     }
+}
+
+function updateCOGSAndNominals() {
+    const rows = document.querySelectorAll("#productTable tbody tr");
+    
+    rows.forEach(row => {
+        const productCodeInput = row.querySelector('.productCode');
+        const productCode = productCodeInput.value;
+
+        if (productCode) {
+            getHPP(productCodeInput, updateNominal);
+        }
+    });
+}
+
+function getHPP(input, callback){
+    const productCode = input.value;
+    const row = input.closest('tr');
+    const storageCode = pageState === "moving" ? document.getElementById("storageCodeSender").value : document.getElementById("storageCode").value;
+    let order_date = document.getElementById("invoice_date").value;
+    let date = new Date(order_date);
+
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+
+    $.ajax({
+        type: "get",
+        url: "../controller/index.php",
+        dataType: 'json',
+        data: {
+            action: 'getHPP',
+            productCode: productCode,
+            storageCode: storageCode,
+            month: month,
+            year: year
+        },
+        success: function (data) {
+            row.querySelector('input[name="price_per_uom[]"]').value = data;
+            callback(row);
+        }
+    });
+}
+
+function updateNominal(row) {
+    const qty = parseFloat(row.querySelector('input[name="qty[]"]').value); // Get the quantity value
+    const price = parseFloat(row.querySelector('input[name="price_per_uom[]"]').value); // Get the updated COGS value
+
+    if (!isNaN(qty) && !isNaN(price)) {
+        const nominal = qty * price; // Calculate the nominal value
+        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(2); // Update the nominal field
+    } else {
+        row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
+    }
+
+    calculateTotalNominal(); // Update total nominal after each row update
 }
 
 function getMovingDetailsFromMovingNo(){
@@ -174,7 +236,8 @@ function getOrderProducts(no_id, status){
 
             data.forEach(item => {
                 newRow = table.insertRow();
-                newRow.innerHTML = `
+                if(pageState.includes("moving")){
+                    newRow.innerHTML = `
                     <td>${rowCount}</td>
                     <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
                     <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
@@ -183,7 +246,21 @@ function getOrderProducts(no_id, status){
                     <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" readonly></td>
                     <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
                 `;
+                }
+                else{
+                    newRow.innerHTML = `
+                    <td>${rowCount}</td>
+                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
+                    <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
+                    <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
+                    <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
+                    <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
+                    <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
+                `;
+                }
             });
+
+            updateCOGSAndNominals();
         }
     });
 }

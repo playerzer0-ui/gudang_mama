@@ -726,24 +726,34 @@ switch($action){
         $uoms = filter_input_array(INPUT_POST)["uom"];
         $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $vendorName = "";
+        $customerName = "";
 
-        $storageName = getstorageByCode($storageCode)["storageName"];
+        if($pageState == "moving"){
+            $storageCodeSender = filter_input(INPUT_POST, "storageCodeSender", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $storageCodeReceiver = filter_input(INPUT_POST, "storageCodeReceiver", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $moving_date = filter_input(INPUT_POST, "moving_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            create_invoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving);
+        }
+        else{
+            $storageName = getstorageByCode($storageCode)["storageName"];
+            create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-");
+            if($pageState == "in"){
+                $vendorName = getVendorByCode($vendorCode)["vendorName"];
+            }
+            else{
+                $customerName = getCustomerByCode($customerCode)["customerName"];
+            }
+        }
         $date = DateTime::createFromFormat('Y-m-d', $invoice_date);
         $month = $date->format('m');
         $year = $date->format('Y');
 
-        if($pageState == "in"){
-            $vendorName = getVendorByCode($vendorCode)["vendorName"];
-        }
-        else{
-            $customerName = getCustomerByCode($customerCode)["customerName"];
-        }
-
-
-        create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur);
-
-        for($i = 0; $i < count($productCodes); $i++){
-            updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+        if($pageState != "moving"){
+            for($i = 0; $i < count($productCodes); $i++){
+                updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+            }
         }
 
         // Generate the PDF and return it as a response
@@ -751,8 +761,11 @@ switch($action){
             if($pageState == "in"){
                 create_invoice_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
             }
-            else{
+            else if($pageState == "out" || $pageState == "out_tax"){
                 create_invoice_out_pdf($storageName, $customerCode, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
+            }
+            else{
+                create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
             }
             exit;
         }
@@ -892,7 +905,8 @@ switch($action){
 
     case "test":
         //echo "<pre>" . print_r(json_encode(generateSaldo("APA", 8, 2024)), true) . "</pre>";
-        echo "<pre>" . print_r(getAllProductsForSaldo("APA", 8, 2024), true) . "</pre>";
+        //echo "<pre>" . print_r(getAllProductsForSaldo("APA", 8, 2024), true) . "</pre>";
+        create_invoice_moving_pdf("APA", "BB", "FF", "2022-12-12", "2022-12-12", "op", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
         break;
 
     case "test2":
