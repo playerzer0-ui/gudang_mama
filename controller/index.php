@@ -352,7 +352,7 @@ switch($action){
             case "invoice":
                 $title = "amend invoice";
                 $result = getOrderByNoSJ($code);
-                $invoice = getInvoiceByNoSJ($code);
+                $invoice = getInvoiceByNoSJ($code, null);
 
                 if($result["status_mode"] == 1){
                     $pageState = "amend_invoice_in";
@@ -369,7 +369,7 @@ switch($action){
             case "payment":
                 $title = "amend payment";
                 $result = getOrderByNoSJ($code);
-                $invoice = getInvoiceByNoSJ($code);
+                $invoice = getInvoiceByNoSJ($code, null);
                 $payment = getPaymentByNoSJ($code);
 
                 if($result["status_mode"] == 1){
@@ -667,7 +667,12 @@ switch($action){
 
     case "getInvoiceByNoSJ":
         $no_sj = filter_input(INPUT_GET, 'no_sj', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        echo json_encode(getInvoiceByNoSJ($no_sj));
+        echo json_encode(getInvoiceByNoSJ($no_sj, null));
+        break;
+
+    case "getInvoiceMovingByNoSJ":
+        $no_sj = filter_input(INPUT_GET, 'no_sj', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo json_encode(getInvoiceByNoSJ(null, $no_sj));
         break;
 
     case "create_slip":
@@ -795,23 +800,34 @@ switch($action){
         $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        $storageName = getstorageByCode($storageCode)["storageName"];
-
-        if($pageState == "in"){
-            $vendorName = getVendorByCode($vendorCode)["vendorName"];
+        if($pageState == "moving"){
+            $storageCodeSender = filter_input(INPUT_POST, "storageCodeSender", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $storageCodeReceiver = filter_input(INPUT_POST, "storageCodeReceiver", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $moving_date = filter_input(INPUT_POST, "moving_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            create_payment("-", $payment_date, $payment_amount, $no_moving);
         }
         else{
-            $customerName = getCustomerByCode($customerCode)["customerName"];
+            $storageName = getstorageByCode($storageCode)["storageName"];
+            if($pageState == "in"){
+                $vendorName = getVendorByCode($vendorCode)["vendorName"];
+            }
+            else{
+                $customerName = getCustomerByCode($customerCode)["customerName"];
+            }
+            create_payment($no_sj, $payment_date, $payment_amount, "-");
         }
 
-        create_payment($no_sj, $payment_date, $payment_amount);
 
         if (isset($_POST['generate_pdf'])){
             if($pageState == "in"){
                 create_payment_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
             }
-            else{
+            else if($pageState == "out" || $pageState == "out_tax"){
                 create_payment_out_pdf($storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+            }
+            else{
+                create_payment_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
             }
             exit;
         }
@@ -904,9 +920,9 @@ switch($action){
         break;
 
     case "test":
-        //echo "<pre>" . print_r(json_encode(generateSaldo("APA", 8, 2024)), true) . "</pre>";
+        echo "<pre>" . print_r(json_encode(generateSaldo("APA", 8, 2024)), true) . "</pre>";
         //echo "<pre>" . print_r(getAllProductsForSaldo("APA", 8, 2024), true) . "</pre>";
-        create_invoice_moving_pdf("APA", "BB", "FF", "2022-12-12", "2022-12-12", "op", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
+        // create_invoice_moving_pdf("APA", "BB", "FF", "2022-12-12", "2022-12-12", "op", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
         break;
 
     case "test2":

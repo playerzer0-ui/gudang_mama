@@ -1,4 +1,4 @@
-let pageState = document.getElementById("pageState").value;
+var pageState = document.getElementById("pageState").value;
 
 $(document).ready(function () {
     calculateHutang();
@@ -55,6 +55,100 @@ function handleFormSubmit(event) {
         });
     }
 }
+
+function updateCOGSAndNominals() {
+    const rows = document.querySelectorAll("#productTable tbody tr");
+    
+    rows.forEach(row => {
+        const productCodeInput = row.querySelector('.productCode');
+        const productCode = productCodeInput.value;
+
+        if (productCode) {
+            getHPP(productCodeInput, updateNominal);
+        }
+    });
+}
+
+function getHPP(input, callback){
+    const productCode = input.value;
+    const row = input.closest('tr');
+    const storageCode = pageState === "moving" ? document.getElementById("storageCodeSender").value : document.getElementById("storageCode").value;
+    let order_date = document.getElementById("invoice_date").value;
+    let date = new Date(order_date);
+
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+
+    $.ajax({
+        type: "get",
+        url: "../controller/index.php",
+        dataType: 'json',
+        data: {
+            action: 'getHPP',
+            productCode: productCode,
+            storageCode: storageCode,
+            month: month,
+            year: year
+        },
+        success: function (data) {
+            row.querySelector('input[name="price_per_uom[]"]').value = data;
+            callback(row);
+        }
+    });
+}
+
+function updateNominal(row) {
+    const qty = parseFloat(row.querySelector('input[name="qty[]"]').value); // Get the quantity value
+    const price = parseFloat(row.querySelector('input[name="price_per_uom[]"]').value); // Get the updated COGS value
+
+    if (!isNaN(qty) && !isNaN(price)) {
+        const nominal = qty * price; // Calculate the nominal value
+        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(2); // Update the nominal field
+    } else {
+        row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
+    }
+
+    calculateTotalNominal(); // Update total nominal after each row update
+}
+
+function getMovingDetailsFromMovingNo(){
+    let storageCodeSender = document.getElementById("storageCodeSender");
+    let storageCodeReceiver = document.getElementById("storageCodeReceiver");
+    let no_moving = document.getElementById("no_moving").value;
+    let moving_date = document.getElementById("moving_date");
+    let invoice_dateEl = document.getElementById("invoice_date");
+    let no_invoiceEl = document.getElementById("no_invoice");
+
+    $.ajax({
+        type: "get",
+        url: "../controller/index.php",
+        data: {
+            action: "getMovingDetails",
+            no_moving: no_moving
+        }
+    }).done(function (response) {
+        const data = JSON.parse(response);
+        storageCodeSender.value = data.storageCodeSender;
+        storageCodeReceiver.value = data.storageCodeReceiver;
+        moving_date.value = data.moving_date;
+
+        $.ajax({
+            type: "get",
+            url: "../controller/index.php",
+            data: {
+                action: 'getInvoiceMovingByNoSJ',
+                no_sj: no_moving
+            }
+        }).done(function (response) {
+            const data = JSON.parse(response);
+            invoice_dateEl.value = data.invoice_date;
+            no_invoiceEl.value = data.no_invoice;
+
+            getOrderProducts(no_moving, "moving");
+        });
+    });
+}
+
 
 function getDetailsFromSJ(){
     let no_sjEl = document.getElementById("no_sj").value;
@@ -123,13 +217,17 @@ function getDetailsFromSJ(){
         }
     });
 
+    getOrderProducts(no_sjEl, "moving");
+}
+
+function getOrderProducts(no_id, status){
     $.ajax({
         type: "get",
         url: "../controller/index.php",
         data: {
             action: 'getOrderProducts',
-            status: 'in',
-            no_sj: no_sjEl
+            status: status,
+            no_sj: no_id
         },
         success: function (response) {
             const table = document.getElementById('productTable').getElementsByTagName('tbody')[0];
@@ -149,11 +247,14 @@ function getDetailsFromSJ(){
                     <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" readonly></td>
                     <td><input type="text" value="${item.price_per_UOM * item.qty}" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
                 `;
-
-                
             });
 
-            calculateTotalNominal();
+            if(pageState == "moving"){
+                updateCOGSAndNominals();
+            }
+            else{
+                calculateTotalNominal();
+            }
         }
     });
 }
@@ -161,7 +262,13 @@ function getDetailsFromSJ(){
 function calculateHutang(){
     let amount = document.getElementById("payment_amount").value;
     let remaining = document.getElementById("remaining");
-    let no_sjEl = document.getElementById("no_sj").value;
+    let no_sjEl;
+    if(pageState == "moving"){
+        no_sjEl = null;
+    }
+    else{
+        no_sjEl = document.getElementById("no_sj").value;
+    }
 
     $.ajax({
         type: "get",

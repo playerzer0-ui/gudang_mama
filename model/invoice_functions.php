@@ -73,12 +73,19 @@
         return $no . "/INV/" . $storageCode . "/" . $month . "/" . $year;
     }
 
-    function getInvoiceByNoSJ($nomor_surat_jalan){
+    function getInvoiceByNoSJ($nomor_surat_jalan, $no_moving){
         global $db;
 
-        $query = "SELECT * FROM invoices WHERE nomor_surat_jalan = :nomor_surat_jalan";
-        $statement = $db->prepare($query);
-        $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        if($no_moving == null){
+            $query = "SELECT * FROM invoices WHERE nomor_surat_jalan = :nomor_surat_jalan";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        }
+        else{
+            $query = "SELECT * FROM invoices WHERE no_moving = :no_moving";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":no_moving", $no_moving);
+        }
 
         try {
             $statement->execute();

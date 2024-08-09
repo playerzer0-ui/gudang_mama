@@ -144,24 +144,25 @@ function getMovingDetailsFromMovingNo(){
     let no_moving = document.getElementById("no_moving").value;
     let moving_date = document.getElementById("moving_date");
 
+    // First AJAX call to get moving details
     $.ajax({
         type: "get",
         url: "../controller/index.php",
         data: {
             action: "getMovingDetails",
             no_moving: no_moving
-        },
-        success: function (response) {
-            const data = JSON.parse(response);
-            storageCodeSender.value = data.storageCodeSender;
-            storageCodeReceiver.value = data.storageCodeReceiver;
-            moving_date.value = data.moving_date;
-            generateNoInvoice();
         }
-    });
+    }).done(function(response) {
+        const data = JSON.parse(response);
+        storageCodeSender.value = data.storageCodeSender;
+        storageCodeReceiver.value = data.storageCodeReceiver;
+        moving_date.value = data.moving_date;
 
-    getOrderProducts(no_moving, "moving");
+        generateNoInvoice();
+
+        return getOrderProducts(no_moving, "moving")});
 }
+
 
 function getDetailsFromSJ(){
     let no_sjEl = document.getElementById("no_sj").value;
@@ -234,33 +235,36 @@ function getOrderProducts(no_id, status){
             let rowCount = 1;
             table.innerHTML = "";
 
-            data.forEach(item => {
-                newRow = table.insertRow();
-                if(pageState.includes("moving")){
+            if(pageState.includes("moving")){
+                data.forEach(item => {
+                    newRow = table.insertRow();
                     newRow.innerHTML = `
-                    <td>${rowCount}</td>
-                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
-                    <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
-                    <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
-                    <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
-                    <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" readonly></td>
-                    <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
-                `;
-                }
-                else{
-                    newRow.innerHTML = `
-                    <td>${rowCount}</td>
-                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
-                    <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
-                    <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
-                    <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
-                    <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
-                    <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
-                `;
-                }
-            });
+                        <td>${rowCount}</td>
+                        <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
+                        <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
+                        <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
+                        <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
+                        <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" readonly></td>
+                        <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
+                    `;
+                });
 
-            updateCOGSAndNominals();
+                updateCOGSAndNominals();
+            }
+            else{
+                data.forEach(item => {
+                    newRow = table.insertRow();
+                    newRow.innerHTML = `
+                        <td>${rowCount}</td>
+                        <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
+                        <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
+                        <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
+                        <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
+                        <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
+                        <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
+                    `;
+                });
+            }
         }
     });
 }

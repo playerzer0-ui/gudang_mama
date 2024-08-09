@@ -3,16 +3,17 @@
     require_once "database.php";
 
 
-    function create_payment($nomor_surat_jalan, $payment_date, $payment_amount){
+    function create_payment($nomor_surat_jalan, $payment_date, $payment_amount, $no_moving){
         global $db;
     
         $query = 'INSERT INTO payments
-            VALUES (:nomor_surat_jalan, :payment_date, :payment_amount)';
+            VALUES (:nomor_surat_jalan, :payment_date, :payment_amount, :no_moving)';
     
         $statement = $db->prepare($query);
         $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
         $statement->bindValue(":payment_date", $payment_date);
         $statement->bindValue(":payment_amount", $payment_amount);
+        $statement->bindValue(":no_moving", $no_moving);
     
         try {
             $statement->execute();
