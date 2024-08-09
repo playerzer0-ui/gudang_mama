@@ -68,6 +68,8 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">repack</a></li>
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_moving">moving</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=moving">invoice moving</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=moving">payment moving</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown btn btn-outline-primary">

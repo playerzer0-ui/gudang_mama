@@ -642,9 +642,15 @@ switch($action){
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo json_encode(getProductSuggestions($term));
         break;
+
     case 'getProductDetails':
         $productCode = filter_input(INPUT_GET, 'productCode', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo json_encode(getProductByCode($productCode));
+        break;
+
+    case "getMovingDetails":
+        $no_moving = filter_input(INPUT_GET, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        echo json_encode(getMovingByCode($no_moving));
         break;
 
     case "getOrderProducts":

@@ -115,7 +115,7 @@ function getOrderProductsFromNoID($no_id, $status){
             break;
         
         case "moving":
-            $query = 'SELECT op.repack_no_repack, op.productCode, p.productName, op.qty, op.uom, op.price_per_UOM, op.note, op.product_status FROM order_products op, products p WHERE op.moving_no_moving = :no_id AND op.productCode = p.productCode';
+            $query = 'SELECT op.moving_no_moving, op.productCode, p.productName, op.qty, op.uom, op.price_per_UOM, op.note, op.product_status FROM order_products op, products p WHERE op.moving_no_moving = :no_id AND op.productCode = p.productCode';
             break; 
     }
     $statement = $db->prepare($query);
