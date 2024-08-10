@@ -11,6 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    if (pageState === "amend_invoice_moving") {
+        updateCOGSAndNominals();
+    }
+});
+
+
 if (!pageState.includes("amend")){
     document.addEventListener("DOMContentLoaded", function() {
         let invoice_dateEl = document.getElementById("invoice_date");
@@ -99,7 +106,7 @@ function updateCOGSAndNominals() {
 function getHPP(input, callback){
     const productCode = input.value;
     const row = input.closest('tr');
-    const storageCode = pageState === "moving" ? document.getElementById("storageCodeSender").value : document.getElementById("storageCode").value;
+    const storageCode = pageState.includes("moving") ? document.getElementById("storageCodeSender").value : document.getElementById("storageCode").value;
     let order_date = document.getElementById("invoice_date").value;
     let date = new Date(order_date);
 
@@ -118,7 +125,7 @@ function getHPP(input, callback){
             year: year
         },
         success: function (data) {
-            row.querySelector('input[name="price_per_uom[]"]').value = data;
+            row.querySelector('input[name="price_per_uom[]"]').value = data.toFixed(0);
             callback(row);
         }
     });
@@ -273,11 +280,16 @@ function generateNoInvoice(){
     let invoice_dateEl = document.getElementById("invoice_date");
     let no_invoiceEl = document.getElementById("no_invoice");
     let sCode;
+    let old_invoiceEl;
     if(pageState.includes("moving")){
         sCode = document.getElementById("storageCodeSender").value;
     }
     else{
         sCode = document.getElementById("storageCode").value;
+    }
+
+    if(pageState == "amend_invoice_moving"){
+        old_invoiceEl = document.getElementById("old_invoice").value;
     }
 
     let dateValue = invoice_dateEl.value;
@@ -289,7 +301,20 @@ function generateNoInvoice(){
         type: "get",
         url: "../controller/index.php?action=generateNoInvoice&storageCode=" + sCode + "&month=" + mon + "&year=" + yea,
         success: function (response) {
-            no_invoiceEl.value = response;
+            if(pageState == "amend_invoice_moving"){
+                let xParts = response.split("/");
+                let yParts = old_invoiceEl.split("/");
+    
+                let restOfTheStringIsSame = xParts.slice(1).join('/') === yParts.slice(1).join('/');
+                if (restOfTheStringIsSame) {
+                    no_invoiceEl.value = old_invoiceEl;
+                } else {
+                    no_invoiceEl.value = response;
+                }
+            }
+            else{
+                no_invoiceEl.value = response;
+            }
         },
         error: function(xhr, status, error) {
             console.error("Error: " + error);

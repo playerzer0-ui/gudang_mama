@@ -7,11 +7,20 @@
         <?php foreach($no_SJs as $key){ ?>
             <div class="row align-items-start">
                 <div class="col">
-                    <b><?php echo $key["nomor_surat_jalan"]; ?></b>
+                    <?php if($key["nomor_surat_jalan"] != "-"){ ?>
+                        <b><?php echo $key["nomor_surat_jalan"]; ?></b>
+                    <?php } else { ?>
+                        <b><?php echo $key["no_moving"]; ?></b>
+                    <?php } ?>
                 </div>
                 <div class="col">
+                    <?php if($key["nomor_surat_jalan"] != "-"){ ?>
                     <a href=<?php echo "../controller/index.php?action=amend_update&data=" . $state . "&code=" . $key["nomor_surat_jalan"]; ?>><button class="btn btn-info">EDIT</button></a>
                     <a href=<?php echo "../controller/index.php?action=master_delete&data=" . $state . "&code=" . $key["nomor_surat_jalan"]; ?>><button class="btn btn-danger">DELETE</button></a>
+                    <?php } else { ?>
+                        <a href=<?php echo "../controller/index.php?action=amend_update&data=" . $state . "&code=" . $key["no_moving"]; ?>><button class="btn btn-info">EDIT</button></a>
+                        <a href=<?php echo "../controller/index.php?action=master_delete&data=" . $state . "&code=" . $key["no_moving"]; ?>><button class="btn btn-danger">DELETE</button></a>
+                    <?php } ?>
                 </div>
             </div>
         <?php } ?>

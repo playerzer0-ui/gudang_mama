@@ -351,19 +351,28 @@ switch($action){
                 break;
             case "invoice":
                 $title = "amend invoice";
-                $result = getOrderByNoSJ($code);
-                $invoice = getInvoiceByNoSJ($code, null);
-
-                if($result["status_mode"] == 1){
-                    $pageState = "amend_invoice_in";
-                }
-                else if($result["status_mode"] == 2){
-                    $pageState = "amend_invoice_out";
+                if(!strpos($code, "SJP")){
+                    $result = getOrderByNoSJ($code);
+                    $invoice = getInvoiceByNoSJ($code, null);
+    
+                    if($result["status_mode"] == 1){
+                        $pageState = "amend_invoice_in";
+                    }
+                    else if($result["status_mode"] == 2){
+                        $pageState = "amend_invoice_out";
+                    }
+                    else{
+                        $pageState = "amend_invoice_out_tax";
+                    }
+                    $products = getOrderProductsFromNoID($code, "in");
                 }
                 else{
-                    $pageState = "amend_invoice_out_tax";
+                    $result = getMovingByCode($code);
+                    $invoice = getInvoiceByNoSJ(null, $code);
+                    $pageState = "amend_invoice_moving";
+    
+                    $products = getOrderProductsFromNoID($code, "moving");
                 }
-                $products = getOrderProductsFromNoID($code, "in");
                 require_once "../view/amend_invoice.php";
                 break;
             case "payment":
@@ -477,9 +486,15 @@ switch($action){
                 $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
 
-                updateInvoice($no_sj, $invoice_date, $no_invoice, $no_faktur);
-                for($i = 0; $i < count($productCodes); $i++){
-                    updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+                if($pageState == "amend_invoice_moving"){
+                    $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                    updateInvoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving);
+                }
+                else{
+                    updateInvoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-");
+                    for($i = 0; $i < count($productCodes); $i++){
+                        updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+                    }
                 }
                 break;
             case "payment":

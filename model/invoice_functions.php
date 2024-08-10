@@ -229,14 +229,15 @@
         return array_values($groupData);
     }
 
-    function updateInvoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur){
+    function updateInvoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur, $no_moving){
         global $db;
     
-        $query = "UPDATE invoices SET invoice_date = :invoice_date, no_invoice = :no_invoice, no_faktur = :no_faktur WHERE nomor_surat_jalan = :nomor_surat_jalan";
+        $query = "UPDATE invoices SET invoice_date = :invoice_date, no_invoice = :no_invoice, no_faktur = :no_faktur, no_moving = :no_moving WHERE nomor_surat_jalan = :nomor_surat_jalan";
         $statement = $db->prepare($query);
         $statement->bindValue(":invoice_date", $invoice_date);
         $statement->bindValue(":no_invoice", $no_invoice);
         $statement->bindValue(":no_faktur", $no_faktur);
+        $statement->bindValue(":no_moving", $no_moving);
         $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
     
         try {
