@@ -377,20 +377,30 @@ switch($action){
                 break;
             case "payment":
                 $title = "amend payment";
-                $result = getOrderByNoSJ($code);
-                $invoice = getInvoiceByNoSJ($code, null);
-                $payment = getPaymentByNoSJ($code);
-
-                if($result["status_mode"] == 1){
-                    $pageState = "amend_payment_in";
-                }
-                else if($result["status_mode"] == 2){
-                    $pageState = "amend_payment_out";
+                if(!strpos($code, "SJP")){
+                    $result = getOrderByNoSJ($code);
+                    $invoice = getInvoiceByNoSJ($code, null);
+                    $payment = getPaymentByNoSJ($code, null);
+    
+                    if($result["status_mode"] == 1){
+                        $pageState = "amend_payment_in";
+                    }
+                    else if($result["status_mode"] == 2){
+                        $pageState = "amend_payment_out";
+                    }
+                    else{
+                        $pageState = "amend_payment_out_tax";
+                    }
+                    $products = getOrderProductsFromNoID($code, "in");
                 }
                 else{
-                    $pageState = "amend_payment_out_tax";
+                    $result = getMovingByCode($code);
+                    $invoice = getInvoiceByNoSJ(null, $code);
+                    $payment = getPaymentByNoSJ(null, $code);
+                    $pageState = "amend_payment_moving";
+
+                    $products = getOrderProductsFromNoID($code, "moving");
                 }
-                $products = getOrderProductsFromNoID($code, "in");
                 require_once "../view/amend_payment.php";
                 break;
             case "repack":
@@ -501,7 +511,13 @@ switch($action){
                 $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-                updatePayment($no_sj, $payment_date, $payment_amount);
+                if($pageState == "amend_payment_moving"){
+                    $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                    updatePayment("-", $payment_date, $payment_amount, $no_moving);
+                }
+                else{
+                    updatePayment($no_sj, $payment_date, $payment_amount, "-");
+                }
                 break;
             case "repack":
                 $repack_date = filter_input(INPUT_POST, "repack_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -573,6 +589,9 @@ switch($action){
                     break;
     
                 case "invoice":
+                    if (!deletePayment($code)) {
+                        throw new Exception("Failed to delete payment");
+                    }
                     $result = getOrderProductsFromNoID($code, "in");
                     foreach ($result as $key) {
                         if (!updatePriceForProducts($code, $key["productCode"], 0)) {

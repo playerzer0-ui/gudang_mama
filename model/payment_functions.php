@@ -43,12 +43,19 @@
         return $result;
     }
 
-    function getPaymentByNoSJ($nomor_surat_jalan){
+    function getPaymentByNoSJ($nomor_surat_jalan, $no_moving){
         global $db;
 
-        $query = "SELECT * FROM payments WHERE nomor_surat_jalan = :nomor_surat_jalan";
-        $statement = $db->prepare($query);
-        $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        if($no_moving == null){
+            $query = "SELECT * FROM payments WHERE nomor_surat_jalan = :nomor_surat_jalan";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        }
+        else{
+            $query = "SELECT * FROM payments WHERE no_moving = :no_moving";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":no_moving", $no_moving);
+        }
 
         try {
             $statement->execute();
@@ -81,14 +88,23 @@
         return $result;
     }
 
-    function updatePayment($nomor_surat_jalan, $payment_date, $payment_amount){
+    function updatePayment($nomor_surat_jalan, $payment_date, $payment_amount, $no_moving){
         global $db;
     
-        $query = "UPDATE payments SET payment_date = :payment_date, payment_amount = :payment_amount WHERE nomor_surat_jalan = :nomor_surat_jalan";
-        $statement = $db->prepare($query);
-        $statement->bindValue(":payment_date", $payment_date);
-        $statement->bindValue(":payment_amount", $payment_amount);
-        $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        if($no_moving == "-"){
+            $query = "UPDATE payments SET payment_date = :payment_date, payment_amount = :payment_amount WHERE nomor_surat_jalan = :nomor_surat_jalan";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":payment_date", $payment_date);
+            $statement->bindValue(":payment_amount", $payment_amount);
+            $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        }
+        else{
+            $query = "UPDATE payments SET payment_date = :payment_date, payment_amount = :payment_amount WHERE no_moving = :no_moving";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":payment_date", $payment_date);
+            $statement->bindValue(":payment_amount", $payment_amount);
+            $statement->bindValue(":no_moving", $no_moving);
+        }
     
         try {
             $statement->execute();
@@ -111,9 +127,16 @@
     function deletePayment($no_sj){
         global $db;
     
-        $query = "DELETE FROM payments WHERE nomor_surat_jalan = :no_sj";
-        $statement = $db->prepare($query);
-        $statement->bindValue(":no_sj", $no_sj);
+        if(!strpos($no_sj, "SJP")){
+            $query = "DELETE FROM payments WHERE nomor_surat_jalan = :no_sj";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":no_sj", $no_sj);
+        }
+        else{
+            $query = "DELETE FROM payments WHERE no_moving = :no_sj";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":no_sj", $no_sj);
+        }
     
         try {
             $statement->execute();

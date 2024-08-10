@@ -4,56 +4,86 @@
     <form id="myForm" action="../controller/index.php?action=amend_update_data&data=payment" method="post">
     <h1>PAYMENT <?php echo $pageState; ?></h1>
     <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
-    <input name="old_sj" type="hidden" id="old_sj" value="<?php echo $result["nomor_surat_jalan"]; ?>">
+    <?php if($pageState != "amend_payment_moving"){ ?>
+        <input name="old_sj" type="hidden" id="old_sj" value="<?php echo $result["nomor_surat_jalan"]; ?>">
+    <?php } ?>
     <table>
         <tr class="form-header">
-            <td>PT</td>
-            <td>:</td>
-            <td colspan="2"><input name="storageCode" type="text" id="storageCode" placeholder="Otomatis dari sistem" value="<?php echo $result["storageCode"]; ?>" readonly></td>
-            <?php if ($pageState == "amend_payment_in") { ?>
-                <td>Name Vendor</td>
+            <?php if($pageState == "amend_payment_moving"){ ?>
+                <td>PT Pengirim</td>
                 <td>:</td>
-                <td colspan="2"><input name="vendorCode" type="text" id="vendorCode" placeholder="Otomatis dari sistem" value="<?php echo $result["vendorCode"]; ?>" readonly></td>
+                <td><input type="text" name="storageCodeSender" id="storageCodeSender" placeholder="otomatis" value="<?php echo $result["storageCodeSender"]; ?>" readonly></td>
+                <td>PT Penerima</td>
+                <td>:</td>
+                <td><input type="text" name="storageCodeReceiver" id="storageCodeReceiver" placeholder="otomatis" value="<?php echo $result["storageCodeReceiver"]; ?>" readonly></td>
             <?php } else { ?>
-                <td>Name Customer</td>
+                <td>PT</td>
                 <td>:</td>
-                <td colspan="2"><input name="customerCode" type="text" id="customerCode" placeholder="Otomatis dari sistem" value="<?php echo $result["customerCode"]; ?>" readonly></td>
+                <td colspan="2"><input name="storageCode" type="text" id="storageCode" placeholder="Otomatis dari sistem" value="<?php echo $result["storageCode"]; ?>" readonly></td>
+                <?php if ($pageState == "amend_payment_in") { ?>
+                    <td>Name Vendor</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="vendorCode" type="text" id="vendorCode" placeholder="Otomatis dari sistem" value="<?php echo $result["vendorCode"]; ?>" readonly></td>
+                <?php } else { ?>
+                    <td>Name Customer</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="customerCode" type="text" id="customerCode" placeholder="Otomatis dari sistem" value="<?php echo $result["customerCode"]; ?>" readonly></td>
+                <?php } ?>
             <?php } ?>
         </tr>
         <tr>
-            <?php if ($pageState == "amend_payment_in") { ?>
-                <td>NO. LPB</td>
+            <?php if($pageState == "amend_payment_moving"){ ?>
+                <td>NO. moving</td>
                 <td>:</td>
-                <td colspan="2"><input name="no_LPB" type="text" id="no_LPB" placeholder="Otomatis dari sistem" value="<?php echo $result["no_LPB"]; ?>" readonly></td>
-                <td>No PO</td>
+                <td><input name="no_moving" id="no_moving" type="text" value="<?php echo $result["no_moving"]; ?>" readonly></td>
+                <td>Tgl. moving</td>
                 <td>:</td>
-                <td colspan="2"><input name="purchase_order" type="text" id="purchase_order" placeholder="Otomatis dari sistem" value="<?php echo $result["purchase_order"]; ?>" readonly></td>
+                <td><input name="moving_date" id="moving_date" type="date" value="<?php echo $result["moving_date"]; ?>" readonly></td>
             <?php } else { ?>
-                <td>No SJ</td>
-                <td>:</td>
-                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" value="<?php echo $result["nomor_surat_jalan"]; ?>" required></td>
-                <td>Alamat</td>
-                <td>:</td>
-                <td colspan="2"><input name="customerAddress" type="text" id="customerAddress" placeholder="Otomatis dari sistem" value="<?php echo $result["customerAddress"]; ?>" readonly></td>
+                <?php if ($pageState == "amend_payment_in") { ?>
+                    <td>NO. LPB</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="no_LPB" type="text" id="no_LPB" placeholder="Otomatis dari sistem" value="<?php echo $result["no_LPB"]; ?>" readonly></td>
+                    <td>No PO</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="purchase_order" type="text" id="purchase_order" placeholder="Otomatis dari sistem" value="<?php echo $result["purchase_order"]; ?>" readonly></td>
+                <?php } else { ?>
+                    <td>No SJ</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" value="<?php echo $result["nomor_surat_jalan"]; ?>" required></td>
+                    <td>Alamat</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="customerAddress" type="text" id="customerAddress" placeholder="Otomatis dari sistem" value="<?php echo $result["customerAddress"]; ?>" readonly></td>
+                <?php } ?>
             <?php } ?>
         </tr>
         <tr class="highlight">
-            <?php if ($pageState == "amend_payment_in") { ?>
-                <td>No SJ</td>
-                <td>:</td>
-                <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" value="<?php echo $result["nomor_surat_jalan"]; ?>" required></td>
-                <td>Tgl invoice</td>
-                <td>:</td>
-                <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
-            <?php } else { ?>
+            <?php if($pageState == "amend_payment_moving"){ ?>
                 <td>No Invoice</td>
                 <td>:</td>
-                <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="Otomatis dari sistem" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
-                <td>NPWP</td>
+                <td><input name="no_invoice" type="text" id="no_invoice" placeholder="otomatis dari sistem" value="<?php echo $invoice["no_invoice"]; ?>" readonly></td>
+                <td>Tgl invoice</td>
                 <td>:</td>
-                <td colspan="2"><input name="npwp" type="text" id="npwp" placeholder="Otomatis dari sistem" value="<?php echo $result["customerNPWP"]; ?>" readonly></td>
+                <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
+            <?php } else { ?>
+                <?php if ($pageState == "amend_payment_in") { ?>
+                    <td>No SJ</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" value="<?php echo $result["nomor_surat_jalan"]; ?>" required></td>
+                    <td>Tgl invoice</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
+                <?php } else { ?>
+                    <td>No Invoice</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="Otomatis dari sistem" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
+                    <td>NPWP</td>
+                    <td>:</td>
+                    <td colspan="2"><input name="npwp" type="text" id="npwp" placeholder="Otomatis dari sistem" value="<?php echo $result["customerNPWP"]; ?>" readonly></td>
+                <?php } ?>
             <?php } ?>
         </tr>
+        <?php if($pageState != "amend_payment_moving"){ ?>
         <tr>
             <?php if ($pageState == "amend_payment_in") { ?>
                 <td>No Truk</td>
@@ -69,6 +99,7 @@
                 <td colspan="4"></td>
             <?php } ?>
         </tr>
+        <?php } ?>
     </table>
 
     <table id="productTable">

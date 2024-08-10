@@ -15,6 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    if (pageState === "amend_payment_moving") {
+        updateCOGSAndNominals();
+    }
+});
+
 function handleFormSubmit(event) {
     event.preventDefault(); // Prevent the default form submission
 
@@ -72,7 +78,7 @@ function updateCOGSAndNominals() {
 function getHPP(input, callback){
     const productCode = input.value;
     const row = input.closest('tr');
-    const storageCode = pageState === "moving" ? document.getElementById("storageCodeSender").value : document.getElementById("storageCode").value;
+    const storageCode = pageState.includes("moving") ? document.getElementById("storageCodeSender").value : document.getElementById("storageCode").value;
     let order_date = document.getElementById("invoice_date").value;
     let date = new Date(order_date);
 
@@ -263,7 +269,7 @@ function calculateHutang(){
     let amount = document.getElementById("payment_amount").value;
     let remaining = document.getElementById("remaining");
     let no_sjEl;
-    if(pageState == "moving"){
+    if(pageState.includes("moving")){
         no_sjEl = null;
     }
     else{
