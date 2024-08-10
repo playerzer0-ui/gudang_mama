@@ -72,7 +72,12 @@
     function getTotalPayment($nomor_surat_jalan){
         global $db;
 
-        $query = "SELECT SUM(payment_amount) AS totalPayment FROM payments WHERE nomor_surat_jalan = :nomor_surat_jalan";
+        if(!strpos($nomor_surat_jalan, "SJP")){
+            $query = "SELECT SUM(payment_amount) AS totalPayment FROM payments WHERE nomor_surat_jalan = :nomor_surat_jalan";
+        }
+        else{
+            $query = "SELECT SUM(payment_amount) AS totalPayment FROM payments WHERE no_moving = :nomor_surat_jalan";
+        }
         $statement = $db->prepare($query);
         $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
 

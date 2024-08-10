@@ -499,6 +499,9 @@ switch($action){
                 if($pageState == "amend_invoice_moving"){
                     $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                     updateInvoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving);
+                    for($i = 0; $i < count($productCodes); $i++){
+                        updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
+                    }
                 }
                 else{
                     updateInvoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-");
@@ -792,6 +795,11 @@ switch($action){
         if($pageState != "moving"){
             for($i = 0; $i < count($productCodes); $i++){
                 updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
+            }
+        }
+        else{
+            for($i = 0; $i < count($productCodes); $i++){
+                updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
             }
         }
 

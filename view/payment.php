@@ -32,7 +32,7 @@
             <?php if($pageState == "moving"){ ?>
                 <td>NO. moving</td>
                 <td>:</td>
-                <td><input name="no_moving" id="no_moving" type="text" oninput="getMovingDetailsFromMovingNo()" required></td>
+                <td><input name="no_moving" id="no_moving" type="text" oninput="getMovingDetailsFromMovingNo();calculateHutang();" required></td>
                 <td>Tgl. moving</td>
                 <td>:</td>
                 <td><input name="moving_date" id="moving_date" type="date" readonly></td>

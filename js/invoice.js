@@ -125,7 +125,7 @@ function getHPP(input, callback){
             year: year
         },
         success: function (data) {
-            row.querySelector('input[name="price_per_uom[]"]').value = data.toFixed(0);
+            row.querySelector('input[name="price_per_uom[]"]').placeholder = data.toFixed(0);
             callback(row);
         }
     });
@@ -251,7 +251,7 @@ function getOrderProducts(no_id, status){
                         <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
                         <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
                         <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
-                        <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" readonly></td>
+                        <td><input type="number" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
                         <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
                     `;
                 });

@@ -175,7 +175,12 @@ function updatePriceForProductsMoving($no_id, $productCode, $price_per_UOM){
 function getTotalNominalByNoSJ($no_sj){
     global $db;
 
-    $query = "SELECT SUM(qty * price_per_UOM) AS totalNominal FROM order_products WHERE nomor_surat_jalan = :no_sj";
+    if(!strpos($no_sj, "SJP")){
+        $query = "SELECT SUM(qty * price_per_UOM) AS totalNominal FROM order_products WHERE nomor_surat_jalan = :no_sj";
+    }
+    else{
+        $query = "SELECT SUM(qty * price_per_UOM) AS totalNominal FROM order_products WHERE moving_no_moving = :no_sj";
+    }
 
     $statement = $db->prepare($query);
     $statement->bindValue(":no_sj", $no_sj);
@@ -534,7 +539,7 @@ function updatePenerimaan(&$productData, $key, $type) {
     $productData["penerimaan"][$type]["price_per_qty"] = $key["avgPrice"];
     $productData["penerimaan"][$type]["totalPrice"] = $key["totalQty"] * $key["avgPrice"];
 
-    if ($type == "repackIn" || $type == "movingIn") {
+    if ($type == "repackIn") {
         $productData["penerimaan"][$type]["price_per_qty"] = $global_repackOut_price_per_qty;
         $productData["penerimaan"][$type]["totalPrice"] = $key["totalQty"] * $global_repackOut_price_per_qty;
     }

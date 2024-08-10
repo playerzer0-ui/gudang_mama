@@ -1,7 +1,9 @@
 var pageState = document.getElementById("pageState").value;
 
 $(document).ready(function () {
-    calculateHutang();
+    if(pageState.includes("amend")){
+        calculateHutang();
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -97,7 +99,7 @@ function getHPP(input, callback){
             year: year
         },
         success: function (data) {
-            row.querySelector('input[name="price_per_uom[]"]').value = data;
+            row.querySelector('input[name="price_per_uom[]"]').placeholder = data.toFixed(0);
             callback(row);
         }
     });
@@ -223,7 +225,7 @@ function getDetailsFromSJ(){
         }
     });
 
-    getOrderProducts(no_sjEl, "moving");
+    getOrderProducts(no_sjEl, "in");
 }
 
 function getOrderProducts(no_id, status){
@@ -255,12 +257,7 @@ function getOrderProducts(no_id, status){
                 `;
             });
 
-            if(pageState == "moving"){
-                updateCOGSAndNominals();
-            }
-            else{
-                calculateTotalNominal();
-            }
+            calculateTotalNominal();
         }
     });
 }
@@ -270,7 +267,7 @@ function calculateHutang(){
     let remaining = document.getElementById("remaining");
     let no_sjEl;
     if(pageState.includes("moving")){
-        no_sjEl = null;
+        no_sjEl = document.getElementById("no_moving").value;
     }
     else{
         no_sjEl = document.getElementById("no_sj").value;
