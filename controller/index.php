@@ -217,8 +217,23 @@ switch($action){
                 $flag = createCustomer($input_data[0], $input_data[1], $input_data[2], $input_data[3]);
                 break;
             case "storage":
-                $flag = createStorage($input_data[0], $input_data[1], $input_data[2], $input_data[3]);
+                if(isset($_FILES['logo']) && $_FILES['logo']['error'] == 0) {
+                    $logo_tmp_name = $_FILES['logo']['tmp_name'];
+                    $storageCode = $input_data[0]; // Assuming input_data[0] is the storageCode
+                    $logo_extension = pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
+                    $logo_new_name = $storageCode . '.' . $logo_extension;
+                    $logo_destination = "../img/" . $logo_new_name;
+            
+                    if(move_uploaded_file($logo_tmp_name, $logo_destination)) {
+                        $flag = createStorage($input_data[0], $input_data[1], $input_data[2], $input_data[3]);
+                    } else {
+                        $flag = false;
+                    }
+                } else {
+                    $flag = false;
+                }
                 break;
+                
         }
 
         if(!$flag){
@@ -272,8 +287,31 @@ switch($action){
                 $flag = updateCustomer($input_data[0], $input_data[1], $input_data[2], $input_data[3], $oldCode);
                 break;
             case "storage":
-                $flag = updateStorage($input_data[0], $input_data[1], $input_data[2], $input_data[3], $oldCode);
+                if (isset($_FILES['logo']) && $_FILES['logo']['error'] == 0) {
+                    if (!empty($oldCode)) {
+                        $old_logo_path = "../img/" . $oldCode . '.' . pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
+            
+                        if (file_exists($old_logo_path)) {
+                            unlink($old_logo_path); // Delete the old logo
+                        }
+                    }
+            
+                    $logo_tmp_name = $_FILES['logo']['tmp_name'];
+                    $storageCode = $input_data[0]; // New storage code
+                    $logo_extension = pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
+                    $logo_new_name = $storageCode . '.' . $logo_extension;
+                    $logo_destination = "../img/" . $logo_new_name;
+            
+                    if (move_uploaded_file($logo_tmp_name, $logo_destination)) {
+                        $flag = updateStorage($input_data[0], $input_data[1], $input_data[2], $input_data[3], $oldCode);
+                    } else {
+                        $flag = false;
+                    }
+                } else {
+                    $flag = false;
+                }
                 break;
+                
         }
 
         if($flag){
@@ -806,10 +844,10 @@ switch($action){
         // Generate the PDF and return it as a response
         if (isset($_POST['generate_pdf'])) {
             if($pageState == "in"){
-                create_invoice_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
+                create_invoice_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
             }
             else if($pageState == "out" || $pageState == "out_tax"){
-                create_invoice_out_pdf($storageName, $customerCode, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
+                create_invoice_out_pdf($storageCode, $storageName, $customerCode, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
             }
             else{
                 create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
@@ -863,10 +901,10 @@ switch($action){
 
         if (isset($_POST['generate_pdf'])){
             if($pageState == "in"){
-                create_payment_in_pdf($storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+                create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
             }
             else if($pageState == "out" || $pageState == "out_tax"){
-                create_payment_out_pdf($storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+                create_payment_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
             }
             else{
                 create_payment_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
@@ -962,9 +1000,11 @@ switch($action){
         break;
 
     case "test":
-        echo "<pre>" . print_r(json_encode(generateSaldo("APA", 8, 2024)), true) . "</pre>";
+        //echo "<pre>" . print_r(json_encode(generateSaldo("APA", 8, 2024)), true) . "</pre>";
         //echo "<pre>" . print_r(getAllProductsForSaldo("APA", 8, 2024), true) . "</pre>";
-        // create_invoice_moving_pdf("APA", "BB", "FF", "2022-12-12", "2022-12-12", "op", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
+        //create_invoice_moving_pdf("APA", "BB", "FF", "2022-12-12", "2022-12-12", "op", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
+        //create_invoice_in_pdf("APA", "BBB", "ASAS", "TRUK", "123", "222-22-22", "1/LPB?APA?00/231", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
+        create_invoice_out_pdf("RQQ", "APA", "BBB", "ASAS", "ADDRESS", "NPWP", "222-22-22", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
         break;
 
     case "test2":

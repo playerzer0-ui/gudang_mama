@@ -30,7 +30,7 @@
         // Check for existing number and increment if necessary
         do {
             $generatedNo = $no . "/SJR/" . $storageCode . "/" . $month . "/" . $year;
-            $checkQuery = 'SELECT COUNT(*) AS existingCount FROM repacks WHERE no_SJR = :generatedNo';
+            $checkQuery = 'SELECT COUNT(*) AS existingCount FROM repacks WHERE no_repack = :generatedNo';
             
             $checkStmt = $db->prepare($checkQuery);
             $checkStmt->bindValue(":generatedNo", $generatedNo);

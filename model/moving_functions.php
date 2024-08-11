@@ -30,7 +30,7 @@
         // Check for existing number and increment if necessary
         do {
             $generatedNo = $no . "/SJP/" . $storageCode . "/" . $month . "/" . $year;
-            $checkQuery = 'SELECT COUNT(*) AS existingCount FROM movings WHERE no_SJP = :generatedNo';
+            $checkQuery = 'SELECT COUNT(*) AS existingCount FROM movings WHERE no_moving = :generatedNo';
             
             $checkStmt = $db->prepare($checkQuery);
             $checkStmt->bindValue(":generatedNo", $generatedNo);
