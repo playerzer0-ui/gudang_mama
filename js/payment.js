@@ -164,6 +164,7 @@ function getDetailsFromSJ(){
     let pageState = document.getElementById("pageState").value;
     let invoice_dateEl = document.getElementById("invoice_date");
     let no_invoiceEl = document.getElementById("no_invoice");
+    let tax = document.getElementById("tax");
     let no_LPBEl;
     let no_trukEl;
     let vendorCodeEl;
@@ -222,6 +223,7 @@ function getDetailsFromSJ(){
             const data = JSON.parse(response);
             invoice_dateEl.value = data.invoice_date;
             no_invoiceEl.value = data.no_invoice;
+            tax.value = data.tax;
         }
     });
 
@@ -319,7 +321,7 @@ function calculatePPN(){
     let taxPPN = document.getElementById('taxPPN');
     let tax = document.getElementById('tax').value;
 
-    taxPPN.value = nominal * tax;
+    taxPPN.value = nominal * (tax / 100);
 }
 
 function calculatePayAmount(){

@@ -533,16 +533,17 @@ switch($action){
                 $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $price_per_uom = filter_input_array(INPUT_POST)["price_per_uom"];
+                $tax = filter_input(INPUT_POST, "tax", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
                 if($pageState == "amend_invoice_moving"){
                     $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                    updateInvoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving);
+                    updateInvoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving, $tax);
                     for($i = 0; $i < count($productCodes); $i++){
                         updatePriceForProductsMoving($no_moving, $productCodes[$i], $price_per_uom[$i]);
                     }
                 }
                 else{
-                    updateInvoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-");
+                    updateInvoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
                     for($i = 0; $i < count($productCodes); $i++){
                         updatePriceForProducts($no_sj, $productCodes[$i], $price_per_uom[$i]);
                     }
@@ -800,6 +801,7 @@ switch($action){
         $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_faktur = filter_input(INPUT_POST, "no_faktur", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $tax = filter_input(INPUT_POST, "tax", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $productCodes = filter_input_array(INPUT_POST)["kd"];
         $productNames = filter_input_array(INPUT_POST)["material"];
         $qtys = filter_input_array(INPUT_POST)["qty"];
@@ -814,11 +816,11 @@ switch($action){
             $storageCodeReceiver = filter_input(INPUT_POST, "storageCodeReceiver", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $moving_date = filter_input(INPUT_POST, "moving_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            create_invoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving);
+            create_invoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving, $tax);
         }
         else{
             $storageName = getstorageByCode($storageCode)["storageName"];
-            create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-");
+            create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
             if($pageState == "in"){
                 $vendorName = getVendorByCode($vendorCode)["vendorName"];
             }
@@ -844,13 +846,13 @@ switch($action){
         // Generate the PDF and return it as a response
         if (isset($_POST['generate_pdf'])) {
             if($pageState == "in"){
-                create_invoice_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
+                create_invoice_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax);
             }
             else if($pageState == "out" || $pageState == "out_tax"){
-                create_invoice_out_pdf($storageCode, $storageName, $customerCode, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
+                create_invoice_out_pdf($storageCode, $storageName, $customerCode, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax);
             }
             else{
-                create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur);
+                create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax);
             }
             exit;
         }
@@ -871,6 +873,7 @@ switch($action){
         $purchase_order = filter_input(INPUT_POST, "purchase_order", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $invoice_date = filter_input(INPUT_POST, "invoice_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_invoice = filter_input(INPUT_POST, "no_invoice", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $tax = filter_input(INPUT_POST, "tax", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $productCodes = filter_input_array(INPUT_POST)["kd"];
@@ -901,13 +904,13 @@ switch($action){
 
         if (isset($_POST['generate_pdf'])){
             if($pageState == "in"){
-                create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+                create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax);
             }
             else if($pageState == "out" || $pageState == "out_tax"){
-                create_payment_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+                create_payment_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax);
             }
             else{
-                create_payment_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date);
+                create_payment_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax);
             }
             exit;
         }
@@ -1004,7 +1007,8 @@ switch($action){
         //echo "<pre>" . print_r(getAllProductsForSaldo("APA", 8, 2024), true) . "</pre>";
         //create_invoice_moving_pdf("APA", "BB", "FF", "2022-12-12", "2022-12-12", "op", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
         //create_invoice_in_pdf("APA", "BBB", "ASAS", "TRUK", "123", "222-22-22", "1/LPB?APA?00/231", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
-        create_invoice_out_pdf("RQQ", "APA", "BBB", "ASAS", "ADDRESS", "NPWP", "222-22-22", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
+        //create_invoice_out_pdf("RQQ", "APA", "BBB", "ASAS", "ADDRESS", "NPWP", "222-22-22", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111, 11);
+        create_payment_in_pdf("RQQ", "rorqual", "vendor", "sj1", "truk", "po1", "2202-22-22", "LPB", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 1200, "12-12-121", 11);
         break;
 
     case "test2":

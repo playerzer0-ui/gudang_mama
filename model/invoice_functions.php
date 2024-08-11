@@ -3,11 +3,11 @@
     require_once "database.php";
     require_once "../model/order_products_functions.php";
 
-    function create_invoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur, $no_moving){
+    function create_invoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur, $no_moving, $tax){
         global $db;
     
         $query = 'INSERT INTO invoices
-            VALUES (:nomor_surat_jalan, :invoice_date, :no_invoice, :no_faktur, :no_moving)';
+            VALUES (:nomor_surat_jalan, :invoice_date, :no_invoice, :no_faktur, :no_moving, :tax)';
     
         $statement = $db->prepare($query);
         $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
@@ -15,6 +15,7 @@
         $statement->bindValue(":no_invoice", $no_invoice);
         $statement->bindValue(":no_faktur", $no_faktur);
         $statement->bindValue(":no_moving", $no_moving);
+        $statement->bindValue(":tax", $tax);
     
         try {
             $statement->execute();
@@ -263,23 +264,25 @@
         return array_values($groupData);
     }
 
-    function updateInvoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur, $no_moving){
+    function updateInvoice($nomor_surat_jalan, $invoice_date, $no_invoice, $no_faktur, $no_moving, $tax){
         global $db;
     
         if($no_moving == "-"){
-            $query = "UPDATE invoices SET invoice_date = :invoice_date, no_invoice = :no_invoice, no_faktur = :no_faktur WHERE nomor_surat_jalan = :nomor_surat_jalan";
+            $query = "UPDATE invoices SET invoice_date = :invoice_date, no_invoice = :no_invoice, no_faktur = :no_faktur, tax = :tax WHERE nomor_surat_jalan = :nomor_surat_jalan";
             $statement = $db->prepare($query);
             $statement->bindValue(":invoice_date", $invoice_date);
             $statement->bindValue(":no_invoice", $no_invoice);
             $statement->bindValue(":no_faktur", $no_faktur);
+            $statement->bindValue(":tax", $tax);
             $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
         }
         else{
-            $query = "UPDATE invoices SET invoice_date = :invoice_date, no_invoice = :no_invoice, no_faktur = :no_faktur WHERE no_moving = :no_moving";
+            $query = "UPDATE invoices SET invoice_date = :invoice_date, no_invoice = :no_invoice, no_faktur = :no_faktur, tax = :tax WHERE no_moving = :no_moving";
             $statement = $db->prepare($query);
             $statement->bindValue(":invoice_date", $invoice_date);
             $statement->bindValue(":no_invoice", $no_invoice);
             $statement->bindValue(":no_faktur", $no_faktur);
+            $statement->bindValue(":tax", $tax);
             $statement->bindValue(":no_moving", $no_moving);
         }
     

@@ -120,7 +120,7 @@ function headerMoving($pdf, $storageCodeSender, $storageCodeReceiver, $no_moving
     $pdf->Cell(40, 10, $no_invoice, 0, 1);
 }
 
-function footerInvoice($pdf, $no_faktur, $total_amount, $taxPPN, $pay_amount){
+function footerInvoice($pdf, $no_faktur, $total_amount, $tax, $taxPPN, $pay_amount){
     $pdf->Ln(1);
     $pdf->Cell(30, 10, 'NO. Faktur', 0, 0);
     $pdf->Cell(70, 10, ': ' . $no_faktur, 0, 0);
@@ -128,7 +128,7 @@ function footerInvoice($pdf, $no_faktur, $total_amount, $taxPPN, $pay_amount){
     $pdf->Cell(30, 10, ': ' . $total_amount, 0, 1);
 
     $pdf->Cell(100, 10, '', 0, 0);
-    $pdf->Cell(30, 10, 'PPN 11%', 0, 0);
+    $pdf->Cell(30, 10, 'PPN (%): ' . $tax, 0, 0);
     $pdf->Cell(30, 10, ': ' . $taxPPN, 0, 1);
 
     $pdf->Cell(100, 10, '', 0, 0);
@@ -164,7 +164,7 @@ function displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $pric
     return $total_amount;
 }
 
-function footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $taxPPN, $pay_amount){
+function footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $tax, $taxPPN, $pay_amount){
     // Footer
     $pdf->Ln(1);
     // Left side (Payment details)
@@ -189,7 +189,7 @@ function footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $tax
 
     // Right side (Total, PPN, and Nilai Yg Harus Dibayar)
     $pdf->SetFont('Arial', 'B', 6);
-    $pdf->Cell(30, 7, 'PPN 11%', 0, 0);
+    $pdf->Cell(30, 7, 'PPN (%): ' . $tax, 0, 0);
     $pdf->SetFont('Arial', '', 6);
     $pdf->Cell(5, 7, ':', 0, 0);
     $pdf->Cell(40, 7, $taxPPN, 0, 1);
@@ -202,7 +202,7 @@ function footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $tax
     $pdf->Cell(40, 7, $pay_amount, 0, 1);
 }
 
-function create_invoice_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date,  $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur){
+function create_invoice_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date,  $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax){
     // Create instance of FPDF
     $total_amount = 0;
     $pdf = new FPDF('L', 'mm', 'A5');
@@ -220,18 +220,18 @@ function create_invoice_in_pdf($storageCode, $storageName, $vendorName, $no_sj, 
     // Add product table
     $total_amount = displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $total_amount);
 
-    $taxPPN = $total_amount * 0.11;
+    $taxPPN = $total_amount * ($tax / 100);
     $pay_amount = $total_amount + $taxPPN;
 
     // Footer
-    footerInvoice($pdf, $no_faktur, $total_amount, $taxPPN, $pay_amount);
+    footerInvoice($pdf, $no_faktur, $total_amount, $tax, $taxPPN, $pay_amount);
 
     // Output the PDF
     header('Content-Type: application/pdf');
     $pdf->Output('I', 'invoice.pdf');
 }
 
-function create_invoice_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date,  $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur){
+function create_invoice_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date,  $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax){
     // Create instance of FPDF
     $total_amount = 0;
     $pdf = new FPDF('L', 'mm', 'A5');
@@ -249,18 +249,18 @@ function create_invoice_out_pdf($storageCode, $storageName, $customerName, $no_s
     // Add product table
     $total_amount = displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $total_amount);
 
-    $taxPPN = $total_amount * 0.11;
+    $taxPPN = $total_amount * ($tax / 100);
     $pay_amount = $total_amount + $taxPPN;
 
     // Footer
-    footerInvoice($pdf, $no_faktur, $total_amount, $taxPPN, $pay_amount);
+    footerInvoice($pdf, $no_faktur, $total_amount, $tax, $taxPPN, $pay_amount);
 
     // Output the PDF
     header('Content-Type: application/pdf');
     $pdf->Output('I', 'invoice.pdf');
 }
 
-function create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date,  $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur){
+function create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date,  $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax){
     // Create instance of FPDF
     $total_amount = 0;
     $pdf = new FPDF('L', 'mm', 'A5');
@@ -279,18 +279,18 @@ function create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no
     // Add product table
     $total_amount = displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $total_amount);
 
-    $taxPPN = $total_amount * 0.11;
+    $taxPPN = $total_amount * ($tax / 100);
     $pay_amount = $total_amount + $taxPPN;
 
     // Footer
-    footerInvoice($pdf, $no_faktur, $total_amount, $taxPPN, $pay_amount);
+    footerInvoice($pdf, $no_faktur, $total_amount, $tax, $taxPPN, $pay_amount);
 
     // Output the PDF
     header('Content-Type: application/pdf');
     $pdf->Output('I', 'invoice.pdf');
 }
 
-function create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date) {
+function create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax) {
     // Create instance of FPDF
     $total_amount = 0;
     $pdf = new FPDF('L', 'mm', 'A5');
@@ -308,18 +308,18 @@ function create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, 
     // Add product table
     $total_amount = displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $total_amount);
 
-    $taxPPN = $total_amount * 0.11;
+    $taxPPN = $total_amount * ($tax / 100);
     $pay_amount = $total_amount + $taxPPN;
 
     // Footer
-    footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $taxPPN, $pay_amount);
+    footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $tax, $taxPPN, $pay_amount);
 
     // Output the PDF
     header('Content-Type: application/pdf');
     $pdf->Output('I', 'invoice.pdf');
 }
 
-function create_payment_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date,  $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date) {
+function create_payment_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date,  $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax) {
     // Create instance of FPDF
     $total_amount = 0;
     $pdf = new FPDF('L', 'mm', 'A5');
@@ -337,18 +337,18 @@ function create_payment_moving_pdf($storageCodeSender, $storageCodeReceiver, $no
     // Add product table
     $total_amount = displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $total_amount);
 
-    $taxPPN = $total_amount * 0.11;
+    $taxPPN = $total_amount * ($tax / 100);
     $pay_amount = $total_amount + $taxPPN;
 
     // Footer
-    footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $taxPPN, $pay_amount);
+    footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $tax, $taxPPN, $pay_amount);
 
     // Output the PDF
     header('Content-Type: application/pdf');
     $pdf->Output('I', 'invoice.pdf');
 }
 
-function create_payment_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date,  $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date) {
+function create_payment_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date,  $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax) {
     // Create instance of FPDF
     $total_amount = 0;
     $pdf = new FPDF('L', 'mm', 'A5');
@@ -367,11 +367,11 @@ function create_payment_out_pdf($storageCode, $storageName, $customerName, $no_s
     // Add product table
     $total_amount = displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $total_amount);
 
-    $taxPPN = $total_amount * 0.11;
+    $taxPPN = $total_amount * ($tax / 100);
     $pay_amount = $total_amount + $taxPPN;
 
     // Footer
-    footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $taxPPN, $pay_amount);
+    footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $tax, $taxPPN, $pay_amount);
 
     // Output the PDF
     header('Content-Type: application/pdf');
