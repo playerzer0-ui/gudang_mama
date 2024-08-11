@@ -46,31 +46,65 @@
 
     function generateNoInvoice($storageCode, $month, $year){
         global $db;
-        
-        $query = 'SELECT count(*) AS totalIN FROM invoices WHERE month(invoice_date) = :mon AND year(invoice_date) = :yea AND no_invoice LIKE :storageCode';
-
+    
+        // Retrieve all existing invoice numbers for the specified month, year, and storage code
+        $query = 'SELECT no_invoice FROM invoices 
+                  WHERE month(invoice_date) = :mon AND year(invoice_date) = :yea AND no_invoice LIKE :storageCode
+                  ORDER BY no_invoice';
+    
         $statement = $db->prepare($query);
         $statement->bindValue(":mon", $month);
         $statement->bindValue(":yea", $year);
-        $statement->bindValue(":storageCode", "%" . $storageCode . "%");
-
+        $statement->bindValue(":storageCode", "%/INV/" . $storageCode . "/" . $month . "/" . $year);
+    
         try {
             $statement->execute();
-        }
-        catch(PDOException $ex){
+        } catch (PDOException $ex) {
             $ex->getMessage();
         }
     
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        $no = $result["totalIN"] + 1;
-    
+        $existingInvoices = $statement->fetchAll(PDO::FETCH_COLUMN);
         $statement->closeCursor();
-
-        if($month < 10){
+    
+        // Initialize the number
+        $no = 1;
+        $invoiceNumbers = array_map(function($invoice) {
+            // Extract the numeric part of the invoice number
+            return (int) explode('/', $invoice)[0];
+        }, $existingInvoices);
+    
+        // Find the smallest available number
+        while (in_array($no, $invoiceNumbers)) {
+            $no++;
+        }
+    
+        if ($month < 10) {
             $month = "0" . $month;
         }
     
+        // Return the new invoice number
         return $no . "/INV/" . $storageCode . "/" . $month . "/" . $year;
+    }    
+
+    function invoiceExists($invoiceNo) {
+        global $db;
+    
+        $query = 'SELECT COUNT(*) FROM invoices WHERE no_invoice = :invoiceNo';
+    
+        $statement = $db->prepare($query);
+        $statement->bindValue(':invoiceNo', $invoiceNo);
+    
+        try {
+            $statement->execute();
+        } catch (PDOException $ex) {
+            $ex->getMessage();
+        }
+    
+        $exists = $statement->fetchColumn() > 0;
+    
+        $statement->closeCursor();
+    
+        return $exists;
     }
 
     function getInvoiceByNoSJ($nomor_surat_jalan, $no_moving){

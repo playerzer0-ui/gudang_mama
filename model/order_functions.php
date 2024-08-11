@@ -71,18 +71,18 @@ function getOrderByNoSJ($no_sj){
 function generateNoLPB($storageCode, $month, $year, $status){
     global $db;
 
-    if($status == 1){
-        $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND no_LPB LIKE :storageCode';
-    }
-    else{
-        $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND nomor_surat_jalan LIKE :storageCode';
-    }
+    $prefix = ($status == 1) ? "LPB" : "SJK";
+    
+    // Get the count of existing numbers
+    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND ' . 
+             ($status == 1 ? 'no_LPB' : 'nomor_surat_jalan') . ' LIKE :storageCode';
+    
     $statement = $db->prepare($query);
     $statement->bindValue(":mon", $month);
     $statement->bindValue(":yea", $year);
     $statement->bindValue(":stat", $status);
     $statement->bindValue(":storageCode", "%" . $storageCode . "%");
-
+    
     try {
         $statement->execute();
     }
@@ -92,30 +92,45 @@ function generateNoLPB($storageCode, $month, $year, $status){
 
     $result = $statement->fetch(PDO::FETCH_ASSOC);
     $no = $result["totalIN"] + 1;
-
     $statement->closeCursor();
+
     if($month < 10){
         $month = "0" . $month;
     }
 
-    if($status == 1){
-        return $no . "/LPB/" . $storageCode . "/" . $month . "/" . $year;
-    }
-    else{
-        return $no . "/SJK/" . $storageCode . "/" . $month . "/" . $year;
-    }
+    // Check for existing number and increment if necessary
+    do {
+        $generatedNo = $no . "/" . $prefix . "/" . $storageCode . "/" . $month . "/" . $year;
+        $checkQuery = 'SELECT COUNT(*) AS existingCount FROM orders WHERE ' . 
+                      ($status == 1 ? 'no_LPB' : 'nomor_surat_jalan') . ' = :generatedNo';
+        
+        $checkStmt = $db->prepare($checkQuery);
+        $checkStmt->bindValue(":generatedNo", $generatedNo);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        $checkStmt->closeCursor();
+        
+        if($checkResult["existingCount"] > 0){
+            $no++;
+        } else {
+            break;
+        }
+    } while(true);
+
+    return $generatedNo;
 }
 
 function generateTaxSJ($storageCode, $month, $year){
     global $db;
 
-    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND nomor_surat_jalan LIKE "%SJT%" AND nomor_surat_jalan LIKE :storageCode';
+    // Get the count of existing numbers
+    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = 3 AND nomor_surat_jalan LIKE "%SJT%" AND nomor_surat_jalan LIKE :storageCode';
+    
     $statement = $db->prepare($query);
     $statement->bindValue(":mon", $month);
     $statement->bindValue(":yea", $year);
-    $statement->bindValue(":stat", 3);
     $statement->bindValue(":storageCode", "%" . $storageCode . "%");
-
+    
     try {
         $statement->execute();
     }
@@ -125,13 +140,31 @@ function generateTaxSJ($storageCode, $month, $year){
 
     $result = $statement->fetch(PDO::FETCH_ASSOC);
     $no = $result["totalIN"] + 1;
-
     $statement->closeCursor();
+
     if($month < 10){
         $month = "0" . $month;
     }
 
-    return $no . "/SJT/" . $storageCode . "/" . $month . "/" . $year;
+    // Check for existing number and increment if necessary
+    do {
+        $generatedNo = $no . "/SJT/" . $storageCode . "/" . $month . "/" . $year;
+        $checkQuery = 'SELECT COUNT(*) AS existingCount FROM orders WHERE nomor_surat_jalan = :generatedNo';
+        
+        $checkStmt = $db->prepare($checkQuery);
+        $checkStmt->bindValue(":generatedNo", $generatedNo);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        $checkStmt->closeCursor();
+        
+        if($checkResult["existingCount"] > 0){
+            $no++;
+        } else {
+            break;
+        }
+    } while(true);
+
+    return $generatedNo;
 }
 
 function updateOrderWithDependencies($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $old_surat_jalan) {

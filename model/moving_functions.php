@@ -4,30 +4,49 @@
 
     function generate_SJP($storageCode, $month, $year){
         global $db;
-
+    
+        // Get the count of existing numbers
         $query = 'SELECT count(*) AS totalIN FROM movings WHERE month(moving_date) = :mon AND year(moving_date) = :yea AND storageCodeSender = :storageCode';
         $statement = $db->prepare($query);
         $statement->bindValue(":mon", $month);
         $statement->bindValue(":yea", $year);
         $statement->bindValue(":storageCode", $storageCode);
-
+    
         try {
             $statement->execute();
         }
         catch(PDOException $ex){
             $ex->getMessage();
         }
-
+    
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         $no = $result["totalIN"] + 1;
-
         $statement->closeCursor();
+    
         if($month < 10){
             $month = "0" . $month;
         }
-
-        return $no . "/SJP/" . $storageCode . "/" . $month . "/" . $year;
-    }
+    
+        // Check for existing number and increment if necessary
+        do {
+            $generatedNo = $no . "/SJP/" . $storageCode . "/" . $month . "/" . $year;
+            $checkQuery = 'SELECT COUNT(*) AS existingCount FROM movings WHERE no_SJP = :generatedNo';
+            
+            $checkStmt = $db->prepare($checkQuery);
+            $checkStmt->bindValue(":generatedNo", $generatedNo);
+            $checkStmt->execute();
+            $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
+            $checkStmt->closeCursor();
+            
+            if($checkResult["existingCount"] > 0){
+                $no++;
+            } else {
+                break;
+            }
+        } while(true);
+    
+        return $generatedNo;
+    }    
 
     function getMovingByCode($no_moving){
         global $db;
