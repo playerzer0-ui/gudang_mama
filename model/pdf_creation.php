@@ -362,7 +362,7 @@ function create_payment_out_pdf($storageCode, $storageName, $customerName, $no_s
     $pdf->Cell(130, 10, 'PAYMENT OUT', 0, 1, 'C');
 
     // PT and Vendor details
-    headerIn($pdf, $storageName, "", $customerName, $no_sj, "", $customerAddress, "", $npwp, $invoice_date, "", "", "out");
+    headerIn($pdf, $storageName, "", $customerName, $no_sj, "", $customerAddress, "", $npwp, $invoice_date, "", $no_invoice, "out");
 
     // Add product table
     $total_amount = displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $total_amount);
