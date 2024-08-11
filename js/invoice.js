@@ -356,8 +356,9 @@ function calculateTotalNominal() {
 function calculatePPN(){
     let nominal = document.getElementById('totalNominal').value;
     let taxPPN = document.getElementById('taxPPN');
+    let tax = document.getElementById('tax').value;
 
-    taxPPN.value = nominal * 0.11;
+    taxPPN.value = nominal * tax;
 }
 
 function calculatePayAmount(){

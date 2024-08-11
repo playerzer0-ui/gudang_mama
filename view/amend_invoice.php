@@ -146,7 +146,7 @@
             <tr>
                 <td></td>
                 <td></td>
-                <td>PPN (11%): </td>
+                <td>PPN(%): <input type="number" name="tax" id="tax" value="11" oninput="calculateTotalNominal()"></td>
                 <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" value="<?php echo ($totalNominal * 0.11); ?>" disabled></td>
             </tr>
             <tr>
