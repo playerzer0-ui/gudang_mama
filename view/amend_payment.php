@@ -147,14 +147,14 @@
             <td>
                 <input type="number" inputmode="numeric" name="payment_amount" id="payment_amount" oninput="calculateHutang()" value="<?php echo $payment["payment_amount"]; ?>" required>
             </td>
-            <td>PPN(%): <input type="number" name="tax" id="tax" value="11" oninput="calculateTotalNominal()"></td>
-            <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" value="<?php echo ($totalNominal * 0.11); ?>" disabled></td>
+            <td>PPN(%): <input type="number" name="tax" id="tax" value="<?php echo $invoice["tax"]; ?>" oninput="calculateTotalNominal()" readonly></td>
+            <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" value="<?php echo ($totalNominal * $invoice["tax"]); ?>" disabled></td>
         </tr>
         <tr>
             <td>sisa hutang: </td>
             <td><span id="remaining">0</span></td>
             <td>nilai dibayar: </td>
-            <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" value="<?php echo (($totalNominal * 0.11) + $totalNominal); ?>" disabled></td>
+            <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" value="<?php echo (($totalNominal * $invoice["tax"]) + $totalNominal); ?>" disabled></td>
         </tr>
     </table>
     <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>

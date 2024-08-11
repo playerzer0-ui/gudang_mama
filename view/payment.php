@@ -128,7 +128,7 @@
             <td>
                 <input type="number" inputmode="numeric" name="payment_amount" id="payment_amount" oninput="calculateHutang()" required>
             </td>
-            <td>PPN(%): <input type="number" name="tax" id="tax" value="11" oninput="calculateTotalNominal()"></td>
+            <td>PPN(%): <input type="number" name="tax" id="tax" value="11" oninput="calculateTotalNominal()" readonly></td>
             <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" disabled></td>
         </tr>
         <tr>
