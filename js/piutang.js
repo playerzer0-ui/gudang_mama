@@ -45,6 +45,8 @@ function populateTable(data) {
                 <th>price/UOM</th>
                 <th>nominal</th>
                 <th>total nominal</th>
+                <th>tax (%)</th>
+                <th>nominal after tax</th>
                 <th>Tgl Pembayaran</th>
                 <th>Nilai Bayar</th>
                 <th>Sisa Piutang</th>
@@ -67,8 +69,10 @@ function populateTable(data) {
         let firstRow = true;
 
         const invoiceTotalNominal = invoice.products.reduce((sum, product) => sum + parseFloat(product.nominal), 0);
+        const tax = invoice.tax; // Assuming tax is a percentage value provided in the invoice data
+        const nominalAfterTax = invoiceTotalNominal + (invoiceTotalNominal * (tax / 100));
         const invoiceTotalPayment = invoice.payments.reduce((sum, payment) => sum + parseFloat(payment.payment_amount), 0);
-        const invoiceRemaining = invoiceTotalNominal - invoiceTotalPayment;
+        const invoiceRemaining = nominalAfterTax - invoiceTotalPayment;
 
         for (let i = 0; i < rowCount; i++) {
             const tr = document.createElement('tr');
@@ -88,6 +92,8 @@ function populateTable(data) {
                 tr.innerHTML += `<td>${formatNumber(product.nominal)}</td>`;
                 if (firstRow) {
                     tr.innerHTML += `<td rowspan="${rowCount}">${formatNumber(invoiceTotalNominal)}</td>`;
+                    tr.innerHTML += `<td rowspan="${rowCount}">${tax}</td>`;
+                    tr.innerHTML += `<td rowspan="${rowCount}">${formatNumber(nominalAfterTax)}</td>`;
                 }
             } else {
                 tr.innerHTML += `<td colspan="4"></td>`;
@@ -122,6 +128,8 @@ function populateTable(data) {
         <td></td>
         <td></td>
         <td>${formatNumber(totalNominal)}</td>
+        <td></td>
+        <td>${formatNumber(totalNominal + (totalNominal * (tax / 100)))}</td>
         <td></td>
         <td>${formatNumber(totalPayment)}</td>
         <td>${formatNumber(totalRemaining)}</td>

@@ -141,7 +141,8 @@
             $query = 'SELECT 
                 o.nomor_surat_jalan,
                 i.invoice_date, 
-                i.no_invoice, 
+                i.no_invoice,
+                i.tax,
                 v.vendorName, 
                 COALESCE(p.payment_date, "-") AS payment_date, 
                 COALESCE(p.payment_amount, 0) AS payment_amount
@@ -164,6 +165,7 @@
                 o.nomor_surat_jalan,
                 i.invoice_date, 
                 i.no_invoice, 
+                i.tax,
                 c.customerName, 
                 COALESCE(p.payment_date, "-") AS payment_date, 
                 COALESCE(p.payment_amount, 0) AS payment_amount
@@ -209,6 +211,7 @@
                     $groupData[$hutangKey] = [
                         "invoice_date" => $details["invoice_date"],
                         "no_invoice" => $details["no_invoice"],
+                        "tax" => $details["tax"],
                         "vendorName" => $details["vendorName"],
                         "payments" => [],
                         "products" => []
@@ -238,6 +241,7 @@
                     $groupData[$hutangKey] = [
                         "invoice_date" => $details["invoice_date"],
                         "no_invoice" => $details["no_invoice"],
+                        "tax" => $details["tax"],
                         "customerName" => $details["customerName"],
                         "payments" => [],
                         "products" => []

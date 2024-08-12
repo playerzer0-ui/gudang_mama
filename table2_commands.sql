@@ -57,7 +57,10 @@ create table invoices(
     invoice_date DATE,
     no_invoice varchar(80),
     no_faktur varchar(80),
-    foreign key(nomor_surat_jalan) references orders(nomor_surat_jalan)
+    no_moving varchar(80),
+    tax double,
+    foreign key(nomor_surat_jalan) references orders(nomor_surat_jalan),
+    foreign key(no_moving) references orders(no_moving)
 );
 
 create table payments(
