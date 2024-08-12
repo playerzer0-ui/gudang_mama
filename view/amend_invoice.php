@@ -147,16 +147,21 @@
                 <td></td>
                 <td></td>
                 <td>PPN(%): <input type="number" name="tax" id="tax" value="<?php echo $invoice["tax"]; ?>" oninput="calculateTotalNominal()"></td>
-                <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" value="<?php echo ($totalNominal * $invoice["tax"]); ?>" disabled></td>
+                <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" value="<?php echo ($totalNominal * ($invoice["tax"] / 100)); ?>" disabled></td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td>Nilai Dibayar: </td>
-                <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" value="<?php echo (($totalNominal * $invoice["tax"]) + $totalNominal); ?>" disabled></td>
+                <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" value="<?php echo (($totalNominal * ($invoice["tax"] / 100)) + $totalNominal); ?>" disabled></td>
             </tr>
         </table>
         <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>
+        <?php if($pageState == "amend_invoice_moving"){ ?>
+            <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_moving=" . $result["no_moving"]; ?>" target="_blank">create PDF</a>
+        <?php } else { ?>
+            <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_sj=" . $result["nomor_surat_jalan"]; ?>" target="_blank">create PDF</a>
+        <?php } ?>
     </form>
 </main>
 

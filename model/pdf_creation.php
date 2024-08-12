@@ -290,7 +290,7 @@ function create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no
     $pdf->Output('I', 'invoice.pdf');
 }
 
-function create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax) {
+function create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax) {
     // Create instance of FPDF
     $total_amount = 0;
     $pdf = new FPDF('L', 'mm', 'A5');

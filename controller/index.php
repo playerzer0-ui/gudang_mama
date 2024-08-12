@@ -823,6 +823,9 @@ switch($action){
             else{
                 create_invoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving, $tax);
             }
+
+            $storageNameSender = getstorageByCode($storageCodeSender)["storageName"];
+            $storageNameReceiver = getstorageByCode($storageCodeReceiver)["storageName"];
         }
         else{
             $storageName = getstorageByCode($storageCode)["storageName"];
@@ -840,9 +843,9 @@ switch($action){
                 }
             }
         }
-        $date = DateTime::createFromFormat('Y-m-d', $invoice_date);
-        $month = $date->format('m');
-        $year = $date->format('Y');
+        // $date = DateTime::createFromFormat('Y-m-d', $invoice_date);
+        // $month = $date->format('m');
+        // $year = $date->format('Y');
 
         if($pageState != "moving"){
             for($i = 0; $i < count($productCodes); $i++){
@@ -861,10 +864,10 @@ switch($action){
                 create_invoice_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax);
             }
             else if($pageState == "out" || $pageState == "out_tax"){
-                create_invoice_out_pdf($storageCode, $storageName, $customerCode, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax);
+                create_invoice_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax);
             }
             else{
-                create_invoice_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax);
+                create_invoice_moving_pdf($storageNameSender, $storageNameReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax);
             }
             exit;
         }
@@ -898,6 +901,10 @@ switch($action){
         if($pageState == "moving"){
             $storageCodeSender = filter_input(INPUT_POST, "storageCodeSender", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $storageCodeReceiver = filter_input(INPUT_POST, "storageCodeReceiver", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            $storageNameSender = getstorageByCode($storageCodeSender)["storageName"];
+            $storageNameReceiver = getstorageByCode($storageCodeReceiver)["storageName"];
+
             $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $moving_date = filter_input(INPUT_POST, "moving_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             create_payment("-", $payment_date, $payment_amount, $no_moving);
@@ -916,13 +923,13 @@ switch($action){
 
         if (isset($_POST['generate_pdf'])){
             if($pageState == "in"){
-                create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax);
+                create_payment_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date, $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax);
             }
             else if($pageState == "out" || $pageState == "out_tax"){
                 create_payment_out_pdf($storageCode, $storageName, $customerName, $no_sj, $customerAddress, $npwp, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax);
             }
             else{
-                create_payment_moving_pdf($storageCodeSender, $storageCodeReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax);
+                create_payment_moving_pdf($storageNameSender, $storageNameReceiver, $no_moving, $moving_date, $invoice_date, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment_amount, $payment_date, $tax);
             }
             exit;
         }
@@ -1020,7 +1027,7 @@ switch($action){
         //create_invoice_moving_pdf("APA", "BB", "FF", "2022-12-12", "2022-12-12", "op", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
         //create_invoice_in_pdf("APA", "BBB", "ASAS", "TRUK", "123", "222-22-22", "1/LPB?APA?00/231", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
         //create_invoice_out_pdf("RQQ", "APA", "BBB", "ASAS", "ADDRESS", "NPWP", "222-22-22", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111, 11);
-        create_payment_in_pdf("RQQ", "rorqual", "vendor", "sj1", "truk", "po1", "2202-22-22", "LPB", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 1200, "12-12-121", 11);
+        create_payment_in_pdf("RQQ", "rorqual", "vendor", "sj1", "truk", "po1", "2202-22-22", "LPB", "saINV", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 1200, "12-12-121", 11);
         break;
 
     case "test2":
@@ -1066,6 +1073,108 @@ switch($action){
     case "amendDelete":
         $no_id = filter_input(INPUT_GET, "no_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        break;
+
+    case "create_pdf":
+        $pageState = filter_input(INPUT_GET, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $vendorName = "";
+        $customerName = "";
+        $productCodes = [];
+        $productNames =[];
+        $qtys = [];
+        $uoms = [];
+        $price_per_uom = [];
+        $flag = false;
+
+        if(strpos($pageState, "invoice")){
+            $flag = true;
+        }
+
+        if($flag){
+            if($pageState == "amend_invoice_moving"){
+                $no_moving = filter_input(INPUT_GET, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $invoice = getInvoiceByNoSJ(null, $no_moving);
+                $order = getMovingByCode($no_moving);
+    
+                $storageNameSender = getstorageByCode($order["storageCodeSender"])["storageName"];
+                $storageNameReceiver = getstorageByCode($order["storageCodeReceiver"])["storageName"];
+    
+                $products = getOrderProductsFromNoID($no_moving, "moving");
+            }
+            else{
+                $no_sj = filter_input(INPUT_GET, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $invoice = getInvoiceByNoSJ($no_sj, null);
+                $order = getOrderByNoSJ($no_sj);
+                $storageName = getstorageByCode($order["storageCode"])["storageName"];
+                if($pageState == "amend_invoice_in"){
+                    $vendorName = getVendorByCode($order["vendorCode"])["vendorName"];
+                }
+                else{
+                    $customerName = getCustomerByCode($order["customerCode"])["customerName"];
+                }
+                $products = getOrderProductsFromNoID($no_sj, "in");
+            }
+        }
+        else{
+            if($pageState == "amend_payment_moving"){
+                $no_moving = filter_input(INPUT_GET, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $invoice = getInvoiceByNoSJ(null, $no_moving);
+                $order = getMovingByCode($no_moving);
+                $payment = getPaymentByNoSJ(null, $no_moving);
+    
+                $storageNameSender = getstorageByCode($order["storageCodeSender"])["storageName"];
+                $storageNameReceiver = getstorageByCode($order["storageCodeReceiver"])["storageName"];
+    
+                $products = getOrderProductsFromNoID($no_moving, "moving");
+            }
+            else{
+                $no_sj = filter_input(INPUT_GET, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $invoice = getInvoiceByNoSJ($no_sj, null);
+                $order = getOrderByNoSJ($no_sj);
+                $payment = getPaymentByNoSJ($no_sj, null);
+
+                $storageName = getstorageByCode($order["storageCode"])["storageName"];
+                if($pageState == "amend_invoice_in"){
+                    $vendorName = getVendorByCode($order["vendorCode"])["vendorName"];
+                }
+                else{
+                    $customerName = getCustomerByCode($order["customerCode"])["customerName"];
+                }
+                $products = getOrderProductsFromNoID($no_sj, "in");
+            }
+        }
+
+        foreach($products as $key){
+            array_push($productCodes, $key["productCode"]);
+            array_push($productNames, $key["productName"]);
+            array_push($qtys, $key["qty"]);
+            array_push($uoms, $key["uom"]);
+            array_push($price_per_uom, $key["price_per_UOM"]);
+        }
+
+        if($flag){
+            if($pageState == "amend_invoice_in"){
+                create_invoice_in_pdf($order["storageCode"], $storageName, $vendorName, $no_sj, $order["no_truk"], $order["purchase_order"], $invoice["invoice_date"], $order["no_LPB"], $invoice["no_invoice"], $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $invoice["no_faktur"], $invoice["tax"]);
+            }
+            else if($pageState == "amend_invoice_out" || $pageState == "amend_invoice_out_tax"){
+                create_invoice_out_pdf($order["storageCode"], $storageName, $customerName, $no_sj, $order["customerAddress"], $order["customerNPWP"], $invoice["invoice_date"], $invoice["no_invoice"], $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $invoice["no_faktur"], $invoice["tax"]);
+            }
+            else{
+                create_invoice_moving_pdf($storageNameSender, $storageNameReceiver, $no_moving, $order["moving_date"], $invoice["invoice_date"], $invoice["no_invoice"], $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $invoice["no_faktur"], $invoice["tax"]);
+            }
+        }
+        else{
+            if($pageState == "amend_payment_in"){
+                create_payment_in_pdf($order["storageCode"], $storageName, $vendorName, $no_sj, $order["no_truk"], $order["purchase_order"], $invoice["invoice_date"], $order["no_LPB"], $invoice["no_invoice"], $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment["payment_amount"], $payment["payment_date"], $invoice["tax"]);
+            }
+            else if($pageState == "amend_payment_out" || $pageState == "amend_payment_out_tax"){
+                create_payment_out_pdf($order["storageCode"], $storageName, $customerName, $no_sj, $order["customerAddress"], $order["customerNPWP"], $invoice["invoice_date"], $invoice["no_invoice"], $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment["payment_amount"], $payment["payment_date"], $invoice["tax"]);
+            }
+            else{
+                create_payment_moving_pdf($storageNameSender, $storageNameReceiver, $no_moving, $order["moving_date"], $invoice["invoice_date"], $invoice["no_invoice"], $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $payment["payment_amount"], $payment["payment_date"], $invoice["tax"]);
+            }
+        }
+
         break;
 }
 

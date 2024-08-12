@@ -98,7 +98,7 @@ function deleteOrderProducts($no_id, $status){
 }
 
 /**
- * delete order products on order_products
+ * get order products on order_products
  * @param string $no_id is the code for either in(order), repack or moving
  * @param string $status can be 3 things, in(order), repack or moving
  */
