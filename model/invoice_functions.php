@@ -108,6 +108,48 @@
         return $exists;
     }
 
+    function invoiceSJExists($no_sj) {
+        global $db;
+    
+        $query = 'SELECT COUNT(*) FROM invoices WHERE nomor_surat_jalan = :no_sj';
+    
+        $statement = $db->prepare($query);
+        $statement->bindValue(':no_sj', $no_sj);
+    
+        try {
+            $statement->execute();
+        } catch (PDOException $ex) {
+            $ex->getMessage();
+        }
+    
+        $exists = $statement->fetchColumn() > 0;
+    
+        $statement->closeCursor();
+    
+        return $exists;
+    }
+
+    function invoiceMovingExists($invoiceNo) {
+        global $db;
+    
+        $query = 'SELECT COUNT(*) FROM invoices WHERE no_moving = :invoiceNo';
+    
+        $statement = $db->prepare($query);
+        $statement->bindValue(':invoiceNo', $invoiceNo);
+    
+        try {
+            $statement->execute();
+        } catch (PDOException $ex) {
+            $ex->getMessage();
+        }
+    
+        $exists = $statement->fetchColumn() > 0;
+    
+        $statement->closeCursor();
+    
+        return $exists;
+    }
+
     function getInvoiceByNoSJ($nomor_surat_jalan, $no_moving){
         global $db;
 

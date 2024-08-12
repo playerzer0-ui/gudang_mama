@@ -816,16 +816,28 @@ switch($action){
             $storageCodeReceiver = filter_input(INPUT_POST, "storageCodeReceiver", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $moving_date = filter_input(INPUT_POST, "moving_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            create_invoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving, $tax);
+            if(invoiceMovingExists($no_moving)){
+                header("Location:../controller/index.php?action=show_invoice&state=" . $pageState . "&msg=there is already an invoice with that no_moving");
+                exit;
+            }
+            else{
+                create_invoice("-", $invoice_date, $no_invoice, $no_faktur, $no_moving, $tax);
+            }
         }
         else{
             $storageName = getstorageByCode($storageCode)["storageName"];
-            create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
-            if($pageState == "in"){
-                $vendorName = getVendorByCode($vendorCode)["vendorName"];
+            if(invoiceSJExists($no_sj)){
+                header("Location:../controller/index.php?action=show_invoice&state=" . $pageState . "&msg=there is already an invoice with that no_sj");
+                exit;
             }
             else{
-                $customerName = getCustomerByCode($customerCode)["customerName"];
+                create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
+                if($pageState == "in"){
+                    $vendorName = getVendorByCode($vendorCode)["vendorName"];
+                }
+                else{
+                    $customerName = getCustomerByCode($customerCode)["customerName"];
+                }
             }
         }
         $date = DateTime::createFromFormat('Y-m-d', $invoice_date);
