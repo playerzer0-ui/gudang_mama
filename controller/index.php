@@ -618,57 +618,38 @@ switch($action){
         try {
             switch ($data) {
                 case "slip":
-                    if (!deleteOrderProducts($code, "order")) {
-                        throw new Exception("Failed to delete order products");
-                    }
-                    if (!deletePayment($code)) {
-                        throw new Exception("Failed to delete payment");
-                    }
-                    if (!deleteInvoice($code)) {
-                        throw new Exception("Failed to delete invoice");
-                    }
-                    if (!deleteOrder($code)) {
-                        throw new Exception("Failed to delete order");
-                    }
+                    deleteOrderProducts($code, "order");
+                    deleteMultiPayment($code);
+                    deleteInvoice($code);
+                    deleteOrder($code);
                     break;
     
                 case "invoice":
-                    if (!deletePayment($code)) {
-                        throw new Exception("Failed to delete payment");
-                    }
+                    deleteMultiPayment($code);
                     $result = getOrderProductsFromNoID($code, "in");
                     foreach ($result as $key) {
-                        if (!updatePriceForProducts($code, $key["productCode"], 0)) {
-                            throw new Exception("Failed to update price for product " . $key["productCode"]);
-                        }
+                        updatePriceForProducts($code, $key["productCode"], 0);
                     }
-                    if (!deleteInvoice($code)) {
-                        throw new Exception("Failed to delete invoice");
-                    }
+                    deleteInvoice($code);
                     break;
     
                 case "payment":
-                    if (!deletePayment($code)) {
-                        throw new Exception("Failed to delete payment");
-                    }
+                    deleteMultiPayment($code);
                     break;
     
                 case "repack":
-                    if (!deleteRepack($code)) {
-                        throw new Exception("Failed to delete repack");
-                    }
+                    deleteRepack($code);
                     break;
     
                 case "moving":
-                    if (!deleteMoving($code)) {
-                        throw new Exception("Failed to delete moving");
-                    }
+                    deleteMoving($code);
                     break;
             }
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
             header("Location:../controller/index.php?action=show_amends&state=" . $data . "&msg=" . $e->getMessage());
+            exit;
         }
         header("Location:../controller/index.php?action=show_amends&state=" . $data . "&msg=record deleted");
         break;
@@ -769,25 +750,38 @@ switch($action){
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if($pageState == "in"){
-            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, 1);
-            for($i = 0; $i < count($productCodes); $i++){
-                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "in");
+            $success = create_slip($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, 1);
+            if($success){
+                for($i = 0; $i < count($productCodes); $i++){
+                    addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "in");
+                }
+                create_NON_slip($no_truk, $vendorCode, $order_date, $purchase_order);
             }
         }
         else if($pageState == "out"){
-            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, 2);
-            for($i = 0; $i < count($productCodes); $i++){
-                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "out");
+            $success = create_slip($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, 2);
+            if($success){
+                for($i = 0; $i < count($productCodes); $i++){
+                    addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "out");
+                }
             }
         }
         else{
-            create_slip($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, 3);
-            for($i = 0; $i < count($productCodes); $i++){
-                addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "out_tax");
+            $success = create_slip($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, 3);
+            if($success){
+                for($i = 0; $i < count($productCodes); $i++){
+                    addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "out_tax");
+                }
             }
         }
 
-        header("Location:../controller/index.php?action=show_invoice&msg=NO_sj:" . $no_sj . "&state=" . $pageState);
+        if($success){
+            header("Location:../controller/index.php?action=show_invoice&msg=NO_sj:" . $no_sj . "&state=" . $pageState);
+        }
+        else{
+            header("Location:../controller/index.php?action=show_slip&msg=" . $no_sj . " is already in the database&state=" . $pageState);
+        }
+
         break;
 
     case "create_invoice":
@@ -839,6 +833,7 @@ switch($action){
                 create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
                 if($pageState == "in"){
                     $vendorName = getVendorByCode($vendorCode)["vendorName"];
+                    create_NON_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, $tax);
                 }
                 else{
                     $customerName = getCustomerByCode($customerCode)["customerName"];
@@ -915,6 +910,7 @@ switch($action){
             $storageName = getstorageByCode($storageCode)["storageName"];
             if($pageState == "in"){
                 $vendorName = getVendorByCode($vendorCode)["vendorName"];
+                create_NON_payment($no_LPB, $payment_date, $payment_amount);
             }
             else{
                 $customerName = getCustomerByCode($customerCode)["customerName"];
@@ -1182,5 +1178,21 @@ switch($action){
         break;
 }
 
+function create_NON_slip($no_truk, $vendorCode, $order_date, $purchase_order){
+    $date = DateTime::createFromFormat('Y-m-d', $order_date);
+    $month = $date->format('m');
+    $year = $date->format('Y');
+    $no_LPB = generateNoLPB("NON", (int)$month, (int)$year, 1);
+
+    create_slip($no_LPB, "NON", $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, 1);
+}
+
+function create_NON_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, $tax){
+    create_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
+}
+
+function create_NON_payment($no_LPB, $payment_date, $payment_amount){
+    create_payment($no_LPB, $payment_date, $payment_amount, "-");
+}
 
 ?>

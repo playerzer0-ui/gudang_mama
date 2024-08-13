@@ -132,7 +132,30 @@
             if ($errorCode == 23000) {
                 $errorInfo = $ex->errorInfo;
                 if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
-                    return 'foreign_key';
+                    throw new Exception($ex->getMessage());
+                }
+            }
+            return false;
+        }
+    }    
+
+    function deleteMultiPayment($nomor_surat_jalan){
+        global $db;
+    
+        $query = "DELETE FROM payments WHERE nomor_surat_jalan = :nomor_surat_jalan";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+    
+        try {
+            $statement->execute();
+            $statement->closeCursor();
+            return true;
+        } catch (PDOException $ex) {
+            $errorCode = $ex->getCode();
+            if ($errorCode == 23000) {
+                $errorInfo = $ex->errorInfo;
+                if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
+                    throw new Exception($ex->getMessage());
                 }
             }
             return false;

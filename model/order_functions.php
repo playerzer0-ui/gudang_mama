@@ -2,7 +2,7 @@
 
 require_once "database.php";
 
-function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $status){
+function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $status) {
     global $db;
 
     $query = 'INSERT INTO orders
@@ -21,13 +21,22 @@ function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendo
 
     try {
         $statement->execute();
+        $statement->closeCursor();
+        return true;  // Return true if successful
+    } catch(PDOException $ex) {
+        $errorCode = $ex->getCode();
+        // MySQL error code for duplicate entry
+        if ($errorCode == 23000) {
+            // This indicates a duplicate entry
+            return false;
+        } else {
+            // Log the error message for debugging (optional)
+            error_log($ex->getMessage());
+            return false;
+        }
     }
-    catch(PDOException $ex){
-        $ex->getMessage();
-    }
-
-    $statement->closeCursor();
 }
+
 
 function getAllOrders(){
     global $db;
@@ -253,7 +262,7 @@ function deleteOrder($no_sj){
             // Foreign key constraint error
             $errorInfo = $ex->errorInfo;
             if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
-                return 'foreign_key';
+                throw new Exception($ex->getMessage());
             }
         }
         return false;

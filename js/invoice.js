@@ -40,13 +40,7 @@ if (!pageState.includes("amend")){
 
 function handleFormSubmit(event) {
     let pageState = document.getElementById("pageState").value;
-    let no_sj;
-    if (pageState == "moving") {
-        no_sj = document.getElementById("no_moving").value;
-    } else {
-        no_sj = document.getElementById("no_sj").value;
-    }
-
+    let no_sj = document.getElementById("no_sj").value;
     event.preventDefault(); // Prevent the default form submission
 
     var form = document.getElementById('myForm');
@@ -57,45 +51,29 @@ function handleFormSubmit(event) {
         form.reportValidity();
         return;
     }
+    var formData = new FormData(form);
 
-    if (pageState.includes("amend")) {
-        // For amend_invoice_in state, submit the form normally
-        form.submit();
-    } else {
-        // For other states, generate PDF and submit form via fetch
-        var formData = new FormData(form);
+    // Add a flag to indicate PDF generation
+    formData.append('generate_pdf', '1');
 
-        // Add a flag to indicate PDF generation
-        formData.append('generate_pdf', '1');
+    // Create a new tab for the PDF
+    var pdfWindow = window.open('', '_blank');
 
-        fetch('../controller/index.php?action=create_invoice', {
-            method: 'POST',
-            body: formData
-        }).then(response => {
-            // Convert the response to text to check for the duplicate message
-            return response.text().then(text => {
-                if (text.includes("already an invoice with that")) {
-                    // Display the error message on the current page
-                    alert("Duplicate invoice detected: ");
-                    window.location.href = `../controller/index.php?action=show_invoice&state=${pageState}&msg=Duplicate no. detected`;
-                } else {
-                    // If no duplicate, continue with PDF generation
-                    return response.blob().then(blob => {
-                        var url = URL.createObjectURL(blob);
-                        var pdfWindow = window.open('', '_blank');
-                        pdfWindow.location.href = url; // Load the PDF in the new tab
+    fetch('../controller/index.php?action=create_invoice', {
+        method: 'POST',
+        body: formData
+    }).then(response => response.blob())
+    .then(blob => {
+        var url = URL.createObjectURL(blob);
+        pdfWindow.location.href = url; // Load the PDF in the new tab
 
-                        // Redirect to the dashboard after a short delay
-                        setTimeout(() => {
-                            window.location.href = `../controller/index.php?action=show_payment&msg=NO_sj:${no_sj}&state=${pageState}`;
-                        }, 2000); // Adjust the delay as needed
-                    });
-                }
-            });
-        }).catch(error => {
-            console.error('Error:', error);
-        });
-    }
+        // Redirect to the dashboard after a short delay
+        setTimeout(() => {
+            window.location.href = `../controller/index.php?action=show_payment&msg=NO_sj:${no_sj}&state=${pageState}`;
+        }, 2000); // Adjust the delay as needed
+    }).catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 

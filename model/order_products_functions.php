@@ -90,7 +90,7 @@ function deleteOrderProducts($no_id, $status){
             // Foreign key constraint error
             $errorInfo = $ex->errorInfo;
             if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
-                return 'foreign_key';
+                throw new Exception($ex->getMessage());
             }
         }
         return false;
