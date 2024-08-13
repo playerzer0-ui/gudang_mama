@@ -4,6 +4,7 @@
     <form id="myForm" action="../controller/index.php?action=amend_update_data&data=payment" method="post">
     <h1>PAYMENT <?php echo $pageState; ?></h1>
     <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
+    <input name="payment_id" type="hidden" id="payment_id" value="<?php echo $payment["payment_id"]; ?>">
     <?php if($pageState != "amend_payment_moving"){ ?>
         <input name="old_sj" type="hidden" id="old_sj" value="<?php echo $result["nomor_surat_jalan"]; ?>">
     <?php } ?>
@@ -50,7 +51,7 @@
                 <?php } else { ?>
                     <td>No SJ</td>
                     <td>:</td>
-                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" value="<?php echo $result["nomor_surat_jalan"]; ?>" required></td>
+                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" value="<?php echo $result["nomor_surat_jalan"]; ?>" readonly></td>
                     <td>Alamat</td>
                     <td>:</td>
                     <td colspan="2"><input name="customerAddress" type="text" id="customerAddress" placeholder="Otomatis dari sistem" value="<?php echo $result["customerAddress"]; ?>" readonly></td>
@@ -69,7 +70,7 @@
                 <?php if ($pageState == "amend_payment_in") { ?>
                     <td>No SJ</td>
                     <td>:</td>
-                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" value="<?php echo $result["nomor_surat_jalan"]; ?>" required></td>
+                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" value="<?php echo $result["nomor_surat_jalan"]; ?>" readonly></td>
                     <td>Tgl invoice</td>
                     <td>:</td>
                     <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
@@ -159,9 +160,9 @@
     </table>
     <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>
     <?php if($pageState == "amend_payment_moving"){ ?>
-        <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_moving=" . $result["no_moving"]; ?>" target="_blank">create PDF</a>
+        <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_moving=" . $result["no_moving"] . "&payment_id=" . $payment["payment_id"]; ?>" target="_blank">create PDF</a>
     <?php } else { ?>
-        <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_sj=" . $result["nomor_surat_jalan"]; ?>" target="_blank">create PDF</a>
+        <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_sj=" . $result["nomor_surat_jalan"] . "&payment_id=" . $payment["payment_id"]; ?>" target="_blank">create PDF</a>
     <?php } ?>
     </form>
 </main>

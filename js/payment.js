@@ -266,6 +266,7 @@ function getOrderProducts(no_id, status){
 
 function calculateHutang(){
     let amount = document.getElementById("payment_amount").value;
+    let tax = document.getElementById("tax").value;
     let remaining = document.getElementById("remaining");
     let no_sjEl;
     if(pageState.includes("moving")){
@@ -278,7 +279,7 @@ function calculateHutang(){
     $.ajax({
         type: "get",
         url: "../controller/index.php",
-        data: {action: "calculateHutang", payment_amount: amount, no_sj: no_sjEl},
+        data: {action: "calculateHutang", payment_amount: amount, tax: tax, no_sj: no_sjEl},
         success: function (response) {
             remaining.innerHTML = response;
         }

@@ -370,6 +370,7 @@ switch($action){
     case "amend_update":
         $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $code = filter_input(INPUT_GET, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $payment_id = filter_input(INPUT_GET, "payment_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         switch($data){
             case "slip":
@@ -418,7 +419,7 @@ switch($action){
                 if(!strpos($code, "SJP")){
                     $result = getOrderByNoSJ($code);
                     $invoice = getInvoiceByNoSJ($code, null);
-                    $payment = getPaymentByNoSJ($code, null);
+                    $payment = getPaymentByID($payment_id);
     
                     if($result["status_mode"] == 1){
                         $pageState = "amend_payment_in";
@@ -434,7 +435,7 @@ switch($action){
                 else{
                     $result = getMovingByCode($code);
                     $invoice = getInvoiceByNoSJ(null, $code);
-                    $payment = getPaymentByNoSJ(null, $code);
+                    $payment = getPaymentByID($payment_id);
                     $pageState = "amend_payment_moving";
 
                     $products = getOrderProductsFromNoID($code, "moving");
@@ -550,15 +551,16 @@ switch($action){
                 }
                 break;
             case "payment":
+                $payment_id = filter_input(INPUT_POST, "payment_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $payment_date = filter_input(INPUT_POST, "payment_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $payment_amount = filter_input(INPUT_POST, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
                 if($pageState == "amend_payment_moving"){
                     $no_moving = filter_input(INPUT_POST, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                    updatePayment("-", $payment_date, $payment_amount, $no_moving);
+                    updatePayment("-", $payment_date, $payment_amount, $no_moving, $payment_id);
                 }
                 else{
-                    updatePayment($no_sj, $payment_date, $payment_amount, "-");
+                    updatePayment($no_sj, $payment_date, $payment_amount, "-", $payment_id);
                 }
                 break;
             case "repack":
@@ -943,10 +945,11 @@ switch($action){
 
         if($no_sj != null){
             $payment_amount = filter_input(INPUT_GET, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $tax = filter_input(INPUT_GET, "tax", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $totalNominal = getTotalNominalByNoSJ($no_sj)["totalNominal"];
             $totalPayment = getTotalPayment($no_sj)["totalPayment"];
             
-            $totalNominal = $totalNominal + ($totalNominal * 0.11);
+            $totalNominal = $totalNominal + ($totalNominal * ((double)$tax / 100));
             if($payment_amount != null){
                 $remaining = $totalNominal - $totalPayment - $payment_amount;
                 echo $remaining;
@@ -1077,6 +1080,7 @@ switch($action){
 
     case "create_pdf":
         $pageState = filter_input(INPUT_GET, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $payment_id = filter_input(INPUT_GET, "payment_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $vendorName = "";
         $customerName = "";
         $productCodes = [];
@@ -1120,7 +1124,7 @@ switch($action){
                 $no_moving = filter_input(INPUT_GET, "no_moving", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $invoice = getInvoiceByNoSJ(null, $no_moving);
                 $order = getMovingByCode($no_moving);
-                $payment = getPaymentByNoSJ(null, $no_moving);
+                $payment = getPaymentByID($payment_id);
     
                 $storageNameSender = getstorageByCode($order["storageCodeSender"])["storageName"];
                 $storageNameReceiver = getstorageByCode($order["storageCodeReceiver"])["storageName"];
@@ -1131,7 +1135,7 @@ switch($action){
                 $no_sj = filter_input(INPUT_GET, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $invoice = getInvoiceByNoSJ($no_sj, null);
                 $order = getOrderByNoSJ($no_sj);
-                $payment = getPaymentByNoSJ($no_sj, null);
+                $payment = getPaymentByID($payment_id);
 
                 $storageName = getstorageByCode($order["storageCode"])["storageName"];
                 if($pageState == "amend_invoice_in"){

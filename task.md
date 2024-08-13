@@ -88,3 +88,15 @@
 
 delete from invoices WHERE nomor_surat_jalan = "h000001"; 
 insert INTO invoices VALUES ("h000001", "2024-07-23", "INV01", "11.111.111.100-1221"); 
+
+
+<?php if($state == "payment"){ ?>
+                        <?php if($key["nomor_surat_jalan"] != "-"){ ?>
+                            <a href=<?php echo "../controller/index.php?action=amend_update&data=" . $state . "&code=" . $key["payment_id"]; ?>><button class="btn btn-info">EDIT</button></a>
+                            <a href=<?php echo "../controller/index.php?action=master_delete&data=" . $state . "&code=" . $key["payment_id"]; ?>><button class="btn btn-danger">DELETE</button></a>
+                        <?php } else { ?>
+                            <a href=<?php echo "../controller/index.php?action=amend_update&data=" . $state . "&code=" . $key["no_moving"]; ?>><button class="btn btn-info">EDIT</button></a>
+                            <a href=<?php echo "../controller/index.php?action=master_delete&data=" . $state . "&code=" . $key["no_moving"]; ?>><button class="btn btn-danger">DELETE</button></a>
+                        <?php } ?>
+                    <?php } else { ?>
+                    <?php } ?>

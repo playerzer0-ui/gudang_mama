@@ -7,7 +7,7 @@
         global $db;
     
         $query = 'INSERT INTO payments
-            VALUES (:nomor_surat_jalan, :payment_date, :payment_amount, :no_moving)';
+            VALUES (:nomor_surat_jalan, :payment_date, :payment_amount, :no_moving, UUID())';
     
         $statement = $db->prepare($query);
         $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
@@ -43,19 +43,12 @@
         return $result;
     }
 
-    function getPaymentByNoSJ($nomor_surat_jalan, $no_moving){
+    function getPaymentByID($payment_id){
         global $db;
 
-        if($no_moving == null){
-            $query = "SELECT * FROM payments WHERE nomor_surat_jalan = :nomor_surat_jalan";
-            $statement = $db->prepare($query);
-            $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
-        }
-        else{
-            $query = "SELECT * FROM payments WHERE no_moving = :no_moving";
-            $statement = $db->prepare($query);
-            $statement->bindValue(":no_moving", $no_moving);
-        }
+        $query = "SELECT * FROM payments WHERE payment_id = :payment_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":payment_id", $payment_id);
 
         try {
             $statement->execute();
@@ -93,23 +86,17 @@
         return $result;
     }
 
-    function updatePayment($nomor_surat_jalan, $payment_date, $payment_amount, $no_moving){
+    function updatePayment($nomor_surat_jalan, $payment_date, $payment_amount, $no_moving, $payment_id){
         global $db;
     
-        if($no_moving == "-"){
-            $query = "UPDATE payments SET payment_date = :payment_date, payment_amount = :payment_amount WHERE nomor_surat_jalan = :nomor_surat_jalan";
-            $statement = $db->prepare($query);
-            $statement->bindValue(":payment_date", $payment_date);
-            $statement->bindValue(":payment_amount", $payment_amount);
-            $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
-        }
-        else{
-            $query = "UPDATE payments SET payment_date = :payment_date, payment_amount = :payment_amount WHERE no_moving = :no_moving";
-            $statement = $db->prepare($query);
-            $statement->bindValue(":payment_date", $payment_date);
-            $statement->bindValue(":payment_amount", $payment_amount);
-            $statement->bindValue(":no_moving", $no_moving);
-        }
+        $query = "UPDATE payments SET payment_date = :payment_date, payment_amount = :payment_amount, nomor_surat_jalan = :nomor_surat_jalan, no_moving = :no_moving WHERE payment_id = :payment_id";
+        
+        $statement = $db->prepare($query);
+        $statement->bindValue(":payment_date", $payment_date);
+        $statement->bindValue(":payment_amount", $payment_amount);
+        $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
+        $statement->bindValue(":no_moving", $no_moving);
+        $statement->bindValue(":payment_id", $payment_id);
     
         try {
             $statement->execute();
@@ -129,19 +116,12 @@
         }
     }
 
-    function deletePayment($no_sj){
+    function deletePayment($payment_id){
         global $db;
     
-        if(!strpos($no_sj, "SJP")){
-            $query = "DELETE FROM payments WHERE nomor_surat_jalan = :no_sj";
-            $statement = $db->prepare($query);
-            $statement->bindValue(":no_sj", $no_sj);
-        }
-        else{
-            $query = "DELETE FROM payments WHERE no_moving = :no_sj";
-            $statement = $db->prepare($query);
-            $statement->bindValue(":no_sj", $no_sj);
-        }
+        $query = "DELETE FROM payments WHERE payment_id = :payment_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":payment_id", $payment_id);
     
         try {
             $statement->execute();
@@ -149,9 +129,7 @@
             return true;
         } catch (PDOException $ex) {
             $errorCode = $ex->getCode();
-            // MySQL error code for foreign key constraint violation
             if ($errorCode == 23000) {
-                // Foreign key constraint error
                 $errorInfo = $ex->errorInfo;
                 if (strpos($errorInfo[2], 'foreign key constraint fails') !== false) {
                     return 'foreign_key';
@@ -159,5 +137,5 @@
             }
             return false;
         }
-    }
+    }    
 ?>
