@@ -8,6 +8,24 @@ $global_repackOut_price_per_qty = 0;
 // $data = [];
 // $productCode = "";
 
+/**
+ * Adds a new product entry to the `order_products` table.
+ *
+ * This function inserts a product with its associated details into the `order_products` table. The specific fields 
+ * that are populated depend on the product's status (`in`, `out`, `out_tax`, `repack_awal`, `repack_akhir`, `moving`).
+ *
+ * @param string $no_id The identifier (either `nomor_surat_jalan`, `no_repack`, or `no_moving`) corresponding to the product entry.
+ * @param string $productCode The unique code of the product being added.
+ * @param float $qty The quantity of the product.
+ * @param string $UOM The unit of measure for the product (e.g., 'kg', 'pcs').
+ * @param float $price_per_UOM The price per unit of measure for the product.
+ * @param string $note Any additional notes related to the product entry.
+ * @param string $status The status of the product in the order (`in`, `out`, `out_tax`, `repack_awal`, `repack_akhir`, `moving`).
+ *
+ * @throws PDOException If there is an error executing the SQL query.
+ *
+ * @return void
+ */
 function addOrderProducts($no_id, $productCode, $qty, $UOM, $price_per_UOM, $note, $status){
     global $db;
 
@@ -134,6 +152,16 @@ function getOrderProductsFromNoID($no_id, $status){
     return $result;
 }
 
+/**
+ * Updates the price per unit for a product in an order.
+ *
+ * @param string $no_id The order number.
+ * @param string $productCode The product code.
+ * @param float $price_per_UOM The new price per unit of measurement.
+ *
+ *
+ * @return void
+ */
 function updatePriceForProducts($no_id, $productCode, $price_per_UOM){
     global $db;
 
@@ -153,6 +181,15 @@ function updatePriceForProducts($no_id, $productCode, $price_per_UOM){
     $statement->closeCursor();
 }
 
+/**
+ * Updates the price of a product in a moving order.
+ *
+ * @param string $no_id Moving order identifier.
+ * @param string $productCode Product code.
+ * @param float $price_per_UOM New price per unit of measurement.
+ *
+ * @return void
+ */
 function updatePriceForProductsMoving($no_id, $productCode, $price_per_UOM){
     global $db;
 
@@ -172,6 +209,12 @@ function updatePriceForProductsMoving($no_id, $productCode, $price_per_UOM){
     $statement->closeCursor();
 }
 
+/**
+ * Calculates the total nominal value for a given order or moving order.
+ * @param string $no_sj Order or moving order identifier.
+ *
+ * @return array|null Returns an associative array containing the total nominal value, or null if no result is found.
+ */
 function getTotalNominalByNoSJ($no_sj){
     global $db;
 
@@ -197,6 +240,16 @@ function getTotalNominalByNoSJ($no_sj){
     return $result;
 }
 
+/**
+ * Retrieves product details for a given order.
+ *
+ * This function returns the product code, quantity, price per unit of measurement (UOM),
+ * and total nominal value (qty * price_per_UOM) for each product in the specified order.
+ *
+ * @param string $no_sj The order identifier (nomor_surat_jalan).
+ *
+ * @return array|null An associative array of product details, or null if no results are found.
+ */
 function getProductsForHutang($no_sj){
     global $db;
 
@@ -219,6 +272,20 @@ function getProductsForHutang($no_sj){
     return $result;
 }
 
+/**
+ * Retrieves all products for saldo calculations based on storage, month, and year.
+ *
+ * This function returns a combined list of products from orders and repacks, including
+ * total quantity and average price per unit of measurement (UOM), grouped by product, storage, 
+ * month, year, and product status. It handles different storage codes and product statuses conditionally.
+ *
+ * @param string $storageCode The storage code, which can be "NON" for non-specific storage.
+ * @param int $month The month for the saldo calculation.
+ * @param int $year The year for the saldo calculation.
+ *
+ * @return array An array containing two sets of product details: one from orders and repacks,
+ *               and one from moving saldo calculations.
+ */
 function getAllProductsForSaldo($storageCode, $month, $year){
     global $db;
 
@@ -417,6 +484,19 @@ function getAllProductsMovingSaldo($storageCode, $month, $year){
     return [$senders, $receivers];
 }
 
+/**
+ * Generates the saldo (inventory balance) report for a specific storage, month, and year.
+ *
+ * This function calculates the opening balance, incoming and outgoing stock movements, 
+ * and closing balance for each product in the specified storage. It handles various 
+ * product statuses such as purchases, sales, repacks, and movements between storages.
+ *
+ * @param string $storageCode The storage code for which the saldo is being generated.
+ * @param int $month The month for the saldo report.
+ * @param int $year The year for the saldo report.
+ *
+ * @return array a complete report for the stock
+ */
 function generateSaldo($storageCode, $month, $year) {
     global $global_repackOut_price_per_qty;
 
