@@ -2,6 +2,15 @@
 
 require_once "database.php";
 
+/**
+ * Retrieves product codes that match a given search term.
+ *
+ * This function searches for product codes that contain the provided term, returning a maximum of 10 results.
+ *
+ * @param string $term The search term to find matching product codes.
+ *
+ * @return array Returns an array of product codes that match the search term.
+ */
 function getProductSuggestions($term) {
     global $db;
 
@@ -23,6 +32,15 @@ function getProductSuggestions($term) {
     }, $results);
 }
 
+/**
+ * Retrieves product codes that match a given search term.
+ *
+ * This function searches for product codes that contain the provided term, returning a maximum of 10 results.
+ *
+ * @param string $term The search term to find matching product codes.
+ *
+ * @return array Returns an array of product codes that match the search term.
+ */
 function getAllProducts(){
     global $db;
 
@@ -40,6 +58,13 @@ function getAllProducts(){
     return $results;
 }
 
+/**
+ * Retrieves the column names of the `products` table.
+ *
+ * This function fetches one record from the `products` table and returns the column names.
+ *
+ * @return array Returns an array of column names for the `products` table.
+ */
 function getAllProductsKeyNames(){
     global $db;
 
@@ -57,6 +82,16 @@ function getAllProductsKeyNames(){
     return array_keys($results[0]);
 }
 
+/**
+ * Inserts a new product record into the `products` table.
+ *
+ * This function adds a new product record with the specified product code and name to the `products` table.
+ *
+ * @param string $productCode The code of the new product.
+ * @param string $productName The name of the new product.
+ *
+ * @return bool Returns `true` if the product is successfully created, `false` otherwise.
+ */
 function createProduct($productCode, $productName){
     global $db;
 
@@ -74,6 +109,19 @@ function createProduct($productCode, $productName){
     return true;
 }
 
+/**
+ * Updates an existing product record in the `products` table.
+ *
+ * This function modifies an existing product record based on the provided new product details.
+ * It identifies the record to update by the old product code.
+ *
+ * @param string $productCode The new product code.
+ * @param string $productName The new product name.
+ * @param string $oldCode The current product code of the record to update.
+ *
+ * @return bool|string Returns `true` if the update is successful, `false` if an error occurs,
+ *                     or a string ('duplicate' or 'foreign_key') if a constraint error is encountered.
+ */
 function updateProduct($productCode, $productName, $oldCode){
     global $db;
 
@@ -103,6 +151,16 @@ function updateProduct($productCode, $productName, $oldCode){
     }
 }
 
+/**
+ * Deletes a specific product record from the `products` table.
+ *
+ * This function removes a product record from the `products` table based on the provided product code.
+ *
+ * @param string $productCode The code of the product record to delete.
+ *
+ * @return bool|string Returns `true` if the deletion is successful, `false` if an error occurs,
+ *                     or a string ('foreign_key') if a foreign key constraint violation is encountered.
+ */
 function deleteProduct($productCode) {
     global $db;
 
@@ -128,7 +186,15 @@ function deleteProduct($productCode) {
     }
 }
 
-
+/**
+ * Retrieves a specific product record based on the provided product code.
+ *
+ * This function fetches details of a product record from the `products` table using the provided product code.
+ *
+ * @param string $productCode The code of the product to retrieve.
+ *
+ * @return array|null Returns an associative array containing the product record details, or `null` if not found.
+ */
 function getProductByCode($productCode) {
     global $db;
 

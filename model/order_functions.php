@@ -2,6 +2,24 @@
 
 require_once "database.php";
 
+/**
+ * Inserts a new order into the database.
+ *
+ * This function adds a new record to the `orders` table with the provided details. 
+ * It handles errors, specifically checking for duplicate entries.
+ *
+ * @param string $nomor_surat_jalan The order number (nomor_surat_jalan).
+ * @param string $storageCode The storage code.
+ * @param string $no_LPB The LPB number.
+ * @param string $no_truk The truck number.
+ * @param string $vendorCode The vendor code.
+ * @param string $customerCode The customer code.
+ * @param string $order_date The order date.
+ * @param string $purchase_order The purchase order number.
+ * @param string $status The status of the order.
+ *
+ * @return bool Returns true if the insertion is successful, false if there is a duplicate entry or other error.
+ */
 function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $status) {
     global $db;
 
@@ -37,7 +55,14 @@ function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendo
     }
 }
 
-
+/**
+ * Retrieves all orders from the database.
+ *
+ * This function fetches all orders from the `orders` table where the order number 
+ * is not equal to '-'.
+ *
+ * @return array An associative array of all orders.
+ */
 function getAllOrders(){
     global $db;
 
@@ -56,6 +81,16 @@ function getAllOrders(){
     return $result;
 }
 
+/**
+ * Retrieves order details by the order number.
+ *
+ * This function fetches the order details and customer information for a given 
+ * order number (nomor_surat_jalan).
+ *
+ * @param string $no_sj The order number (nomor_surat_jalan).
+ *
+ * @return array|null An associative array with order and customer details, or null if no result is found.
+ */
 function getOrderByNoSJ($no_sj){
     global $db;
 
@@ -77,6 +112,20 @@ function getOrderByNoSJ($no_sj){
     return $result;
 }
 
+/**
+ * Generates a new LPB or SJK number based on storage code, month, year, and status.
+ *
+ * This function creates a unique LPB or SJK number by checking existing numbers and
+ * ensuring that the generated number does not conflict with existing ones. The format
+ * of the number is determined by the status and includes the storage code, month, and year.
+ *
+ * @param string $storageCode The storage code to include in the generated number.
+ * @param int $month The month for the generated number.
+ * @param int $year The year for the generated number.
+ * @param int $status The status determining whether to generate an LPB (status 1) or SJK (status 0).
+ *
+ * @return string The generated LPB or SJK number.
+ */
 function generateNoLPB($storageCode, $month, $year, $status){
     global $db;
 
@@ -129,6 +178,19 @@ function generateNoLPB($storageCode, $month, $year, $status){
     return $generatedNo;
 }
 
+/**
+ * Generates a new Tax SJ number based on storage code, month, and year.
+ *
+ * This function creates a unique Tax SJ number by checking existing numbers to
+ * ensure that the generated number does not conflict with existing ones. The format
+ * of the number includes the storage code, month, and year.
+ *
+ * @param string $storageCode The storage code to include in the generated number.
+ * @param int $month The month for the generated number.
+ * @param int $year The year for the generated number.
+ *
+ * @return string The generated Tax SJ number.
+ */
 function generateTaxSJ($storageCode, $month, $year){
     global $db;
 
@@ -176,6 +238,28 @@ function generateTaxSJ($storageCode, $month, $year){
     return $generatedNo;
 }
 
+/**
+ * Updates an order and related records in the `orders`, `invoices`, and `payments` tables.
+ *
+ * This function performs the following:
+ * - Updates the `orders` table with new details.
+ * - Updates the `invoices` table to reflect the new order number.
+ * - Updates the `payments` table to reflect the new order number.
+ * - Utilizes transactions to ensure all updates are applied atomically.
+ * - Disables and re-enables foreign key checks during the update process to prevent constraint issues.
+ *
+ * @param string $nomor_surat_jalan The new order number to update.
+ * @param string $storageCode The storage code associated with the order.
+ * @param string $no_LPB The new LPB number for the order.
+ * @param string $no_truk The new truck number for the order.
+ * @param string $vendorCode The vendor code associated with the order.
+ * @param string $customerCode The customer code associated with the order.
+ * @param string $order_date The new order date.
+ * @param string $purchase_order The new purchase order number.
+ * @param string $old_surat_jalan The old order number to be replaced.
+ *
+ * @return bool|string Returns `true` on success, `'foreign_key'` if a foreign key constraint fails, `'duplicate'` if a duplicate entry is found, or `false` if the update fails.
+ */
 function updateOrderWithDependencies($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $old_surat_jalan) {
     global $db;
 
@@ -243,7 +327,17 @@ function updateOrderWithDependencies($nomor_surat_jalan, $storageCode, $no_LPB, 
 }
 
 
-
+/**
+ * Deletes an order from the `orders` table.
+ *
+ * This function attempts to delete a record from the `orders` table based on the provided `nomor_surat_jalan`. If the deletion fails due to a foreign key constraint, an exception is thrown.
+ *
+ * @param string $no_sj The order number (nomor_surat_jalan) of the order to be deleted.
+ *
+ * @return bool Returns `true` on successful deletion, or `false` if the deletion fails for reasons other than a foreign key constraint violation.
+ * 
+ * @throws Exception Throws an exception if a foreign key constraint violation occurs during deletion.
+ */
 function deleteOrder($no_sj){
     global $db;
 

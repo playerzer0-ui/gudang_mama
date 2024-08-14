@@ -2,6 +2,19 @@
 
 require_once "database.php";
 
+/**
+ * Registers a new user by inserting their credentials into the `user` table.
+ *
+ * This function hashes the provided password and inserts a new record with the username, hashed password,
+ * and user type into the `user` table.
+ *
+ * @param string $username The username for the new user.
+ * @param string $password The password for the new user.
+ * @param string $userType The type of user (e.g., 'admin', 'user').
+ *
+ * @return void
+ * @throws Exception If there is an issue with database interaction.
+ */
 function register($username, $password, $userType){
     global $db;
 
@@ -24,6 +37,19 @@ function register($username, $password, $userType){
     $statement->closeCursor();
 }
 
+/**
+ * Authenticates a user by verifying their credentials.
+ *
+ * This function checks if the provided username exists and if the provided password matches the hashed password
+ * in the database. If authentication is successful, it starts a session and stores user information in session variables.
+ * Otherwise, it redirects to the login page with an appropriate error message.
+ *
+ * @param string $username The username of the user trying to log in.
+ * @param string $password The password of the user trying to log in.
+ *
+ * @return void
+ * @throws Exception If there is an issue with database interaction.
+ */
 function login($username, $password){
     global $db;
 
@@ -68,6 +94,13 @@ function login($username, $password){
     }
 }
 
+/**
+ * Logs out the current user by destroying the session.
+ *
+ * This function ends the user session and redirects to the index page.
+ *
+ * @return void
+ */
 function logout(){
     session_start();
     session_unset();
@@ -75,6 +108,17 @@ function logout(){
     header("Location:../controller/index.php?action=index");
 }
 
+/**
+ * Checks if a username already exists in the `user` table.
+ *
+ * This function queries the `user` table to determine if the provided username is already in use.
+ * If the username exists, it redirects to the registration page with an error message.
+ *
+ * @param string $username The username to check for existence.
+ *
+ * @return void
+ * @throws Exception If there is an issue with database interaction.
+ */
 function checkUsername($username){
     global $db;
 
