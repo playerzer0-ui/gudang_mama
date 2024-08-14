@@ -222,6 +222,15 @@ function getProductsForHutang($no_sj){
 function getAllProductsForSaldo($storageCode, $month, $year){
     global $db;
 
+    // Conditional parts of the WHERE clause
+    $storageCondition = $storageCode !== "NON" ? 'o.storageCode = :storageCode AND ' : '';
+    $storageCondition1 = $storageCode !== "NON" ? 'r.storageCode = :storageCode1 AND ' : '';
+    
+    $productStatusCondition = $storageCode === "NON" ? 'op.product_status != "out_tax"' : 'op.product_status != "out"';
+
+    // Conditional part of the ORDER BY clause
+    $orderByCondition = $storageCode !== "NON" ? "WHEN product_status = 'out_tax' THEN 2" : "WHEN product_status = 'out' THEN 2";
+
     $query = '(SELECT 
             p.productCode, 
             p.productName,
@@ -240,10 +249,10 @@ function getAllProductsForSaldo($storageCode, $month, $year){
         JOIN 
             invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
         WHERE 
-            o.storageCode = :storageCode
-            AND MONTH(i.invoice_date) = :mon
+            '. $storageCondition .'
+            MONTH(i.invoice_date) = :mon
             AND YEAR(i.invoice_date) = :yea
-            AND op.product_status != "out"
+            AND '. $productStatusCondition .'
         GROUP BY 
             p.productCode, 
             p.productName,
@@ -270,9 +279,10 @@ function getAllProductsForSaldo($storageCode, $month, $year){
         JOIN 
             repacks r ON op.repack_no_repack = r.no_repack
         WHERE
-            r.storageCode = :storageCode1
-            AND MONTH(r.repack_date) = :mon1
+            '. $storageCondition1 .'
+            MONTH(r.repack_date) = :mon1
             AND YEAR(r.repack_date) = :yea1
+            AND '. $productStatusCondition .'
         GROUP BY 
             p.productCode, 
             p.productName,
@@ -284,17 +294,21 @@ function getAllProductsForSaldo($storageCode, $month, $year){
     ORDER BY
         CASE 
             WHEN product_status = "in" THEN 1
-            WHEN product_status = "out_tax" THEN 2
+            '. $orderByCondition .'
             WHEN product_status = "repack_awal" THEN 3
             WHEN product_status = "repack_akhir" THEN 4
             ELSE 5
         END';
 
     $statement = $db->prepare($query);
-    $statement->bindValue(":storageCode", $storageCode);
+
+    // Bind values conditionally
+    if($storageCode !== "NON"){
+        $statement->bindValue(":storageCode", $storageCode);
+        $statement->bindValue(":storageCode1", $storageCode);
+    }
     $statement->bindValue(":mon", $month);
     $statement->bindValue(":yea", $year);
-    $statement->bindValue(":storageCode1", $storageCode);
     $statement->bindValue(":mon1", $month);
     $statement->bindValue(":yea1", $year);
 
@@ -306,13 +320,8 @@ function getAllProductsForSaldo($storageCode, $month, $year){
     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
     $statement->closeCursor();
 
-
     $movings = getAllProductsMovingSaldo($storageCode, $month, $year);
 
-    // echo "<pre>senders" . print_r($movings, true) . "</pre>";
-    // echo "<pre>inouts" . print_r($result, true) . "</pre>";
-
-    // echo "<pre>RESULTTT" . print_r(combineForReportStock($result, $movings, $storageCode, $month, $year), true) . "</pre>";
     return [$result, $movings];
 }
 
@@ -434,6 +443,10 @@ function generateSaldo($storageCode, $month, $year) {
         switch ($key["product_status"]) {
             case "in":
                 updatePenerimaan($data[$productCode], $key, "pembelian");
+                break;
+
+            case "out":
+                updatePengeluaran($data[$productCode], $key, "penjualan");
                 break;
 
             case "out_tax":

@@ -755,7 +755,7 @@ switch($action){
                 for($i = 0; $i < count($productCodes); $i++){
                     addOrderProducts($no_sj, $productCodes[$i], $qtys[$i], $uoms[$i], 0, $notes[$i], "in");
                 }
-                create_NON_slip($no_truk, $vendorCode, $order_date, $purchase_order);
+                //create_NON_slip($no_truk, $vendorCode, $order_date, $purchase_order);
             }
         }
         else if($pageState == "out"){
@@ -833,7 +833,7 @@ switch($action){
                 create_invoice($no_sj, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
                 if($pageState == "in"){
                     $vendorName = getVendorByCode($vendorCode)["vendorName"];
-                    create_NON_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, $tax);
+                    //create_NON_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, $tax);
                 }
                 else{
                     $customerName = getCustomerByCode($customerCode)["customerName"];
@@ -910,7 +910,7 @@ switch($action){
             $storageName = getstorageByCode($storageCode)["storageName"];
             if($pageState == "in"){
                 $vendorName = getVendorByCode($vendorCode)["vendorName"];
-                create_NON_payment($no_LPB, $payment_date, $payment_amount);
+                //create_NON_payment($no_LPB, $payment_date, $payment_amount);
             }
             else{
                 $customerName = getCustomerByCode($customerCode)["customerName"];
@@ -1178,21 +1178,21 @@ switch($action){
         break;
 }
 
-function create_NON_slip($no_truk, $vendorCode, $order_date, $purchase_order){
-    $date = DateTime::createFromFormat('Y-m-d', $order_date);
-    $month = $date->format('m');
-    $year = $date->format('Y');
-    $no_LPB = generateNoLPB("NON", (int)$month, (int)$year, 1);
+// function create_NON_slip($no_truk, $vendorCode, $order_date, $purchase_order){
+//     $date = DateTime::createFromFormat('Y-m-d', $order_date);
+//     $month = $date->format('m');
+//     $year = $date->format('Y');
+//     $no_LPB = generateNoLPB("NON", (int)$month, (int)$year, 1);
 
-    create_slip($no_LPB, "NON", $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, 1);
-}
+//     create_slip($no_LPB, "NON", $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, 1);
+// }
 
-function create_NON_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, $tax){
-    create_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
-}
+// function create_NON_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, $tax){
+//     create_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
+// }
 
-function create_NON_payment($no_LPB, $payment_date, $payment_amount){
-    create_payment($no_LPB, $payment_date, $payment_amount, "-");
-}
+// function create_NON_payment($no_LPB, $payment_date, $payment_amount){
+//     create_payment($no_LPB, $payment_date, $payment_amount, "-");
+// }
 
 ?>
