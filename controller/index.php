@@ -12,6 +12,7 @@ require_once "../model/product_functions.php";
 require_once "../model/repack_functions.php";
 require_once "../model/moving_functions.php";
 require_once "../model/saldo_functions.php";
+require_once "../model/utility_functions.php";
 require_once "../model/order_products_functions.php";
 require_once "../fpdf/fpdf.php";
 require_once "../model/pdf_creation.php";
@@ -43,6 +44,11 @@ else{
     $state = "login";
 }
 
+if (!checkAccess($action, $userType)) {
+    header("Location:../controller/index.php?action=dashboard");
+    exit;
+}
+
 switch($action){
     case "dashboard":
         if($userID == null){
@@ -60,11 +66,6 @@ switch($action){
         require_once "../view/login.php";
         break;
 
-    case "show_register":
-        $title = "register";
-        require_once "../view/register.php";
-        break;
-
     case "login":
         if(isset($_SESSION["userID"])){
             header("Location:../controller/index.php?action=dashboard");
@@ -75,15 +76,6 @@ switch($action){
 
         header("Location:../controller/index.php?action=dashboard");
         break;
-
-    // case "register":
-    //     $username_inp = filter_input(INPUT_POST, "username", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    //     $password_inp = filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    //     $usertype_inp = filter_input(INPUT_POST, "userType", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    //     register($username_inp, $password_inp, $usertype_inp);
-
-    //     header("Location:../controller/index.php?action=dashboard");
-    //     break;
 
     case "logout":
         logout();
