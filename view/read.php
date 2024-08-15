@@ -14,8 +14,13 @@
             <?php foreach($keyNames as $name){ ?>
                 <td><?php echo $key[$name]; ?></td>
             <?php } ?>
-            <td><a href=<?php echo "../controller/index.php?action=master_update&data=" . $data . "&code=" . $key[$keyNames[0]]; ?>><button class="btn btn-info">update</button></a></td>
-            <td><a href=<?php echo "../controller/index.php?action=master_delete&data=" . $data . "&code=" . $key[$keyNames[0]]; ?>><button class="btn btn-danger">delete</button></a></td>
+            <?php if($data == "users"){ ?>
+                <td><a href=<?php echo "../controller/index.php?action=master_update&data=" . $data . "&code=" . $key["userID"]; ?>><button class="btn btn-info">update</button></a></td>
+                <td><a href=<?php echo "../controller/index.php?action=master_delete&data=" . $data . "&code=" . $key["userID"]; ?>><button class="btn btn-danger">delete</button></a></td>
+            <?php } else { ?>
+                <td><a href=<?php echo "../controller/index.php?action=master_update&data=" . $data . "&code=" . $key[$keyNames[0]]; ?>><button class="btn btn-info">update</button></a></td>
+                <td><a href=<?php echo "../controller/index.php?action=master_delete&data=" . $data . "&code=" . $key[$keyNames[0]]; ?>><button class="btn btn-danger">delete</button></a></td>
+            <?php } ?>
         </tr>
         <?php } ?>
     </table>

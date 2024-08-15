@@ -76,14 +76,14 @@ switch($action){
         header("Location:../controller/index.php?action=dashboard");
         break;
 
-    case "register":
-        $username_inp = filter_input(INPUT_POST, "username", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $password_inp = filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $usertype_inp = filter_input(INPUT_POST, "userType", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        register($username_inp, $password_inp, $usertype_inp);
+    // case "register":
+    //     $username_inp = filter_input(INPUT_POST, "username", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    //     $password_inp = filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    //     $usertype_inp = filter_input(INPUT_POST, "userType", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    //     register($username_inp, $password_inp, $usertype_inp);
 
-        header("Location:../controller/index.php?action=dashboard");
-        break;
+    //     header("Location:../controller/index.php?action=dashboard");
+    //     break;
 
     case "logout":
         logout();
@@ -174,6 +174,10 @@ switch($action){
                 $result = getAllStorages();
                 $keyNames = getAllStoragesKeyNames();
                 break;
+            case "users":
+                $result = getAllUsers();
+                $keyNames = getAllUsersKeyNames();
+                break;
         }
 
         require_once "../view/read.php";
@@ -196,6 +200,11 @@ switch($action){
                 break;
             case "storage":
                 $keyNames = getAllStoragesKeyNames();
+                break;
+            case "users":
+                $keyNames = getAllUsersKeyNames();
+                require_once "../view/register.php";
+                exit;
                 break;
         }
 
@@ -233,6 +242,9 @@ switch($action){
                     $flag = false;
                 }
                 break;
+            case "users":
+                $flag = register($input_data[0], $input_data[1], $input_data[2]);
+                break;
                 
         }
 
@@ -265,6 +277,11 @@ switch($action){
             case "storage":
                 $keyNames = getAllStoragesKeyNames();
                 $result = getstorageByCode($code);
+                break;
+            case "users":
+                $result = getUserByCode($code);
+                require_once "../view/register.php";
+                exit;
                 break;
         }
 
@@ -311,6 +328,9 @@ switch($action){
                     $flag = false;
                 }
                 break;
+            case "users":
+                $flag = updateUser($input_data[0], $input_data[1], $input_data[2], $oldCode);
+                break;
                 
         }
 
@@ -351,6 +371,9 @@ switch($action){
                 break;
             case "storage":
                 $flag = deleteStorage($code);
+                break;
+            case "users":
+                $flag = deleteUser($code);
                 break;
         }
 

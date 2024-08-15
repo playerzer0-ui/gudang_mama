@@ -34,20 +34,24 @@
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="../controller/index.php?action=dashboard"><button class="btn btn-info">storage</button></a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="../controller/index.php?action=show_hutang"><button class="btn btn-info">report hutang</button></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="../controller/index.php?action=show_piutang"><button class="btn btn-info">report piutang</button></a>
-                        </li>
+                        <?php if($userType == 1){ ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="../controller/index.php?action=show_hutang"><button class="btn btn-info">report hutang</button></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="../controller/index.php?action=show_piutang"><button class="btn btn-info">report piutang</button></a>
+                            </li>
+                        <?php } ?>
                         <li class="nav-item dropdown btn btn-outline-primary">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 in
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_slip&state=in">slip in</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=in">invoice in</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=in">payment in</a></li>
+                                <?php if($userType == 1){ ?>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=in">invoice in</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=in">payment in</a></li>
+                                <?php } ?>
                             </ul>
                         </li>
                         <li class="nav-item dropdown btn btn-outline-primary">
@@ -56,11 +60,13 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_slip&state=out">slip out</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=out">invoice out</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=out">payment out</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_slip&state=out_tax">slip tax out</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=out_tax">invoice tax out</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=out_tax">payment tax out</a></li>
+                                <?php if($userType == 1){ ?>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=out">invoice out</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=out">payment out</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_slip&state=out_tax">slip tax out</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=out_tax">invoice tax out</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=out_tax">payment tax out</a></li>
+                                <?php } ?>
                             </ul>
                         </li>
                         <li class="nav-item dropdown btn btn-outline-primary">
@@ -70,8 +76,10 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_repack">repack</a></li>
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_moving">moving</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=moving">invoice moving</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=moving">payment moving</a></li>
+                                <?php if($userType == 1){ ?>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_invoice&state=moving">invoice moving</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_payment&state=moving">payment moving</a></li>
+                                <?php } ?>
                             </ul>
                         </li>
                         <li class="nav-item dropdown btn btn-outline-primary">
@@ -80,29 +88,29 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=slip">edit slips</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=invoice">edit invoices</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=payment">edit payments</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=repack">edit repacks</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=moving">edit movings</a></li>
+                                <?php if($userType == 1){ ?>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=invoice">edit invoices</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=payment">edit payments</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=repack">edit repacks</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=moving">edit movings</a></li>
+                                <?php } ?>
                             </ul>
                         </li>
-                        <li class="nav-item dropdown btn btn-outline-warning">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                master
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=vendor">vendors</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=customer">customers</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=product">products</a></li>
-                                <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=storage">storages</a></li>
-                            </ul>
-                        </li>
-
                         <?php if($userType == 1){ ?>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="../controller/index.php?action=show_register"><button class="btn btn-secondary">register</button></a>
-                        </li>
+                            <li class="nav-item dropdown btn btn-outline-warning">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    master
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=vendor">vendors</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=customer">customers</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=product">products</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=storage">storages</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=users">users</a></li>
+                                </ul>
+                            </li>
                         <?php } ?>
+
                         <li class="nav-item">
                             <a class="nav-link" href="../controller/index.php?action=logout"><button class="btn btn-primary"><?php echo $state; ?></button></a>
                         </li>

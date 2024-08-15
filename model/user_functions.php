@@ -18,10 +18,12 @@ require_once "database.php";
 function register($username, $password, $userType){
     global $db;
 
-    checkUsername($username);
+    if(!checkUsername($username)){
+        return false;
+    }
 
     $hash_password = password_hash($password, PASSWORD_BCRYPT);
-    $query = "INSERT INTO user (username, password, userType) VALUES (:username, :hash_password, :userType)";
+    $query = "INSERT INTO users VALUES (UUID(), :username, :hash_password, :userType)";
     $statement = $db->prepare($query);
     $statement->bindValue(":username", $username);
     $statement->bindValue(":hash_password", $hash_password);
@@ -35,7 +37,116 @@ function register($username, $password, $userType){
     }
 
     $statement->closeCursor();
+    return true;
 }
+
+function getAllUsers(){
+    global $db;
+
+    $query = "SELECT * FROM users";
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $result;
+}
+
+function getUserByCode($userID){
+    global $db;
+
+    $query = "SELECT * FROM users WHERE userID = :userID";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(":userID", $userID);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetch(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $result;
+}
+
+function getAllUsersKeyNames(){
+    global $db;
+
+    $query = "SELECT * FROM users LIMIT 1";
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return array_keys($result[0]);
+}
+
+function updateUser($username, $password, $userType, $oldName) {
+    global $db;
+
+    if ($username != $oldName) {
+        if (!checkUsername($username)) {
+            return false;
+        }
+    }
+
+    $hash_password = password_hash($password, PASSWORD_BCRYPT);
+    $query = "UPDATE users SET username = :username, password = :password, userType = :userType WHERE username = :oldname";
+    $statement = $db->prepare($query);
+    
+    // Bind the parameters
+    $statement->bindValue(":username", $username);
+    $statement->bindValue(":password", $hash_password);
+    $statement->bindValue(":userType", $userType);
+    $statement->bindValue(":oldname", $oldName);
+
+    try {
+        // Execute the query
+        $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        // Handle the error
+        echo $ex->getMessage();
+        return false;
+    }
+}
+
+
+function deleteUser($userID) {
+    global $db;
+
+    $query = "DELETE FROM users WHERE userID = :userID";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":userID", $userID);
+
+    try {
+        $statement->execute();
+        $statement->closeCursor();
+        return true;
+    } catch (PDOException $ex) {
+        echo $ex->getMessage();
+        return false;
+    }
+}
+
 
 /**
  * Authenticates a user by verifying their credentials.
@@ -53,7 +164,7 @@ function register($username, $password, $userType){
 function login($username, $password){
     global $db;
 
-    $query = "SELECT * FROM user WHERE username = :username";
+    $query = "SELECT * FROM users WHERE username = :username";
 
     $statement = $db->prepare($query);
     $statement->bindValue(":username", $username);
@@ -69,7 +180,7 @@ function login($username, $password){
 
     //no user found
     if($row == 0){
-        header("Location:../controller/index.php?action=login&msg=user not found");
+        header("Location:../controller/index.php?action=show_login&msg=user not found");
         exit();
     }
 
@@ -89,7 +200,7 @@ function login($username, $password){
         $_SESSION['userType'] = $dbuserType;
     }
     else{
-        header("Location:../controller/index.php?action=login&msg=invalid credentials");
+        header("Location:../controller/index.php?action=show_login&msg=invalid credentials");
         exit();
     }
 }
@@ -122,7 +233,7 @@ function logout(){
 function checkUsername($username){
     global $db;
 
-    $query = "SELECT * FROM user WHERE username = :username";
+    $query = "SELECT * FROM users WHERE username = :username";
     $statement = $db->prepare($query);
     $statement->bindValue(":username", $username);
 
@@ -136,12 +247,11 @@ function checkUsername($username){
     $row = $statement->rowCount();
 
     if($row != 0){
-        //same username detected, error
-        header("Location:../controller/index.php?action=register&msg=there is already an exact username, try a different one");
-        exit();
+        return false;
     }
 
     $statement->closeCursor();
+    return true;
 }
 
 ?>
