@@ -387,6 +387,11 @@ switch($action){
         $code = filter_input(INPUT_GET, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $payment_id = filter_input(INPUT_GET, "payment_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
+        if (!checkAccess($data, $userType)) {
+            header("Location:../controller/index.php?action=dashboard");
+            exit;
+        }
+
         switch($data){
             case "slip":
                 $title = "amend slip";
@@ -490,6 +495,11 @@ switch($action){
         $purchase_order = filter_input(INPUT_POST, "purchase_order", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $pageState = filter_input(INPUT_POST, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        if (!checkAccess($data, $userType)) {
+            header("Location:../controller/index.php?action=dashboard");
+            exit;
+        }
 
         switch($data){
             case "slip":
@@ -627,6 +637,11 @@ switch($action){
     case "amend_delete_data":
         $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $code = filter_input(INPUT_POST, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        if (!checkAccess($data, $userType)) {
+            header("Location:../controller/index.php?action=dashboard");
+            exit;
+        }
 
         $db->beginTransaction();
     
