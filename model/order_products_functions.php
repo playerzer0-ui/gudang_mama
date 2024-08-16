@@ -176,9 +176,11 @@ function updatePriceForProducts($no_id, $productCode, $price_per_UOM){
     }
     catch(PDOException $ex){
         $ex->getMessage();
+        return false;
     }
 
     $statement->closeCursor();
+    return true;
 }
 
 /**
@@ -204,9 +206,11 @@ function updatePriceForProductsMoving($no_id, $productCode, $price_per_UOM){
     }
     catch(PDOException $ex){
         $ex->getMessage();
+        return false;
     }
 
     $statement->closeCursor();
+    return true;
 }
 
 /**

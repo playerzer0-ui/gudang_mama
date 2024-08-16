@@ -669,10 +669,19 @@ switch($action){
                     $success = deleteMultiPayment($code);
     
                     if ($success === true) {
-                        $result = getOrderProductsFromNoID($code, "in");
-                        foreach ($result as $key) {
-                            $success = updatePriceForProducts($code, $key["productCode"], 0);
-                            if ($success !== true) break; // Exit the loop if any update fails
+                        if(strpos($code, "SJP")){
+                            $result = getOrderProductsFromNoID($code, "moving");
+                            foreach ($result as $key) {
+                                $success = updatePriceForProductsMoving($code, $key["productCode"], 0);
+                                if ($success !== true) break; // Exit the loop if any update fails
+                            }
+                        }
+                        else{
+                            $result = getOrderProductsFromNoID($code, "in");
+                            foreach ($result as $key) {
+                                $success = updatePriceForProducts($code, $key["productCode"], 0);
+                                if ($success !== true) break; // Exit the loop if any update fails
+                            }
                         }
                     }
     

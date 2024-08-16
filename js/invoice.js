@@ -40,7 +40,13 @@ if (!pageState.includes("amend")){
 
 function handleFormSubmit(event) {
     let pageState = document.getElementById("pageState").value;
-    let no_sj = document.getElementById("no_sj").value;
+    let no_sj;
+    if(!pageState.includes("moving")){
+        no_sj = document.getElementById("no_sj").value;
+    }
+    else{
+        no_sj = document.getElementById("no_moving").value;
+    }
     event.preventDefault(); // Prevent the default form submission
 
     var form = document.getElementById('myForm');
