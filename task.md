@@ -19,7 +19,7 @@
             MONTH(i.invoice_date) AS saldoMonth, 
             YEAR(i.invoice_date) AS saldoYear, 
             SUM(op.qty) AS totalQty, 
-            AVG(op.price_per_UOM) AS avgPrice,
+            AVG(SUM(op.price_per_UOM * op.qty)) AS avgPrice,
             op.product_status
         FROM
             products p
@@ -51,7 +51,7 @@
             MONTH(r.repack_date) AS saldoMonth, 
             YEAR(r.repack_date) AS saldoYear, 
             SUM(op.qty) AS totalQty, 
-            AVG(op.price_per_UOM) AS avgPrice,
+            AVG(SUM(op.price_per_UOM * op.qty)) AS avgPrice,
             op.product_status
         FROM
             products p

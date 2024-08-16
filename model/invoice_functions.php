@@ -94,7 +94,7 @@
         $statement = $db->prepare($query);
         $statement->bindValue(":mon", $month);
         $statement->bindValue(":yea", $year);
-        $statement->bindValue(":storageCode", "%/INV/" . $storageCode . "/" . $month . "/" . $year);
+        $statement->bindValue(":storageCode", "%" . $storageCode . "%");
     
         try {
             $statement->execute();

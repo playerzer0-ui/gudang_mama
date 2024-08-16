@@ -57,7 +57,7 @@
                 <td>
                     <select name="customerCode" id="customerCode">
                         <?php foreach (getAllCustomers() as $key) { ?>
-                            <?php if($key["vendorCode"] == $result["vendorCode"]) { ?>
+                            <?php if($key["customerCode"] == $result["customerCode"]) { ?>
                                 <option value="<?php echo $key["customerCode"]; ?>" selected><?php echo $key["customerName"]; ?></option>
                             <?php } else { ?>
                                 <option value="<?php echo $key["customerCode"]; ?>"><?php echo $key["customerName"]; ?></option>

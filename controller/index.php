@@ -637,52 +637,77 @@ switch($action){
     case "amend_delete_data":
         $data = filter_input(INPUT_POST, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $code = filter_input(INPUT_POST, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
+    
         if (!checkAccess($data, $userType)) {
             header("Location:../controller/index.php?action=dashboard");
             exit;
         }
-
+    
         $db->beginTransaction();
     
         try {
+            $success = false;
+    
             switch ($data) {
                 case "slip":
-                    deleteOrderProducts($code, "order");
-                    deleteMultiPayment($code);
-                    deleteInvoice($code);
-                    deleteOrder($code);
+                    $success = deleteOrderProducts($code, "order");
+    
+                    if ($success === true) {
+                        $success = deleteMultiPayment($code);
+                    }
+    
+                    if ($success === true) {
+                        $success = deleteInvoice($code);
+                    }
+    
+                    if ($success === true) {
+                        $success = deleteOrder($code);
+                    }
                     break;
     
                 case "invoice":
-                    deleteMultiPayment($code);
-                    $result = getOrderProductsFromNoID($code, "in");
-                    foreach ($result as $key) {
-                        updatePriceForProducts($code, $key["productCode"], 0);
+                    $success = deleteMultiPayment($code);
+    
+                    if ($success === true) {
+                        $result = getOrderProductsFromNoID($code, "in");
+                        foreach ($result as $key) {
+                            $success = updatePriceForProducts($code, $key["productCode"], 0);
+                            if ($success !== true) break; // Exit the loop if any update fails
+                        }
                     }
-                    deleteInvoice($code);
+    
+                    if ($success === true) {
+                        $success = deleteInvoice($code);
+                    }
                     break;
     
                 case "payment":
-                    deleteMultiPayment($code);
+                    $success = deleteMultiPayment($code);
                     break;
     
                 case "repack":
-                    deleteRepack($code);
+                    $success = deleteRepack($code);
                     break;
     
                 case "moving":
-                    deleteMoving($code);
+                    $success = deleteMoving($code);
                     break;
             }
-            $db->commit();
+    
+            if ($success === true) {
+                $db->commit();
+                header("Location:../controller/index.php?action=show_amends&state=" . $data . "&msg=record deleted");
+            } elseif ($success === 'foreign_key') {
+                throw new Exception("Foreign key constraint violation. Deletion not allowed.");
+            } else {
+                throw new Exception("An error occurred while deleting the record.");
+            }
         } catch (Exception $e) {
             $db->rollBack();
             header("Location:../controller/index.php?action=show_amends&state=" . $data . "&msg=" . $e->getMessage());
-            exit;
         }
-        header("Location:../controller/index.php?action=show_amends&state=" . $data . "&msg=record deleted");
         break;
+        
         
 
     case "generate_LPB":
