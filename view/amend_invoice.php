@@ -156,7 +156,7 @@
                 <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" value="<?php echo (($totalNominal * ($invoice["tax"] / 100)) + $totalNominal); ?>" disabled></td>
             </tr>
         </table>
-        <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>
+        <button type="submit" class="btn btn-outline-success">Submit</button>
         <?php if($pageState == "amend_invoice_moving"){ ?>
             <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_moving=" . $result["no_moving"]; ?>" target="_blank">create PDF</a>
         <?php } else { ?>
