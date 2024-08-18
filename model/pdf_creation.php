@@ -125,15 +125,15 @@ function footerInvoice($pdf, $no_faktur, $total_amount, $tax, $taxPPN, $pay_amou
     $pdf->Cell(30, 10, 'NO. Faktur', 0, 0);
     $pdf->Cell(70, 10, ': ' . $no_faktur, 0, 0);
     $pdf->Cell(30, 10, 'Total Nilai Barang', 0, 0);
-    $pdf->Cell(30, 10, ': ' . $total_amount, 0, 1);
+    $pdf->Cell(30, 10, ': ' . formatToIndonesianNumber($total_amount), 0, 1);
 
     $pdf->Cell(100, 10, '', 0, 0);
     $pdf->Cell(30, 10, 'PPN (%): ' . $tax, 0, 0);
-    $pdf->Cell(30, 10, ': ' . $taxPPN, 0, 1);
+    $pdf->Cell(30, 10, ': ' . formatToIndonesianNumber($taxPPN), 0, 1);
 
     $pdf->Cell(100, 10, '', 0, 0);
-    $pdf->Cell(40, 10, 'NIlai Yg Harus Dibayar', 0, 0);
-    $pdf->Cell(30, 10, ': ' . $pay_amount, 0, 1);
+    $pdf->Cell(30, 10, 'NIlai Yg Harus Dibayar', 0, 0);
+    $pdf->Cell(30, 10, ': ' . formatToIndonesianNumber($pay_amount), 0, 1);
 }
 
 function displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $total_amount){
@@ -153,10 +153,10 @@ function displayProducts($pdf, $productCodes, $productNames, $qtys, $uoms, $pric
         $pdf->Cell(10, 7, $i + 1, 1);
         $pdf->Cell(30, 7, $productCodes[$i], 1);
         $pdf->Cell(50, 7, $productNames[$i], 1);
-        $pdf->Cell(20, 7, $qtys[$i], 1);
+        $pdf->Cell(20, 7, formatToIndonesianNumber($qtys[$i]), 1);
         $pdf->Cell(20, 7, $uoms[$i], 1);
-        $pdf->Cell(30, 7, $price_per_uom[$i], 1);
-        $pdf->Cell(30, 7, ($qtys[$i] * $price_per_uom[$i]), 1);
+        $pdf->Cell(30, 7, formatToIndonesianNumber($price_per_uom[$i]), 1);
+        $pdf->Cell(30, 7, formatToIndonesianNumber(($qtys[$i] * $price_per_uom[$i])), 1);
         $total_amount += ($qtys[$i] * $price_per_uom[$i]);
         $pdf->Ln();
     }
@@ -179,27 +179,27 @@ function footerPayment($pdf, $payment_date, $total_amount, $payment_amount, $tax
     $pdf->Cell(30, 7, 'Total Nilai Barang', 0, 0);
     $pdf->SetFont('Arial', '', 6);
     $pdf->Cell(5, 7, ':', 0, 0);
-    $pdf->Cell(40, 7, $total_amount, 0, 1);
+    $pdf->Cell(40, 7, formatToIndonesianNumber($total_amount), 0, 1);
 
     $pdf->SetFont('Arial', 'B', 6);
     $pdf->Cell(30, 7, 'nilai payment', 0, 0);
     $pdf->SetFont('Arial', '', 6);
     $pdf->Cell(5, 7, ':', 0, 0);
-    $pdf->Cell(45, 7, $payment_amount, 0, 0);
+    $pdf->Cell(45, 7, formatToIndonesianNumber($payment_amount), 0, 0);
 
     // Right side (Total, PPN, and Nilai Yg Harus Dibayar)
     $pdf->SetFont('Arial', 'B', 6);
     $pdf->Cell(30, 7, 'PPN (%): ' . $tax, 0, 0);
     $pdf->SetFont('Arial', '', 6);
     $pdf->Cell(5, 7, ':', 0, 0);
-    $pdf->Cell(40, 7, $taxPPN, 0, 1);
+    $pdf->Cell(40, 7, formatToIndonesianNumber($taxPPN), 0, 1);
 
     $pdf->Cell(80, 7, '', 0, 0);
     $pdf->SetFont('Arial', 'B', 6);
     $pdf->Cell(30, 7, 'Nilai Yg Harus Dibayar', 0, 0);
     $pdf->SetFont('Arial', '', 6);
     $pdf->Cell(5, 7, ':', 0, 0);
-    $pdf->Cell(40, 7, $pay_amount, 0, 1);
+    $pdf->Cell(40, 7, formatToIndonesianNumber($pay_amount), 0, 1);
 }
 
 function create_invoice_in_pdf($storageCode, $storageName, $vendorName, $no_sj, $no_truk, $purchase_order, $invoice_date,  $no_LPB, $no_invoice, $productCodes, $productNames, $qtys, $uoms, $price_per_uom, $no_faktur, $tax){
@@ -376,6 +376,10 @@ function create_payment_out_pdf($storageCode, $storageName, $customerName, $no_s
     // Output the PDF
     header('Content-Type: application/pdf');
     $pdf->Output('I', 'invoice.pdf');
+}
+
+function formatToIndonesianNumber($number) {
+    return number_format($number, 0, ',', '.');
 }
 
 ?>
