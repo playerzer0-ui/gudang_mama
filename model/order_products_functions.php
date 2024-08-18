@@ -297,7 +297,7 @@ function getAllProductsForSaldo($storageCode, $month, $year){
     $storageCondition = $storageCode !== "NON" ? 'o.storageCode = :storageCode AND ' : '';
     $storageCondition1 = $storageCode !== "NON" ? 'r.storageCode = :storageCode1 AND ' : '';
     
-    $productStatusCondition = $storageCode === "NON" ? 'op.product_status != "out_tax"' : 'op.product_status != "out"';
+    $productStatusCondition = $storageCode === "NON" ? 'op.product_status != "out_tax" AND op.product_status NOT LIKE "%repack%"' : 'op.product_status != "out"';
 
     // Conditional part of the ORDER BY clause
     $orderByCondition = $storageCode !== "NON" ? "WHEN product_status = 'out_tax' THEN 4" : "WHEN product_status = 'out' THEN 4";

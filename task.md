@@ -33,6 +33,7 @@ WHERE
     MONTH(i.invoice_date) = 8
     AND YEAR(i.invoice_date) = 2024
     AND op.product_status != "out_tax"
+    AND op.product_status NOT LIKE "%repack%"
 GROUP BY 
     p.productCode, 
     p.productName,
