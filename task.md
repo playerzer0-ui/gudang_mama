@@ -12,73 +12,72 @@
 - report hutang
 - report piutang
 
-(SELECT 
-            p.productCode, 
-            p.productName,
-            o.storageCode, 
-            MONTH(i.invoice_date) AS saldoMonth, 
-            YEAR(i.invoice_date) AS saldoYear, 
-            SUM(op.qty) AS totalQty, 
-            AVG(SUM(op.price_per_UOM * op.qty)) AS avgPrice,
-            op.product_status
-        FROM
-            products p
-        JOIN 
-            order_products op ON p.productCode = op.productCode
-        JOIN 
-            orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
-        JOIN 
-            invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
-        WHERE 
-            o.storageCode = "APA"
-            AND MONTH(i.invoice_date) = 8
-            AND YEAR(i.invoice_date) = 2024
-            AND op.product_status != "out"
-        GROUP BY 
-            p.productCode, 
-            p.productName,
-            o.storageCode, 
-            saldoMonth, 
-            saldoYear,
-            op.product_status
-    )
-    UNION ALL
-    (
-        SELECT 
-            p.productCode, 
-            p.productName,
-            r.storageCode, 
-            MONTH(r.repack_date) AS saldoMonth, 
-            YEAR(r.repack_date) AS saldoYear, 
-            SUM(op.qty) AS totalQty, 
-            AVG(SUM(op.price_per_UOM * op.qty)) AS avgPrice,
-            op.product_status
-        FROM
-            products p
-        JOIN 
-            order_products op ON p.productCode = op.productCode
-        JOIN 
-            repacks r ON op.repack_no_repack = r.no_repack
-        WHERE
-            r.storageCode = "APA"
-            AND MONTH(r.repack_date) = 8
-            AND YEAR(r.repack_date) = 2024
-        GROUP BY 
-            p.productCode, 
-            p.productName,
-            r.storageCode, 
-            saldoMonth, 
-            saldoYear,
-            op.product_status
-    )
-    ORDER BY
-        CASE 
-            WHEN product_status = "in" THEN 1
-            WHEN product_status = "out_tax" THEN 2
-            WHEN product_status = "repack_awal" THEN 3
-            WHEN product_status = "repack_akhir" THEN 4
-            ELSE 5
-        END
+SELECT 
+    p.productCode, 
+    p.productName,
+    o.storageCode, 
+    MONTH(i.invoice_date) AS saldoMonth, 
+    YEAR(i.invoice_date) AS saldoYear, 
+    SUM(op.qty) AS totalQty, 
+    ROUND(SUM(op.price_per_UOM * op.qty) / SUM(op.qty)) AS avgPrice,
+    op.product_status
+FROM
+    products p
+JOIN 
+    order_products op ON p.productCode = op.productCode
+JOIN 
+    orders o ON op.nomor_surat_jalan = o.nomor_surat_jalan
+JOIN 
+    invoices i ON o.nomor_surat_jalan = i.nomor_surat_jalan
+WHERE 
+    MONTH(i.invoice_date) = 8
+    AND YEAR(i.invoice_date) = 2024
+    AND op.product_status != "out_tax"
+GROUP BY 
+    p.productCode, 
+    p.productName,
+    o.storageCode, 
+    saldoMonth, 
+    saldoYear,
+    op.product_status
+
+UNION ALL
+
+SELECT 
+    p.productCode, 
+    p.productName,
+    r.storageCode, 
+    MONTH(r.repack_date) AS saldoMonth, 
+    YEAR(r.repack_date) AS saldoYear, 
+    SUM(op.qty) AS totalQty, 
+    ROUND(SUM(op.price_per_UOM * op.qty) / SUM(op.qty)) AS avgPrice,
+    op.product_status
+FROM
+    products p
+JOIN 
+    order_products op ON p.productCode = op.productCode
+JOIN 
+    repacks r ON op.repack_no_repack = r.no_repack
+WHERE
+    MONTH(r.repack_date) = 8
+    AND YEAR(r.repack_date) = 2024
+GROUP BY 
+    p.productCode, 
+    p.productName,
+    r.storageCode, 
+    saldoMonth, 
+    saldoYear,
+    op.product_status
+
+ORDER BY
+    CASE 
+        WHEN product_status = "in" THEN 1
+        WHEN product_status = "repack_awal" THEN 2
+        WHEN product_status = "repack_akhir" THEN 3
+        WHEN product_status = "out" THEN 4
+        ELSE 5
+    END;
+
 
 
 
