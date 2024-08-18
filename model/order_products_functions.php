@@ -300,7 +300,7 @@ function getAllProductsForSaldo($storageCode, $month, $year){
     $productStatusCondition = $storageCode === "NON" ? 'op.product_status != "out_tax"' : 'op.product_status != "out"';
 
     // Conditional part of the ORDER BY clause
-    $orderByCondition = $storageCode !== "NON" ? "WHEN product_status = 'out_tax' THEN 2" : "WHEN product_status = 'out' THEN 2";
+    $orderByCondition = $storageCode !== "NON" ? "WHEN product_status = 'out_tax' THEN 4" : "WHEN product_status = 'out' THEN 4";
 
     $query = '(SELECT 
             p.productCode, 
@@ -365,9 +365,9 @@ function getAllProductsForSaldo($storageCode, $month, $year){
     ORDER BY
         CASE 
             WHEN product_status = "in" THEN 1
+            WHEN product_status = "repack_awal" THEN 2
+            WHEN product_status = "repack_akhir" THEN 3
             '. $orderByCondition .'
-            WHEN product_status = "repack_awal" THEN 3
-            WHEN product_status = "repack_akhir" THEN 4
             ELSE 5
         END';
 

@@ -1094,8 +1094,8 @@ switch($action){
         break;
 
     case "test2":
-        echo "<pre>" . print_r(generateSaldo("APA", 8, 2024), true) . "</pre>";
-        //echo "<pre>" . print_r(json_encode(getAllProductsForSaldo("APA", 8, 2024)), true) . "</pre>";
+        //echo "<pre>" . print_r(json_encode(generateSaldo("NON", 8, 2024)), true) . "</pre>";
+        echo "<pre>" . print_r(json_encode(getAllProductsForSaldo("APA", 8, 2024)), true) . "</pre>";
         break;
 
     case "getHPP":
