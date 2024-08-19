@@ -36,7 +36,8 @@
         <button class="btn btn-secondary" onclick="generateReport()">search</button>
     </div>
     <div class="table-container">
-        <table id="reporttable">
+        <?php if($userType == 1){ ?>
+            <table id="reporttable">
             <thead>
                 <tr>
                     <th rowspan="3">No</th>
@@ -98,6 +99,48 @@
                 <!-- Data rows will be populated here -->
             </tbody>
         </table>
+        <?php } else { ?>
+        <table id="reporttable">
+            <thead>
+                <tr>
+                    <th rowspan="3">No</th>
+                    <th rowspan="3">KD</th>
+                    <th rowspan="3">Material</th>
+                    <th colspan="1">Saldo Awal</th>
+                    <th colspan="4">Penerimaan</th>
+                    <th colspan="1">Barang Siap Dijual</th>
+                    <th colspan="4">Pengeluaran</th>
+                    <th colspan="1">Saldo Akhir</th>
+                </tr>
+                <tr>
+                    <th rowspan="2">QTY</th>
+                    <th colspan="1">Pembelian</th>
+                    <th colspan="1">Pindah PT</th>
+                    <th colspan="1">Repack</th>
+                    <th colspan="1">Total In</th>
+                    <th rowspan="2">QTY</th>
+                    <th colspan="1">Penjualan</th>
+                    <th colspan="1">Pindah PT</th>
+                    <th colspan="1">Repack</th>
+                    <th colspan="1">Total Out</th>
+                    <th rowspan="2">QTY</th>
+                </tr>
+                <tr>
+                    <th>QTY</th>
+                    <th>QTY</th>
+                    <th>QTY</th>
+                    <th>QTY</th>
+                    <th>QTY</th>
+                    <th>QTY</th>
+                    <th>QTY</th>
+                    <th>QTY</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data rows will be populated here -->
+            </tbody>
+        </table>
+        <?php } ?>
     </div>
  </main>
 

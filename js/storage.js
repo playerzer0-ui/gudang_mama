@@ -28,7 +28,7 @@ function generateReport() {
 
         },
         success: function (response) {
-            console.log(response);
+            //console.log(response);
             let data = JSON.parse(response);
             populateReportTable(data);
         }
@@ -38,17 +38,19 @@ function generateReport() {
 }
 
 function populateReportTable(data) {
+    const userType = document.getElementById('userType').value; // Get userType from hidden input
     const tbody = document.querySelector('#reporttable tbody');
     tbody.innerHTML = ''; // Clear existing rows
 
     // Variables to store total sums for final row
     let totalSaldoAwalQty = 0;
-    let totalSaldoAwalRupiah = 0;
     let totalPenerimaanQty = 0;
-    let totalPenerimaanRupiah = 0;
     let totalPengeluaranQty = 0;
-    let totalPengeluaranRupiah = 0;
     let totalSaldoAkhirQty = 0;
+
+    let totalSaldoAwalRupiah = 0;
+    let totalPenerimaanRupiah = 0;
+    let totalPengeluaranRupiah = 0;
     let totalSaldoAkhirRupiah = 0;
 
     let count = 0;
@@ -68,91 +70,116 @@ function populateReportTable(data) {
 
         // Saldo Awal
         let saldoAwalQty = item.saldo_awal.totalQty;
-        let saldoAwalRupiah = parseFloat(item.saldo_awal.totalPrice);
         totalSaldoAwalQty += saldoAwalQty;
-        totalSaldoAwalRupiah += saldoAwalRupiah;
 
-        row.innerHTML += `
-            <td>${saldoAwalQty}</td>
-            <td>${formatNumber(item.saldo_awal.price_per_qty)}</td>
-            <td>${formatNumber(saldoAwalRupiah)}</td>
-        `;
+        row.innerHTML += `<td>${saldoAwalQty}</td>`;
+
+        if (userType == 1) {
+            let saldoAwalRupiah = parseFloat(item.saldo_awal.totalPrice);
+            totalSaldoAwalRupiah += saldoAwalRupiah;
+
+            row.innerHTML += `
+                <td>${formatNumber(item.saldo_awal.price_per_qty)}</td>
+                <td>${formatNumber(saldoAwalRupiah)}</td>
+            `;
+        }
 
         // Penerimaan
         let pembelianQty = parseInt(item.penerimaan.pembelian.totalQty);
-        let pembelianRupiah = parseFloat(item.penerimaan.pembelian.totalPrice);
-        totalPenerimaanQty += pembelianQty;
-        totalPenerimaanRupiah += pembelianRupiah;
-
         let totalInQty = item.penerimaan.totalIn.totalQty;
-        let totalInRupiah = parseFloat(item.penerimaan.totalIn.totalPrice);
-        totalPenerimaanQty += totalInQty;
-        totalPenerimaanRupiah += totalInRupiah;
+        totalPenerimaanQty += pembelianQty + totalInQty;
 
-        row.innerHTML += `
-            <td>${pembelianQty}</td>
-            <td>${formatNumber(item.penerimaan.pembelian.price_per_qty)}</td>
-            <td>${formatNumber(pembelianRupiah)}</td>
-            <td>${item.penerimaan.movingIn.totalQty}</td>
-            <td>${formatNumber(item.penerimaan.movingIn.price_per_qty)}</td>
-            <td>${formatNumber(item.penerimaan.movingIn.totalPrice)}</td>
-            <td>${item.penerimaan.repackIn.totalQty}</td>
-            <td>${formatNumber(item.penerimaan.repackIn.price_per_qty)}</td>
-            <td>${formatNumber(item.penerimaan.repackIn.totalPrice)}</td>
-            <td>${totalInQty}</td>
-            <td>${formatNumber(item.penerimaan.totalIn.price_per_qty)}</td>
-            <td>${formatNumber(totalInRupiah)}</td>
-        `;
+        row.innerHTML += `<td>${pembelianQty}</td>`;
+
+        if (userType == 1) {
+            let pembelianRupiah = parseFloat(item.penerimaan.pembelian.totalPrice);
+            let totalInRupiah = parseFloat(item.penerimaan.totalIn.totalPrice);
+            totalPenerimaanRupiah += pembelianRupiah + totalInRupiah;
+
+            row.innerHTML += `
+                <td>${formatNumber(item.penerimaan.pembelian.price_per_qty)}</td>
+                <td>${formatNumber(pembelianRupiah)}</td>
+                <td>${item.penerimaan.movingIn.totalQty}</td>
+                <td>${formatNumber(item.penerimaan.movingIn.price_per_qty)}</td>
+                <td>${formatNumber(item.penerimaan.movingIn.totalPrice)}</td>
+                <td>${item.penerimaan.repackIn.totalQty}</td>
+                <td>${formatNumber(item.penerimaan.repackIn.price_per_qty)}</td>
+                <td>${formatNumber(item.penerimaan.repackIn.totalPrice)}</td>
+                <td>${totalInQty}</td>
+                <td>${formatNumber(item.penerimaan.totalIn.price_per_qty)}</td>
+                <td>${formatNumber(totalInRupiah)}</td>
+            `;
+        } else {
+            row.innerHTML += `
+                <td>${item.penerimaan.movingIn.totalQty}</td>
+                <td>${item.penerimaan.repackIn.totalQty}</td>
+                <td>${totalInQty}</td>
+            `;
+        }
 
         // Barang Siap Dijual
-        row.innerHTML += `
-            <td>${item.barang_siap_dijual.totalQty}</td>
-            <td>${formatNumber(item.barang_siap_dijual.price_per_qty)}</td>
-            <td>${formatNumber(item.barang_siap_dijual.totalPrice)}</td>
-        `;
+        row.innerHTML += `<td>${item.barang_siap_dijual.totalQty}</td>`;
+
+        if (userType == 1) {
+            row.innerHTML += `
+                <td>${formatNumber(item.barang_siap_dijual.price_per_qty)}</td>
+                <td>${formatNumber(item.barang_siap_dijual.totalPrice)}</td>
+            `;
+        }
 
         // Pengeluaran
         let penjualanQty = parseInt(item.pengeluaran.penjualan.totalQty);
-        let penjualanRupiah = parseFloat(item.pengeluaran.penjualan.totalPrice);
-        totalPengeluaranQty += penjualanQty;
-        totalPengeluaranRupiah += penjualanRupiah;
-
         let totalOutQty = item.pengeluaran.totalOut.totalQty;
-        let totalOutRupiah = parseFloat(item.pengeluaran.totalOut.totalPrice);
-        totalPengeluaranQty += totalOutQty;
-        totalPengeluaranRupiah += totalOutRupiah;
+        totalPengeluaranQty += penjualanQty + totalOutQty;
 
-        row.innerHTML += `
-            <td>${penjualanQty}</td>
-            <td>${formatNumber(item.pengeluaran.penjualan.price_per_qty)}</td>
-            <td>${formatNumber(penjualanRupiah)}</td>
-            <td>${item.pengeluaran.movingOut.totalQty}</td>
-            <td>${formatNumber(item.pengeluaran.movingOut.price_per_qty)}</td>
-            <td>${formatNumber(item.pengeluaran.movingOut.totalPrice)}</td>
-            <td>${item.pengeluaran.repackOut.totalQty}</td>
-            <td>${formatNumber(item.pengeluaran.repackOut.price_per_qty)}</td>
-            <td>${formatNumber(item.pengeluaran.repackOut.totalPrice)}</td>
-            <td>${totalOutQty}</td>
-            <td>${formatNumber(item.pengeluaran.totalOut.price_per_qty)}</td>
-            <td>${formatNumber(totalOutRupiah)}</td>
-        `;
+        row.innerHTML += `<td>${penjualanQty}</td>`;
+
+        if (userType == 1) {
+            let penjualanRupiah = parseFloat(item.pengeluaran.penjualan.totalPrice);
+            let totalOutRupiah = parseFloat(item.pengeluaran.totalOut.totalPrice);
+            totalPengeluaranRupiah += penjualanRupiah + totalOutRupiah;
+
+            row.innerHTML += `
+                <td>${formatNumber(item.pengeluaran.penjualan.price_per_qty)}</td>
+                <td>${formatNumber(penjualanRupiah)}</td>
+                <td>${item.pengeluaran.movingOut.totalQty}</td>
+                <td>${formatNumber(item.pengeluaran.movingOut.price_per_qty)}</td>
+                <td>${formatNumber(item.pengeluaran.movingOut.totalPrice)}</td>
+                <td>${item.pengeluaran.repackOut.totalQty}</td>
+                <td>${formatNumber(item.pengeluaran.repackOut.price_per_qty)}</td>
+                <td>${formatNumber(item.pengeluaran.repackOut.totalPrice)}</td>
+                <td>${totalOutQty}</td>
+                <td>${formatNumber(item.pengeluaran.totalOut.price_per_qty)}</td>
+                <td>${formatNumber(totalOutRupiah)}</td>
+            `;
+        } else {
+            row.innerHTML += `
+                <td>${item.pengeluaran.movingOut.totalQty}</td>
+                <td>${item.pengeluaran.repackOut.totalQty}</td>
+                <td>${totalOutQty}</td>
+            `;
+        }
 
         // Saldo Akhir
         let saldoAkhirQty = item.saldo_akhir.totalQty;
-        let saldoAkhirRupiah = parseFloat(item.saldo_akhir.totalPrice);
         totalSaldoAkhirQty += saldoAkhirQty;
-        totalSaldoAkhirRupiah += saldoAkhirRupiah;
 
-        row.innerHTML += `
-            <td>${saldoAkhirQty}</td>
-            <td>${formatNumber(item.saldo_akhir.price_per_qty)}</td>
-            <td>${formatNumber(saldoAkhirRupiah)}</td>
-        `;
+        row.innerHTML += `<td>${saldoAkhirQty}</td>`;
+
+        if (userType == 1) {
+            let saldoAkhirRupiah = parseFloat(item.saldo_akhir.totalPrice);
+            totalSaldoAkhirRupiah += saldoAkhirRupiah;
+
+            row.innerHTML += `
+                <td>${formatNumber(item.saldo_akhir.price_per_qty)}</td>
+                <td>${formatNumber(saldoAkhirRupiah)}</td>
+            `;
+        }
 
         tbody.appendChild(row);
     }
 
-    // Optionally, you can add a row for totals if needed
+    // Optionally, you can add a row for totals if needed, based on userType
 }
 
 function formatNumber(number) {
