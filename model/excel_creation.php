@@ -20,20 +20,25 @@ function report_stock_excel($storageCode, $month, $year) {
     ->setKeywords("Office Excel  open XML php")
     ->setCategory("report file");
 
+
+    $sheet->setCellValue("A1", "hello");
+
+
+    $filePath = "../files/report_stock_" . $storageCode . "_" . $month . "_" . $year . ".xlsx";
     $writer = new Xlsx($spreadsheet);
-    $writer->save($filename);
+    $writer->save($filePath);
 
     ob_end_clean();
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+    header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
     header('Content-Transfer-Encoding: binary');
     header('Cache-Control: must-revalidate, post-check, pre-check');
     header('Pragma: public');
     header('Content-Type: application/force-download');
     header('Content-Type: application/download');
-    header('Content-Length: ' . filesize($filename));
+    header('Content-Length: ' . filesize($filePath));
     header('Expires: 0');
-    readfile($filename);
+    readfile($filePath);
 }
 
 
