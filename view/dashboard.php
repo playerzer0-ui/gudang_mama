@@ -34,6 +34,9 @@
             <!-- JavaScript will populate the year options -->
         </select>
         <button class="btn btn-secondary" onclick="generateReport()">search</button>
+        <div id="excel">
+            
+        </div>
     </div>
     <div class="table-container">
         <?php if($userType == 1){ ?>

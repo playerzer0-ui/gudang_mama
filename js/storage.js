@@ -53,12 +53,23 @@ function populateReportTable(data) {
     let totalPengeluaranRupiah = 0;
     let totalSaldoAkhirRupiah = 0;
 
+    let item;
+    let storageCode;
+    let month;
+    let year;
+
     let count = 0;
     for (let key in data) {
-        if (key === "0") continue; // Skip metadata
+        if (key === "0"){
+            item = data[key];
+            storageCode = item.storageCode;
+            month = item.month;
+            year = item.year;
+            continue;
+        }
 
         count++;
-        let item = data[key];
+        item = data[key];
         let row = document.createElement('tr');
 
         // No, KD, Material
@@ -177,9 +188,11 @@ function populateReportTable(data) {
         }
 
         tbody.appendChild(row);
-    }
 
+    }
     // Optionally, you can add a row for totals if needed, based on userType
+    document.getElementById("excel").innerHTML = `<a href="../controller/index.php?action=excel_stock&storageCode=${storageCode}&month=${month}&year=${year}" target="_blank"><button class="btn btn-success">excel</button></a>`;
+
 }
 
 function formatNumber(number) {

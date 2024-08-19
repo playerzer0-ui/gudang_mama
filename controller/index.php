@@ -1260,23 +1260,14 @@ switch($action){
         }
 
         break;
+
+    case "excel_stock":
+        $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $month = filter_input(INPUT_GET, "month", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $year = filter_input(INPUT_GET, "year", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        report_stock_excel($storageCode, $month, $year);
+        break;
 }
-
-// function create_NON_slip($no_truk, $vendorCode, $order_date, $purchase_order){
-//     $date = DateTime::createFromFormat('Y-m-d', $order_date);
-//     $month = $date->format('m');
-//     $year = $date->format('Y');
-//     $no_LPB = generateNoLPB("NON", (int)$month, (int)$year, 1);
-
-//     create_slip($no_LPB, "NON", $no_LPB, $no_truk, $vendorCode, "NON", $order_date, $purchase_order, 1);
-// }
-
-// function create_NON_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, $tax){
-//     create_invoice($no_LPB, $invoice_date, $no_invoice, $no_faktur, "-", $tax);
-// }
-
-// function create_NON_payment($no_LPB, $payment_date, $payment_amount){
-//     create_payment($no_LPB, $payment_date, $payment_amount, "-");
-// }
 
 ?>
