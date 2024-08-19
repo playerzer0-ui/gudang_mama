@@ -10,4 +10,8 @@ function checkAccess($action, $userType) {
     return true;
 }
 
+function formatToIndonesianNumber($number) {
+    return number_format($number, 0, ',', '.');
+}
+
 ?>

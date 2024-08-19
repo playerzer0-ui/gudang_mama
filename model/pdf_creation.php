@@ -2,6 +2,7 @@
 
 require_once "../model/storage_functions.php";
 require_once "../model/invoice_functions.php";
+require_once "../model/utility_functions.php";
 require_once "../model/payment_functions.php";
 require_once "../model/vendor_functions.php";
 require_once "../model/order_functions.php";
@@ -376,10 +377,6 @@ function create_payment_out_pdf($storageCode, $storageName, $customerName, $no_s
     // Output the PDF
     header('Content-Type: application/pdf');
     $pdf->Output('I', 'invoice.pdf');
-}
-
-function formatToIndonesianNumber($number) {
-    return number_format($number, 0, ',', '.');
 }
 
 ?>
