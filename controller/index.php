@@ -16,6 +16,7 @@ require_once "../model/utility_functions.php";
 require_once "../model/order_products_functions.php";
 require_once "../fpdf/fpdf.php";
 require_once "../model/pdf_creation.php";
+require_once "../model/excel_creation.php";
 
 global $db;
 
@@ -83,30 +84,45 @@ switch($action){
         break;
 
     case "show_slip":
+        if($userID == null){
+            header("Location:../controller/index.php?action=show_login");
+        }
         $pageState = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $title = "slip " . $pageState;
         require_once "../view/slip.php";
         break;
 
     case "show_invoice":
+        if($userID == null){
+            header("Location:../controller/index.php?action=show_login");
+        }
         $pageState = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $title = "invoice " . $pageState;
         require_once "../view/invoice.php";
         break;
 
     case "show_payment":
+        if($userID == null){
+            header("Location:../controller/index.php?action=show_login");
+        }
         $pageState = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $title = "payment " . $pageState;
         require_once "../view/payment.php";
         break;
 
     case "show_repack":
+        if($userID == null){
+            header("Location:../controller/index.php?action=show_login");
+        }
         $title = "repack";
         $pageState = "repack";
         require_once "../view/repack.php";
         break;
 
     case "show_moving":
+        if($userID == null){
+            header("Location:../controller/index.php?action=show_login");
+        }
         $title = "moving";
         $pageState = "moving";
         require_once "../view/moving.php";
@@ -123,6 +139,9 @@ switch($action){
         break;
 
     case "show_amends":
+        if($userID == null){
+            header("Location:../controller/index.php?action=show_login");
+        }
         $title = "amends";
         $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         switch($state){
@@ -1095,7 +1114,8 @@ switch($action){
 
     case "test2":
         //echo "<pre>" . print_r(json_encode(generateSaldo("NON", 8, 2024)), true) . "</pre>";
-        echo "<pre>" . print_r(json_encode(getAllProductsForSaldo("APA", 8, 2024)), true) . "</pre>";
+        //echo "<pre>" . print_r(json_encode(getAllProductsForSaldo("APA", 8, 2024)), true) . "</pre>";
+        report_stock_excel("APA", "08", "2024");
         break;
 
     case "getHPP":
