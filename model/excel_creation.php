@@ -207,7 +207,7 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $data = getLaporanHutangPiutang($month, $year, $storageCode, $mode);
-    
+
     $totalQty = 0;
     $totalNominal = 0;
     $totalNominalAfterTax = 0;
@@ -299,9 +299,12 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
                 $sheet->mergeCells("C{$rowNumber}:C" . ($rowNumber + $rowCount - 1));
                 $sheet->mergeCells("D{$rowNumber}:D" . ($rowNumber + $rowCount - 1));
                 $sheet->mergeCells("I{$rowNumber}:I" . ($rowNumber + $rowCount - 1));
+                $sheet->getStyle("I{$rowNumber}:I" . ($rowNumber + $rowCount - 1))->getNumberFormat()->setFormatCode($indonesianNumberFormat);
                 $sheet->mergeCells("J{$rowNumber}:J" . ($rowNumber + $rowCount - 1));
                 $sheet->mergeCells("K{$rowNumber}:K" . ($rowNumber + $rowCount - 1));
+                $sheet->getStyle("K{$rowNumber}:K" . ($rowNumber + $rowCount - 1))->getNumberFormat()->setFormatCode($indonesianNumberFormat);
                 $sheet->mergeCells("N{$rowNumber}:N" . ($rowNumber + $rowCount - 1));
+                $sheet->getStyle("N{$rowNumber}:N" . ($rowNumber + $rowCount - 1))->getNumberFormat()->setFormatCode($indonesianNumberFormat);
                 $sheet->setCellValue("B{$rowNumber}", $invoice['invoice_date']);
                 if($mode == "hutang"){
                     $sheet->setCellValue("C{$rowNumber}", $invoice['vendorName']);
@@ -328,6 +331,7 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
                 $payment = $invoice['payments'][$i];
                 $sheet->setCellValue("L{$rowNumber}", $payment['payment_date']);
                 $sheet->setCellValue("M{$rowNumber}", $payment['payment_amount']);
+                $sheet->getStyle("M{$rowNumber}")->getNumberFormat()->setFormatCode($indonesianNumberFormat);
             }
 
             $rowNumber++;
@@ -347,6 +351,14 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
 
     // Optionally format the totals row (e.g., bold font)
     $sheet->getStyle("E{$rowNumber}:N{$rowNumber}")->getFont()->setBold(true);
+
+    $sheet->getStyle("F6:F{$rowNumber}")->getNumberFormat()->setFormatCode($indonesianNumberFormat);
+    $sheet->getStyle("G6:G{$rowNumber}")->getNumberFormat()->setFormatCode($indonesianNumberFormat);
+    $sheet->getStyle("H6:H{$rowNumber}")->getNumberFormat()->setFormatCode($indonesianNumberFormat);
+    $sheet->getStyle("I{$rowNumber}")->getNumberFormat()->setFormatCode($indonesianNumberFormat);
+    $sheet->getStyle("K{$rowNumber}")->getNumberFormat()->setFormatCode($indonesianNumberFormat);
+    $sheet->getStyle("M{$rowNumber}")->getNumberFormat()->setFormatCode($indonesianNumberFormat);
+    $sheet->getStyle("N{$rowNumber}")->getNumberFormat()->setFormatCode($indonesianNumberFormat);
 
     if($mode == "hutang"){
         $filePath = "../files/report_hutang_" . $storageCode . "_" . $month . "_" . $year . ".xlsx";
@@ -368,6 +380,7 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
     readfile($filePath);
     unlink($filePath);
 }
+
 
 
 ?>
