@@ -1110,12 +1110,13 @@ switch($action){
         //create_invoice_in_pdf("APA", "BBB", "ASAS", "TRUK", "123", "222-22-22", "1/LPB?APA?00/231", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
         //create_invoice_out_pdf("RQQ", "APA", "BBB", "ASAS", "ADDRESS", "NPWP", "222-22-22", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111, 11);
         //create_payment_in_pdf("RQQ", "rorqual", "vendor", "sj1", "truk", "po1", "2202-22-22", "LPB", "saINV", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 1200, "12-12-121", 11);
+        echo "<pre>" . print_r(json_encode(getLaporanHutangPiutang("APA", 8, 2024, "hutang")), true) . "</pre>";
         break;
 
     case "test2":
         //echo "<pre>" . print_r(json_encode(generateSaldo("NON", 8, 2024)), true) . "</pre>";
         //echo "<pre>" . print_r(json_encode(getAllProductsForSaldo("APA", 8, 2024)), true) . "</pre>";
-        report_stock_excel("APA", "08", "2024");
+        //report_stock_excel("APA", "08", "2024");
         break;
 
     case "getHPP":
@@ -1267,6 +1268,21 @@ switch($action){
         $year = filter_input(INPUT_GET, "year", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         report_stock_excel($storageCode, $month, $year);
+        break;
+
+    case "excel_hutang":
+        $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $month = filter_input(INPUT_GET, "month", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $year = filter_input(INPUT_GET, "year", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        excel_hutang_piutang($storageCode, $month, $year, "hutang");
+        break;
+
+    case "excel_piutang":
+        $month = filter_input(INPUT_GET, "month", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $year = filter_input(INPUT_GET, "year", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        excel_hutang_piutang("NON", $month, $year, "piutang");
         break;
 }
 

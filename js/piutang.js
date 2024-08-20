@@ -27,6 +27,7 @@ function generateReport() {
             let data = JSON.parse(response);
             console.log(response);
             populateTable(data);
+            document.getElementById("excel").innerHTML = `<a href="../controller/index.php?action=excel_piutang&month=${monthValue}&year=${yearValue}" target="_blank"><button class="btn btn-success">excel</button></a>`;
         }
     });
 }
@@ -61,6 +62,7 @@ function populateTable(data) {
     let totalNominal = 0;
     let totalPayment = 0;
     let totalRemaining = 0;
+    let tax = 0;
 
     data.forEach((invoice, index) => {
         const productCount = invoice.products.length;
@@ -69,7 +71,7 @@ function populateTable(data) {
         let firstRow = true;
 
         const invoiceTotalNominal = invoice.products.reduce((sum, product) => sum + parseFloat(product.nominal), 0);
-        const tax = invoice.tax; // Assuming tax is a percentage value provided in the invoice data
+        tax = invoice.tax; // Assuming tax is a percentage value provided in the invoice data
         const nominalAfterTax = invoiceTotalNominal + (invoiceTotalNominal * (tax / 100));
         const invoiceTotalPayment = invoice.payments.reduce((sum, payment) => sum + parseFloat(payment.payment_amount), 0);
         const invoiceRemaining = nominalAfterTax - invoiceTotalPayment;
@@ -104,7 +106,7 @@ function populateTable(data) {
                 tr.innerHTML += `<td>${payment.payment_date}</td>`;
                 tr.innerHTML += `<td>${formatNumber(payment.payment_amount)}</td>`;
                 if (firstRow) {
-                    tr.innerHTML += `<td rowspan="${rowCount}"${invoiceRemaining < 0 ? ' class="not-paid"' : ''}>${formatNumber(invoiceRemaining)}</td>`;
+                    tr.innerHTML += `<td rowspan="${rowCount}"${invoiceRemaining > 0 ? ' class="not-paid"' : ''}>${formatNumber(invoiceRemaining)}</td>`;
                 }
             } else {
                 tr.innerHTML += `<td colspan="2"></td>`;

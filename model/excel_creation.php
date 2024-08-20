@@ -1,6 +1,7 @@
 <?php
 
 require_once "../vendor/autoload.php";
+require_once "../model/invoice_functions.php";
 require_once "../model/order_products_functions.php";
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -8,9 +9,11 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 $letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP'];
+$indonesianNumberFormat = '#,##0';
 
 function report_stock_excel($storageCode, $month, $year) {
     global $letters;
+    global $indonesianNumberFormat;
 
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
@@ -124,7 +127,7 @@ function report_stock_excel($storageCode, $month, $year) {
     $sheet->setCellValue("AJ7", "rupiah");
 
     $cell = 8;
-    $indonesianNumberFormat = '#,##0';
+    
     foreach($data as $key => $val){
         if($key == "0") continue;
 
@@ -178,6 +181,152 @@ function report_stock_excel($storageCode, $month, $year) {
 
 
     $filePath = "../files/report_stock_" . $storageCode . "_" . $month . "_" . $year . ".xlsx";
+    $writer = new Xlsx($spreadsheet);
+    $writer->save($filePath);
+
+    ob_end_clean();
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
+    header('Content-Transfer-Encoding: binary');
+    header('Cache-Control: must-revalidate, post-check, pre-check');
+    header('Pragma: public');
+    header('Content-Type: application/force-download');
+    header('Content-Type: application/download');
+    header('Content-Length: ' . filesize($filePath));
+    header('Expires: 0');
+    readfile($filePath);
+
+    // Delete the file after sending it to the client
+    unlink($filePath);
+}
+
+function excel_hutang_piutang($storageCode, $month, $year, $mode){
+    global $letters;
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $data = getLaporanHutangPiutang($month, $year, $storageCode, $mode);
+    $totalQty = 0;
+    $totalNominal = 0;
+    $totalNominalAfterTax = 0;
+    $totalNilaiBayar = 0;
+    $totalSisaHutang = 0;
+
+    $spreadsheet->getProperties()->setCreator("user")
+    ->setLastModifiedBy("user")
+    ->setTitle("report_hutang_" . $storageCode . "_" . $month . "_" . $year)
+    ->setSubject("report_hutang_" . $storageCode . "_" . $month . "_" . $year)
+    ->setDescription("monthly report generated with hutang")
+    ->setKeywords("Office Excel open XML php")
+    ->setCategory("report file");
+
+    for($i = 0; $i < 14; $i++){
+        $sheet->getColumnDimension($letters[$i])->setAutoSize(true);
+    }
+
+    $sheet->mergeCells("A1:G1");
+    $sheet->getStyle("A1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $sheet->getStyle("A1")->getFont()->setBold(5)->setSize(36);
+    if($mode == "hutang"){
+        $sheet->setCellValue("A1", "REPORT HUTANG: " . $storageCode);
+    }
+    else{
+        $sheet->setCellValue("A1", "REPORT PIUTANG: " . $storageCode);
+    }
+    $sheet->setCellValue("A2", "MONTH: " . $month);
+    $sheet->setCellValue("A3", "YEAR: " . $year);
+
+    $sheet->setCellValue("A5", "No.");
+    $sheet->setCellValue("B5", "Invoice Date");
+    if($mode == "hutang"){
+        $sheet->setCellValue("C5", "Nama Vendor");
+    }
+    else{
+        $sheet->setCellValue("C5", "Nama Customer");
+    }
+    $sheet->setCellValue("D5", "No Invoice");
+    $sheet->setCellValue("E5", "Nama Material");
+    $sheet->setCellValue("F5", "QTY");
+    $sheet->setCellValue("G5", "Price/UOM");
+    $sheet->setCellValue("H5", "Nominal");
+    $sheet->setCellValue("I5", "Total Nominal");
+    $sheet->setCellValue("J5", "Tax (%)");
+    $sheet->setCellValue("K5", "Nominal After Tax");
+    $sheet->setCellValue("L5", "Tgl Pembayaran");
+    $sheet->setCellValue("M5", "Nilai Bayar");
+    $sheet->setCellValue("N5", "Sisa Hutang");
+
+    $rowNumber = 6; // Starting row for data
+    $index = 1;
+
+    foreach($data as $invoice){
+        $productCount = count($invoice['products']);
+        $paymentCount = count($invoice['payments']);
+        $rowCount = max($productCount, $paymentCount);
+        $firstRow = true;
+
+        $invoiceTotalNominal = array_reduce($invoice['products'], function($sum, $product) {
+            return $sum + (float)$product['nominal'];
+        }, 0);
+        $tax = (float)$invoice['tax'];
+        $nominalAfterTax = $invoiceTotalNominal + ($invoiceTotalNominal * ($tax / 100));
+        $invoiceTotalPayment = array_reduce($invoice['payments'], function($sum, $payment) {
+            return $sum + (float)$payment['payment_amount'];
+        }, 0);
+        $invoiceRemaining = $nominalAfterTax - $invoiceTotalPayment;
+
+        for ($i = 0; $i < $rowCount; $i++) {
+            $sheet->setCellValue("A{$rowNumber}", $index);
+
+            if ($firstRow) {
+                $sheet->mergeCells("B{$rowNumber}:B" . ($rowNumber + $rowCount - 1));
+                $sheet->mergeCells("C{$rowNumber}:C" . ($rowNumber + $rowCount - 1));
+                $sheet->mergeCells("D{$rowNumber}:D" . ($rowNumber + $rowCount - 1));
+                $sheet->mergeCells("I{$rowNumber}:I" . ($rowNumber + $rowCount - 1));
+                $sheet->mergeCells("J{$rowNumber}:J" . ($rowNumber + $rowCount - 1));
+                $sheet->mergeCells("K{$rowNumber}:K" . ($rowNumber + $rowCount - 1));
+                $sheet->mergeCells("N{$rowNumber}:N" . ($rowNumber + $rowCount - 1));
+                $sheet->setCellValue("B{$rowNumber}", $invoice['invoice_date']);
+                if($mode == "hutang"){
+                    $sheet->setCellValue("C{$rowNumber}", $invoice['vendorName']);
+                }
+                else{
+                    $sheet->setCellValue("C{$rowNumber}", $invoice['customerName']);
+                }
+                $sheet->setCellValue("D{$rowNumber}", $invoice['no_invoice']);
+                $sheet->setCellValue("I{$rowNumber}", $invoiceTotalNominal);
+                $sheet->setCellValue("J{$rowNumber}", $tax);
+                $sheet->setCellValue("K{$rowNumber}", $nominalAfterTax);
+                $sheet->setCellValue("N{$rowNumber}", $invoiceRemaining);
+            }
+
+            if ($i < $productCount) {
+                $product = $invoice['products'][$i];
+                $sheet->setCellValue("E{$rowNumber}", $product['productCode']);
+                $sheet->setCellValue("F{$rowNumber}", $product['qty']);
+                $sheet->setCellValue("G{$rowNumber}", $product['price_per_UOM']);
+                $sheet->setCellValue("H{$rowNumber}", $product['nominal']);
+            }
+
+            if ($i < $paymentCount) {
+                $payment = $invoice['payments'][$i];
+                $sheet->setCellValue("L{$rowNumber}", $payment['payment_date']);
+                $sheet->setCellValue("M{$rowNumber}", $payment['payment_amount']);
+            }
+
+            $rowNumber++;
+            $firstRow = false;
+        }
+
+        $index++;
+    }
+
+    if($mode == "hutang"){
+        $filePath = "../files/report_hutang_" . $storageCode . "_" . $month . "_" . $year . ".xlsx";
+    }
+    else{
+        $filePath = "../files/report_piutang_" . $month . "_" . $year . ".xlsx";
+    }
     $writer = new Xlsx($spreadsheet);
     $writer->save($filePath);
 
