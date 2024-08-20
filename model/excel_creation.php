@@ -202,10 +202,12 @@ function report_stock_excel($storageCode, $month, $year) {
 
 function excel_hutang_piutang($storageCode, $month, $year, $mode){
     global $letters;
+    global $indonesianNumberFormat;
 
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $data = getLaporanHutangPiutang($month, $year, $storageCode, $mode);
+    
     $totalQty = 0;
     $totalNominal = 0;
     $totalNominalAfterTax = 0;
@@ -258,6 +260,7 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
 
     $rowNumber = 6; // Starting row for data
     $index = 1;
+    $previousNo = ''; // Track previous 'No.' value
 
     foreach($data as $invoice){
         $productCount = count($invoice['products']);
@@ -275,8 +278,21 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
         }, 0);
         $invoiceRemaining = $nominalAfterTax - $invoiceTotalPayment;
 
+        // Update totals
+        $totalQty += array_sum(array_column($invoice['products'], 'qty'));
+        $totalNominal += $invoiceTotalNominal;
+        $totalNominalAfterTax += $nominalAfterTax;
+        $totalNilaiBayar += $invoiceTotalPayment;
+        $totalSisaHutang += $invoiceRemaining;
+
         for ($i = 0; $i < $rowCount; $i++) {
-            $sheet->setCellValue("A{$rowNumber}", $index);
+            // Handle 'No.' merging
+            if ($previousNo === $index) {
+                $sheet->mergeCells("A" . ($rowNumber - 1) . ":A{$rowNumber}");
+            } else {
+                $sheet->setCellValue("A{$rowNumber}", $index);
+                $previousNo = $index;
+            }
 
             if ($firstRow) {
                 $sheet->mergeCells("B{$rowNumber}:B" . ($rowNumber + $rowCount - 1));
@@ -321,12 +337,24 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
         $index++;
     }
 
+    // Adding Totals Row
+    $sheet->setCellValue("E{$rowNumber}", "Total");
+    $sheet->setCellValue("F{$rowNumber}", $totalQty);
+    $sheet->setCellValue("H{$rowNumber}", $totalNominal);
+    $sheet->setCellValue("K{$rowNumber}", $totalNominalAfterTax);
+    $sheet->setCellValue("M{$rowNumber}", $totalNilaiBayar);
+    $sheet->setCellValue("N{$rowNumber}", $totalSisaHutang);
+
+    // Optionally format the totals row (e.g., bold font)
+    $sheet->getStyle("E{$rowNumber}:N{$rowNumber}")->getFont()->setBold(true);
+
     if($mode == "hutang"){
         $filePath = "../files/report_hutang_" . $storageCode . "_" . $month . "_" . $year . ".xlsx";
     }
     else{
         $filePath = "../files/report_piutang_" . $month . "_" . $year . ".xlsx";
     }
+
     $writer = new Xlsx($spreadsheet);
     $writer->save($filePath);
 
@@ -334,16 +362,12 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
     header('Content-Transfer-Encoding: binary');
-    header('Cache-Control: must-revalidate, post-check, pre-check');
+    header('Cache-Control: must-revalidate');
     header('Pragma: public');
-    header('Content-Type: application/force-download');
-    header('Content-Type: application/download');
-    header('Content-Length: ' . filesize($filePath));
     header('Expires: 0');
     readfile($filePath);
-
-    // Delete the file after sending it to the client
     unlink($filePath);
 }
+
 
 ?>
