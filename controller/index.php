@@ -1267,7 +1267,12 @@ switch($action){
         $month = filter_input(INPUT_GET, "month", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $year = filter_input(INPUT_GET, "year", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        report_stock_excel($storageCode, $month, $year);
+        if($userType == 1){
+            report_stock_excel($storageCode, $month, $year);
+        }
+        else{
+            report_stock_excel_normal($storageCode, $month, $year);
+        }
         break;
 
     case "excel_hutang":

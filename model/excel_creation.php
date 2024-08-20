@@ -172,12 +172,139 @@ function report_stock_excel($storageCode, $month, $year) {
         $sheet->setCellValue("AI".$cell, $val["saldo_akhir"]["price_per_qty"]);
         $sheet->setCellValue("AJ".$cell, $val["saldo_akhir"]["totalPrice"]);
 
-        
-        for($i = 3; $i < 36; $i++){
-            $sheet->getStyle($letters[$i].$cell)->getNumberFormat()->setFormatCode($indonesianNumberFormat);
-        }
         $cell++;
     }
+
+    $sheet->getStyle("D8:AJ" . ($cell - 1))->getNumberFormat()->setFormatCode($indonesianNumberFormat);
+
+    $filePath = "../files/report_stock_" . $storageCode . "_" . $month . "_" . $year . ".xlsx";
+    $writer = new Xlsx($spreadsheet);
+    $writer->save($filePath);
+
+    ob_end_clean();
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
+    header('Content-Transfer-Encoding: binary');
+    header('Cache-Control: must-revalidate, post-check, pre-check');
+    header('Pragma: public');
+    header('Content-Type: application/force-download');
+    header('Content-Type: application/download');
+    header('Content-Length: ' . filesize($filePath));
+    header('Expires: 0');
+    readfile($filePath);
+
+    // Delete the file after sending it to the client
+    unlink($filePath);
+}
+
+function report_stock_excel_normal($storageCode, $month, $year) {
+    global $letters;
+    global $indonesianNumberFormat;
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $data = generateSaldo($storageCode, $month, $year);
+    $count = 1;
+
+    $spreadsheet->getProperties()->setCreator("user")
+    ->setLastModifiedBy("user")
+    ->setTitle("report_stock_" . $storageCode . "_" . $month . "_" . $year)
+    ->setSubject("report_stock_" . $storageCode . "_" . $month . "_" . $year)
+    ->setDescription("monthly report generated with storage")
+    ->setKeywords("Office Excel  open XML php")
+    ->setCategory("report file");
+
+    for($i = 0; $i < 16; $i++){
+        $sheet->getColumnDimension($letters[$i])->setAutoSize(true);
+    }
+    //header
+    $sheet->mergeCells("A1:G1");
+    $sheet->getStyle("A1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $sheet->getStyle("A1")->getFont()->setBold(5)->setSize(36);
+    $sheet->setCellValue("A1", "REPORT STOCK: " . $storageCode);
+    $sheet->setCellValue("A2", "MONTH: " . $month);
+    $sheet->setCellValue("A3", "YEAR: " . $year);
+
+    //Table head
+    $sheet->mergeCells("A5:A7");
+    $sheet->setCellValue("A5", "no.");
+    $sheet->getStyle("A5")->getAlignment()->setHorizontal(Alignment::VERTICAL_CENTER);
+    $sheet->mergeCells("B5:B7");
+    $sheet->setCellValue("B5", "KD");
+    $sheet->getStyle("B5")->getAlignment()->setHorizontal(Alignment::VERTICAL_CENTER);
+    $sheet->mergeCells("C5:C7");
+    $sheet->setCellValue("C5", "material");
+    $sheet->getStyle("C5")->getAlignment()->setHorizontal(Alignment::VERTICAL_CENTER);
+    $sheet->mergeCells("D5:D6");
+    $sheet->setCellValue("D5", "saldo awal");
+    $sheet->getStyle("D5")->getAlignment()->setHorizontal(Alignment::VERTICAL_CENTER);
+    $sheet->setCellValue("D7", "qty");
+
+    //penerimaan
+    $sheet->mergeCells("E5:H5");
+    $sheet->setCellValue("E5", "PENERIMAAN");
+    $sheet->getStyle("E5")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $sheet->setCellValue("E6", "pembelian");
+    $sheet->setCellValue("F6", "pindah PT");
+    $sheet->setCellValue("G6", "repack");
+    $sheet->setCellValue("H6", "totalIn");
+    $sheet->setCellValue("E7", "qty");
+    $sheet->setCellValue("F7", "qty");
+    $sheet->setCellValue("G7", "qty");
+    $sheet->setCellValue("H7", "qty");
+
+    //barang_siap_dijual
+    $sheet->mergeCells("I5:I6");
+    $sheet->setCellValue("I5", "barang siap dijual");
+    $sheet->setCellValue("I7", "qty");
+
+    //pengeluaran
+    $sheet->mergeCells("J5:M5");
+    $sheet->setCellValue("J5", "PENGELUARAN");
+    $sheet->getStyle("J5")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $sheet->setCellValue("J6", "penjualan");
+    $sheet->setCellValue("K6", "pindah PT");
+    $sheet->setCellValue("L6", "repack");
+    $sheet->setCellValue("M6", "totalOut");
+    $sheet->setCellValue("J7", "qty");
+    $sheet->setCellValue("K7", "qty");
+    $sheet->setCellValue("L7", "qty");
+    $sheet->setCellValue("M7", "qty");
+
+    //saldo_akhir
+    $sheet->mergeCells("N5:N6");
+    $sheet->setCellValue("N5", "saldo akhir");
+    $sheet->setCellValue("N7", "qty");
+
+    $cell = 8;
+    
+    foreach($data as $key => $val){
+        if($key == "0") continue;
+
+        $sheet->setCellValue("A".$cell, $count++);
+        $sheet->setCellValue("B".$cell, $val["productCode"]);
+        $sheet->setCellValue("C".$cell, $val["productName"]);
+        $sheet->setCellValue("D".$cell, $val["saldo_awal"]["totalQty"]);
+
+        $sheet->setCellValue("E".$cell, $val["penerimaan"]["pembelian"]["totalQty"]);
+        $sheet->setCellValue("F".$cell, $val["penerimaan"]["movingIn"]["totalQty"]);
+        $sheet->setCellValue("G".$cell, $val["penerimaan"]["repackIn"]["totalQty"]);
+        $sheet->setCellValue("H".$cell, $val["penerimaan"]["totalIn"]["totalQty"]);
+
+        $sheet->setCellValue("I".$cell, $val["barang_siap_dijual"]["totalQty"]);
+
+        $sheet->setCellValue("J".$cell, $val["pengeluaran"]["penjualan"]["totalQty"]);
+        $sheet->setCellValue("K".$cell, $val["pengeluaran"]["movingOut"]["totalQty"]);
+        $sheet->setCellValue("L".$cell, $val["pengeluaran"]["repackOut"]["totalQty"]);
+        $sheet->setCellValue("M".$cell, $val["pengeluaran"]["totalOut"]["totalQty"]);
+
+        $sheet->setCellValue("N".$cell, $val["saldo_akhir"]["totalQty"]);
+
+
+        $cell++;
+    }
+
+    $sheet->getStyle("D8:N" . ($cell - 1))->getNumberFormat()->setFormatCode($indonesianNumberFormat);
 
 
     $filePath = "../files/report_stock_" . $storageCode . "_" . $month . "_" . $year . ".xlsx";
