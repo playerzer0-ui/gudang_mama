@@ -1,4 +1,4 @@
-/vendor
-/.vscode
+/vendor/
+/.vscode/
 test.txt
 task.md
