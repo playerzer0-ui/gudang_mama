@@ -111,7 +111,7 @@ function updateNominal(row) {
 
     if (!isNaN(qty) && !isNaN(price)) {
         const nominal = qty * price; // Calculate the nominal value
-        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(2); // Update the nominal field
+        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(0); // Update the nominal field
     } else {
         row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
     }
@@ -286,21 +286,6 @@ function calculateHutang(){
     });
 }
 
-function calculateNominal(priceInput) {
-    const row = priceInput.closest('tr'); // Get the closest row to the input
-    const qty = parseFloat(row.querySelector('input[name="qty[]"]').value); // Get the quantity value
-    const price = parseFloat(priceInput.value); // Get the price value
-
-    if (!isNaN(qty) && !isNaN(price)) {
-        const nominal = qty * price; // Calculate the nominal value
-        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(2); // Update the nominal field
-    } else {
-        row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
-    }
-
-    calculateTotalNominal();
-}
-
 function calculateTotalNominal() {
     const nominalInputs = document.querySelectorAll('input[name="nominal[]"]'); // Get all nominal inputs
     let total = 0;
@@ -312,7 +297,7 @@ function calculateTotalNominal() {
         }
     });
 
-    document.getElementById('totalNominal').value = total.toFixed(2); 
+    document.getElementById('totalNominal').value = total.toFixed(0); 
     calculatePPN();
     calculatePayAmount();
 }
