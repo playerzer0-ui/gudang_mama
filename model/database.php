@@ -10,10 +10,10 @@
 
     }
     else{
-        $hostname = "mysql06host.comp.dkit.ie";
-        $dbname = "D00234340";
-        $uname = "D00234340";
-        $password = "vtQwHz7j";
+        $hostname = "sql110.infinityfree.com";
+        $dbname = "if0_37150393_database_gudang";
+        $uname = "if0_37150393";
+        $password = "cDT4lXPPXxsX";
     
         $dsn = "mysql:host=" . $hostname . ";dbname=" . $dbname;
     }
