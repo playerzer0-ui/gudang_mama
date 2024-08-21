@@ -508,6 +508,52 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
     unlink($filePath);
 }
 
+function getLogs(){
+    global $letters;
+    global $indonesianNumberFormat;
+
+    $array = ["slip", "slip_repack", "slip_moving", "invoice", "invoice_moving", "payment", "payment_moving"];
+    $datas = [getAllOrdersAndProducts_slip(), getAllOrdersAndProductsRepack_slip(), getAllOrdersAndProductsMoving_slip(), getAllOrdersAndProducts_invoice(), getAllOrdersAndProductsMoving_invoice(), getAllOrdersAndProducts_payment(), getAllOrdersAndProductsMoving_payment()];
+
+    $spreadsheet = new Spreadsheet();
+
+    for($i = 0; $i < count($array); $i++){
+        if ($i > 0) {
+            $spreadsheet->createSheet();
+        }
+        $spreadsheet->setActiveSheetIndex($i);
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle($array[$i]);
+
+        // Get the data for the current sheet
+        $data = $datas[$i];
+
+        if (!empty($data)) {
+            // Set the header row
+            $headers = array_keys($data[0]);
+            $sheet->fromArray($headers, NULL, 'A1');
+
+            // Set the data rows
+            $sheet->fromArray($data, NULL, 'A2');
+        }
+    }
+
+    $spreadsheet->setActiveSheetIndex(0);
+
+    $filePath = "../files/logs.xlsx";
+    $writer = new Xlsx($spreadsheet);
+    $writer->save($filePath);
+
+    ob_end_clean();
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
+    header('Content-Transfer-Encoding: binary');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Expires: 0');
+    readfile($filePath);
+    unlink($filePath);
+}
 
 
 ?>

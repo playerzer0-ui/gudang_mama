@@ -715,12 +715,16 @@ switch($action){
     
                 case "repack":
                     $success = deleteOrderProducts($code, "repack");
-                    $success = deleteRepack($code);
+                    if($success === true){
+                        $success = deleteRepack($code);
+                    }
                     break;
     
                 case "moving":
                     $success = deleteOrderProducts($code, "moving");
-                    $success = deleteMoving($code);
+                    if($success === true){
+                        $success = deleteMoving($code);
+                    }
                     break;
             }
     
@@ -1290,6 +1294,10 @@ switch($action){
         $year = filter_input(INPUT_GET, "year", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         excel_hutang_piutang("NON", $month, $year, "piutang");
+        break;
+
+    case "getLogs":
+        getLogs();
         break;
 }
 
