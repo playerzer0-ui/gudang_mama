@@ -556,7 +556,7 @@ switch($action){
                         }
                     }
                 } else {
-                    $result = updateOrderWithDependencies($no_sj, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $old_sj);
+                    $result = updateOrderWithDependencies($no_sj, $storageCode, $no_LPB, $no_truk, "NON", $customerCode, $order_date, $purchase_order, $old_sj);
                     if ($result === true) {
                         for ($i = 0; $i < count($productCodes); $i++) {
                             $price = isset($productPrices[$productCodes[$i]]) ? $productPrices[$productCodes[$i]] : 0;
@@ -714,10 +714,12 @@ switch($action){
                     break;
     
                 case "repack":
+                    $success = deleteOrderProducts($code, "repack");
                     $success = deleteRepack($code);
                     break;
     
                 case "moving":
+                    $success = deleteOrderProducts($code, "moving");
                     $success = deleteMoving($code);
                     break;
             }

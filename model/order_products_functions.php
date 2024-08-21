@@ -695,4 +695,148 @@ function updateSaldoAkhir(&$productData) {
     }
 }
 
+function getAllOrdersAndProducts_slip(){
+    global $db;
+
+    $query = 'SELECT o.nomor_surat_jalan, o.storageCode, o.no_LPB, o.no_truk, o.vendorCode, o.customerCode, o.order_date, o.purchase_order, op.productCode, op.qty, op.UOM, op.note, op.product_status FROM orders o, order_products op
+    WHERE o.nomor_surat_jalan = op.nomor_surat_jalan AND op.nomor_surat_jalan != "-"
+    ORDER BY op.product_status';
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $result;
+}
+
+function getAllOrdersAndProductsRepack_slip(){
+    global $db;
+
+    $query = 'SELECT r.no_repack, r.repack_date, r.storageCode, op.productCode, op.qty, op.UOM, op.note, op.product_status FROM repacks r, order_products op
+    WHERE r.no_repack = op.repack_no_repack AND r.no_repack != "-"';
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $result;
+}
+
+function getAllOrdersAndProductsMoving_slip(){
+    global $db;
+
+    $query = 'SELECT m.no_moving, m.moving_date, m.storageCodeSender, m.storageCodeReceiver, op.productCode, op.qty, op.UOM, op.note, op.product_status FROM movings m, order_products op
+    WHERE m.no_moving = op.moving_no_moving AND m.no_moving != "-"';
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $result;
+}
+
+function getAllOrdersAndProducts_invoice(){
+    global $db;
+
+    $query = 'SELECT i.nomor_surat_jalan, i.invoice_date, i.no_invoice, i.no_faktur, i.tax, op.productCode, op.qty, op.UOM, op.price_per_UOM, op.note, op.product_status FROM invoices i, order_products op WHERE i.nomor_surat_jalan = op.nomor_surat_jalan AND i.nomor_surat_jalan != "-"';
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $result;
+}
+
+function getAllOrdersAndProductsMoving_invoice(){
+    global $db;
+
+    $query = 'SELECT i.no_moving, i.invoice_date, i.no_invoice, i.no_faktur, i.tax, op.productCode, op.qty, op.UOM, op.price_per_UOM, op.note, op.product_status FROM invoices i, order_products op WHERE i.no_moving = op.moving_no_moving AND i.no_moving != "-"';
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $result;
+}
+
+function getAllOrdersAndProducts_payment(){
+    global $db;
+
+    $query = 'SELECT p.nomor_surat_jalan, p.payment_date, p.payment_amount, op.productCode, op.qty, op.UOM, op.price_per_UOM, op.note, op.product_status FROM payments p, order_products op WHERE p.nomor_surat_jalan = op.nomor_surat_jalan AND p.nomor_surat_jalan != "-"';
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $result;
+}
+
+function getAllOrdersAndProductsMoving_payment(){
+    global $db;
+
+    $query = 'SELECT p.no_moving, p.payment_date, p.payment_amount, op.productCode, op.qty, op.UOM, op.price_per_UOM, op.note, op.product_status FROM payments p, order_products op WHERE p.no_moving = op.moving_no_moving AND p.no_moving != "-"';
+
+    $statement = $db->prepare($query);
+
+    try {
+        $statement->execute();
+    }
+    catch(PDOException $ex){
+        $ex->getMessage();
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $result;
+}
+
 ?>
