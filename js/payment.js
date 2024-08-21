@@ -252,12 +252,10 @@ function getOrderProducts(no_id, status){
                     <td>${rowCount}</td>
                     <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
                     <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
-                    <td><input type="number" value="${formatNumber(item.qty)}" name="qty_display[]" readonly>
-                    <input type="hidden" value="${item.qty}" name="qty[]"></td>
+                    <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
                     <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
-                    <td><input type="text" value="${formatNumber(item.price_per_UOM)}" inputmode="numeric" name="price_per_uom_display[]" placeholder="di isi" readonly><input type="hidden" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]"></td>
-                    <td><input type="text" value="${formatNumber(item.price_per_UOM * item.qty)}" name="nominal_display[]" placeholder="otomatis dari sistem" readonly>
-                    <input type="hidden" value="${item.price_per_UOM * item.qty}" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
+                    <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" readonly></td>
+                    <td><input type="text" value="${item.price_per_UOM * item.qty}" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
                 `;
             });
 
@@ -269,7 +267,6 @@ function getOrderProducts(no_id, status){
 function calculateHutang(){
     let amount = document.getElementById("payment_amount").value;
     let tax = document.getElementById("tax").value;
-    let remaining_display = document.getElementById("remaining_display");
     let remaining = document.getElementById("remaining");
     let no_sjEl;
     if(pageState.includes("moving")){
@@ -284,7 +281,6 @@ function calculateHutang(){
         url: "../controller/index.php",
         data: {action: "calculateHutang", payment_amount: amount, tax: tax, no_sj: no_sjEl},
         success: function (response) {
-            remaining_display.innerHTML = formatNumber(response);
             remaining.innerHTML = response;
         }
     });
@@ -301,31 +297,23 @@ function calculateTotalNominal() {
         }
     });
 
-    document.getElementById('totalNominal').value = total.toFixed(0); 
+    document.getElementById('totalNominal').value = total.toFixed(2); 
     calculatePPN();
     calculatePayAmount();
 }
 
 function calculatePPN(){
     let nominal = document.getElementById('totalNominal').value;
-    let taxPPN_display = document.getElementById('taxPPN_display');
     let taxPPN = document.getElementById('taxPPN');
     let tax = document.getElementById('tax').value;
 
-    taxPPN_display.value = formatNumber(nominal * (tax / 100));
     taxPPN.value = nominal * (tax / 100);
 }
 
 function calculatePayAmount(){
     let nominal = document.getElementById('totalNominal').value;
     let taxPPN = document.getElementById('taxPPN').value;
-    let amount_paid_display = document.getElementById('amount_paid_display');
     let amount_paid = document.getElementById('amount_paid');
 
-    amount_paid_display.value = formatNumber(parseFloat(nominal) + parseFloat(taxPPN));
     amount_paid.value = parseFloat(nominal) + parseFloat(taxPPN);
-}
-
-function formatNumber(number) {
-    return new Intl.NumberFormat('id-ID', { style: 'decimal', maximumFractionDigits: 0 }).format(number);
 }
