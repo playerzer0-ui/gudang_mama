@@ -32,7 +32,7 @@
             <?php if($pageState == "moving"){ ?>
                 <td>NO. moving</td>
                 <td>:</td>
-                <td><input name="no_moving" id="no_moving" type="text" oninput="getMovingDetailsFromMovingNo();calculateHutang();" required></td>
+                <td><input name="no_moving" id="no_moving" type="text" oninput="getMovingDetailsFromMovingNo()" required></td>
                 <td>Tgl. moving</td>
                 <td>:</td>
                 <td><input name="moving_date" id="moving_date" type="date" readonly></td>
@@ -47,7 +47,7 @@
                 <?php } else { ?>
                     <td>No SJ</td>
                     <td>:</td>
-                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" required></td>
+                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
                     <td>Alamat</td>
                     <td>:</td>
                     <td colspan="2"><input name="customerAddress" type="text" id="customerAddress" placeholder="Otomatis dari sistem" readonly></td>
@@ -66,7 +66,7 @@
                 <?php if ($pageState == "in") { ?>
                     <td>No SJ</td>
                     <td>:</td>
-                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ();calculateHutang();" required></td>
+                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" oninput="getDetailsFromSJ()" required></td>
                     <td>Tgl invoice</td>
                     <td>:</td>
                     <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" readonly></td>
@@ -128,7 +128,7 @@
             <td>
                 <input type="number" inputmode="numeric" name="payment_amount" id="payment_amount" oninput="calculateHutang()" required>
             </td>
-            <td>PPN(%): <input type="number" name="tax" id="tax" value="11" oninput="calculateTotalNominal()" readonly></td>
+            <td>PPN(%): <input type="number" name="tax" id="tax" oninput="calculateTotalNominal()" readonly></td>
             <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" disabled></td>
         </tr>
         <tr>

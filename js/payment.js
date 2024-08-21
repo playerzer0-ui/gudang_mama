@@ -126,6 +126,7 @@ function getMovingDetailsFromMovingNo(){
     let moving_date = document.getElementById("moving_date");
     let invoice_dateEl = document.getElementById("invoice_date");
     let no_invoiceEl = document.getElementById("no_invoice");
+    let tax = document.getElementById("tax");
 
     $.ajax({
         type: "get",
@@ -151,6 +152,7 @@ function getMovingDetailsFromMovingNo(){
             const data = JSON.parse(response);
             invoice_dateEl.value = data.invoice_date;
             no_invoiceEl.value = data.no_invoice;
+            tax.value = data.tax;
 
             getOrderProducts(no_moving, "moving");
         });
@@ -224,10 +226,10 @@ function getDetailsFromSJ(){
             invoice_dateEl.value = data.invoice_date;
             no_invoiceEl.value = data.no_invoice;
             tax.value = data.tax;
+            getOrderProducts(no_sjEl, "in");
         }
     });
 
-    getOrderProducts(no_sjEl, "in");
 }
 
 function getOrderProducts(no_id, status){
