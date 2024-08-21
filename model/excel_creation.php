@@ -508,12 +508,15 @@ function excel_hutang_piutang($storageCode, $month, $year, $mode){
     unlink($filePath);
 }
 
-function getLogs(){
-    global $letters;
-    global $indonesianNumberFormat;
-
-    $array = ["slip", "slip_repack", "slip_moving", "invoice", "invoice_moving", "payment", "payment_moving"];
-    $datas = [getAllOrdersAndProducts_slip(), getAllOrdersAndProductsRepack_slip(), getAllOrdersAndProductsMoving_slip(), getAllOrdersAndProducts_invoice(), getAllOrdersAndProductsMoving_invoice(), getAllOrdersAndProducts_payment(), getAllOrdersAndProductsMoving_payment()];
+function getLogs($userType){
+    if($userType == 1){
+        $array = ["slip", "slip_repack", "slip_moving", "invoice", "invoice_moving", "payment", "payment_moving"];
+        $datas = [getAllOrdersAndProducts_slip(), getAllOrdersAndProductsRepack_slip(), getAllOrdersAndProductsMoving_slip(), getAllOrdersAndProducts_invoice(), getAllOrdersAndProductsMoving_invoice(), getAllOrdersAndProducts_payment(), getAllOrdersAndProductsMoving_payment()];
+    }
+    else{
+        $array = ["slip", "slip_repack", "slip_moving"];
+        $datas = [getAllOrdersAndProducts_slip(), getAllOrdersAndProductsRepack_slip(), getAllOrdersAndProductsMoving_slip()];
+    }
 
     $spreadsheet = new Spreadsheet();
 

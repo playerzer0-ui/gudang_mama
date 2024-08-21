@@ -111,11 +111,9 @@
                             </li>
                         <?php } ?>
 
-                        <?php if($userType == 1){ ?>
-                            <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link" href="../controller/index.php?action=getLogs"><button class="btn btn-info">LOGS</button></a>
-                            </li>
-                        <?php } ?>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../controller/index.php?action=logout"><button class="btn btn-primary"><?php echo $state; ?></button></a>
                         </li>

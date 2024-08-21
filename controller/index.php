@@ -1297,7 +1297,7 @@ switch($action){
         break;
 
     case "getLogs":
-        getLogs();
+        getLogs($userType);
         break;
 }
 
