@@ -536,6 +536,11 @@ function getLogs(){
             // Set the data rows
             $sheet->fromArray($data, NULL, 'A2');
         }
+
+        // Auto-size columns
+        foreach ($sheet->getColumnIterator() as $column) {
+            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+        }
     }
 
     $spreadsheet->setActiveSheetIndex(0);
