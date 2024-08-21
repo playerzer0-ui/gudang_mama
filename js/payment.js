@@ -297,7 +297,7 @@ function calculateTotalNominal() {
         }
     });
 
-    document.getElementById('totalNominal').value = total.toFixed(2); 
+    document.getElementById('totalNominal').value = total.toFixed(0); 
     calculatePPN();
     calculatePayAmount();
 }
