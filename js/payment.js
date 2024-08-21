@@ -111,7 +111,7 @@ function updateNominal(row) {
 
     if (!isNaN(qty) && !isNaN(price)) {
         const nominal = qty * price; // Calculate the nominal value
-        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(2); // Update the nominal field
+        row.querySelector('input[name="nominal[]"]').value = nominal.toFixed(0); // Update the nominal field
     } else {
         row.querySelector('input[name="nominal[]"]').value = ''; // Clear the nominal field if invalid input
     }
@@ -301,7 +301,6 @@ function calculateTotalNominal() {
         }
     });
 
-    document.getElementById('totalNominal_display').value = formatNumber(total); 
     document.getElementById('totalNominal').value = total.toFixed(0); 
     calculatePPN();
     calculatePayAmount();
