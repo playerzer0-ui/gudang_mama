@@ -121,7 +121,8 @@
             <th>tanggal payment: </th>
             <td><input type="date" name="payment_date" id="payment_date" placeholder="di isi" required></td>
             <th>total nilai barang: </th>
-            <th><input type="number" inputmode="numeric" name="totalNominal" id="totalNominal" disabled></th>
+            <th>
+            <input type="text" inputmode="numeric" name="totalNominal_display" id="totalNominal_display" disabled><input type="hidden" inputmode="numeric" name="totalNominal" id="totalNominal" disabled></th>
         </tr>
         <tr>
             <td>nilai payment: </td>
@@ -129,13 +130,15 @@
                 <input type="number" inputmode="numeric" name="payment_amount" id="payment_amount" oninput="calculateHutang()" required>
             </td>
             <td>PPN(%): <input type="number" name="tax" id="tax" value="11" oninput="calculateTotalNominal()" readonly></td>
-            <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" disabled></td>
+            <td><input type="text" inputmode="numeric" name="taxPPN_display" id="taxPPN_display" disabled>
+            <input type="hidden" inputmode="numeric" name="taxPPN" id="taxPPN"></td>
         </tr>
         <tr>
             <td>sisa hutang: </td>
-            <td><span id="remaining">0</span></td>
+            <td><span id="remaining_display">0</span><input type="hidden" id="remaining"></td>
             <td>nilai dibayar: </td>
-            <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" disabled></td>
+            <td><input type="text" inputmode="numeric" name="amount_paid_display" id="amount_paid_display" disabled>
+            <input type="hidden" inputmode="numeric" name="amount_paid" id="amount_paid"></td>
         </tr>
     </table>
     <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>
