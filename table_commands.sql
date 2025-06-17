@@ -1,15 +1,21 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.3
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 20, 2024 at 05:55 AM
--- Server version: 10.4.24-MariaDB
--- PHP Version: 8.1.4
+-- Generation Time: Jun 17, 2025 at 07:06 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `database_gudang`
@@ -29,7 +35,7 @@ CREATE TABLE `customers` (
   `customerName` varchar(100) DEFAULT NULL,
   `customerAddress` varchar(120) DEFAULT NULL,
   `customerNPWP` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `customers`
@@ -55,7 +61,7 @@ CREATE TABLE `invoices` (
   `no_faktur` varchar(80) DEFAULT NULL,
   `no_moving` varchar(80) DEFAULT NULL,
   `tax` double DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `invoices`
@@ -86,7 +92,7 @@ CREATE TABLE `movings` (
   `moving_date` date DEFAULT NULL,
   `storageCodeSender` varchar(10) DEFAULT NULL,
   `storageCodeReceiver` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `movings`
@@ -115,7 +121,7 @@ CREATE TABLE `orders` (
   `order_date` date DEFAULT NULL,
   `purchase_order` varchar(80) DEFAULT NULL,
   `status_mode` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `orders`
@@ -150,38 +156,38 @@ CREATE TABLE `order_products` (
   `price_per_UOM` decimal(30,2) DEFAULT NULL,
   `note` varchar(80) DEFAULT NULL,
   `product_status` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `order_products`
 --
 
 INSERT INTO `order_products` (`nomor_surat_jalan`, `moving_no_moving`, `repack_no_repack`, `productCode`, `qty`, `UOM`, `price_per_UOM`, `note`, `product_status`) VALUES
-('H810005211', '-', '-', 'RR-120-A', 5000, 'tray', '480000.00', '', 'in'),
-('H810005211', '-', '-', 'MM-100-A', 3000, 'tray', '580000.00', '', 'in'),
-('H810005212', '-', '-', 'RR-120-A', 3000, 'tray', '500000.00', '', 'in'),
-('H810005212', '-', '-', 'MM-120-A', 5000, 'tray', '600000.00', '', 'in'),
-('H810005213', '-', '-', 'RR-100-A', 3000, 'tray', '485000.00', '', 'in'),
-('H810005213', '-', '-', 'MM-100-A', 3000, 'tray', '585000.00', '', 'in'),
-('1/SJK/NON/08/2024', '-', '-', 'RR-120-A', 1000, 'tray', '500000.00', '', 'out'),
-('1/SJK/NON/08/2024', '-', '-', 'MM-100-A', 1500, 'tray', '605000.00', '', 'out'),
-('2/SJK/NON/08/2024', '-', '-', 'RR-120-A', 2000, 'tray', '500000.00', '', 'out'),
-('2/SJK/NON/08/2024', '-', '-', 'RR-100-A', 1000, 'tray', '480000.00', '', 'out'),
-('3/SJK/NON/08/2024', '-', '-', 'MM-120-A', 1500, 'tray', '615000.00', '', 'out'),
-('3/SJK/NON/08/2024', '-', '-', 'MM-100-A', 3000, 'tray', '605000.00', '', 'out'),
-('-', '1/SJP/APA/08/2024', '-', 'RR-120-A', 1500, 'tray', '490000.00', '', 'moving'),
-('-', '2/SJP/APA/08/2024', '-', 'MM-120-A', 2000, 'tray', '605000.00', '', 'moving'),
-('1/SJT/APA/08/2024', '-', '-', 'RR-120-A', 2500, 'tray', '485000.00', '', 'out_tax'),
-('1/SJT/APA/08/2024', '-', '-', 'MM-100-A', 3000, 'tray', '585000.00', '', 'out_tax'),
-('2/SJT/APA/08/2024', '-', '-', 'RR-120-A', 3000, 'tray', '505000.00', '', 'out_tax'),
-('2/SJT/APA/08/2024', '-', '-', 'MM-120-A', 3000, 'tray', '605000.00', '', 'out_tax'),
-('1/SJT/NON/08/2024', '-', '-', 'RR-100-A', 3000, 'tray', '0.00', '', 'out_tax'),
-('1/SJT/NON/08/2024', '-', '-', 'MM-100-A', 3000, 'tray', '0.00', '', 'out_tax'),
-('3/SJT/APA/08/2024', '-', '-', 'RR-100-A', 3000, 'tray', '490000.00', '', 'out_tax'),
-('3/SJT/APA/08/2024', '-', '-', 'MM-100-A', 3000, 'tray', '590000.00', '', 'out_tax'),
-('-', '1/SJP/RBL/08/2024', '-', 'RR-120-A', 10, 'tray', '0.00', '', 'moving'),
-('-', '-', '1/SJR/APA/08/2024', 'RR-120-A', 1000, 'tray', '0.00', '', 'repack_awal'),
-('-', '-', '1/SJR/APA/08/2024', 'RR-100-A', 1000, 'tray', '0.00', '', 'repack_akhir');
+('H810005211', '-', '-', 'RR-120-A', 5000, 'tray', 480000.00, '', 'in'),
+('H810005211', '-', '-', 'MM-100-A', 3000, 'tray', 580000.00, '', 'in'),
+('H810005212', '-', '-', 'RR-120-A', 3000, 'tray', 500000.00, '', 'in'),
+('H810005212', '-', '-', 'MM-120-A', 5000, 'tray', 600000.00, '', 'in'),
+('H810005213', '-', '-', 'RR-100-A', 3000, 'tray', 485000.00, '', 'in'),
+('H810005213', '-', '-', 'MM-100-A', 3000, 'tray', 585000.00, '', 'in'),
+('1/SJK/NON/08/2024', '-', '-', 'RR-120-A', 1000, 'tray', 500000.00, '', 'out'),
+('1/SJK/NON/08/2024', '-', '-', 'MM-100-A', 1500, 'tray', 605000.00, '', 'out'),
+('2/SJK/NON/08/2024', '-', '-', 'RR-120-A', 2000, 'tray', 500000.00, '', 'out'),
+('2/SJK/NON/08/2024', '-', '-', 'RR-100-A', 1000, 'tray', 480000.00, '', 'out'),
+('3/SJK/NON/08/2024', '-', '-', 'MM-120-A', 1500, 'tray', 615000.00, '', 'out'),
+('3/SJK/NON/08/2024', '-', '-', 'MM-100-A', 3000, 'tray', 605000.00, '', 'out'),
+('-', '1/SJP/APA/08/2024', '-', 'RR-120-A', 1500, 'tray', 490000.00, '', 'moving'),
+('-', '2/SJP/APA/08/2024', '-', 'MM-120-A', 2000, 'tray', 605000.00, '', 'moving'),
+('1/SJT/APA/08/2024', '-', '-', 'RR-120-A', 2500, 'tray', 485000.00, '', 'out_tax'),
+('1/SJT/APA/08/2024', '-', '-', 'MM-100-A', 3000, 'tray', 585000.00, '', 'out_tax'),
+('2/SJT/APA/08/2024', '-', '-', 'RR-120-A', 3000, 'tray', 505000.00, '', 'out_tax'),
+('2/SJT/APA/08/2024', '-', '-', 'MM-120-A', 3000, 'tray', 605000.00, '', 'out_tax'),
+('1/SJT/NON/08/2024', '-', '-', 'RR-100-A', 3000, 'tray', 0.00, '', 'out_tax'),
+('1/SJT/NON/08/2024', '-', '-', 'MM-100-A', 3000, 'tray', 0.00, '', 'out_tax'),
+('3/SJT/APA/08/2024', '-', '-', 'RR-100-A', 3000, 'tray', 490000.00, '', 'out_tax'),
+('3/SJT/APA/08/2024', '-', '-', 'MM-100-A', 3000, 'tray', 590000.00, '', 'out_tax'),
+('-', '1/SJP/RBL/08/2024', '-', 'RR-120-A', 10, 'tray', 0.00, '', 'moving'),
+('-', '-', '1/SJR/APA/08/2024', 'RR-120-A', 1000, 'tray', 0.00, '', 'repack_awal'),
+('-', '-', '1/SJR/APA/08/2024', 'RR-100-A', 1000, 'tray', 0.00, '', 'repack_akhir');
 
 -- --------------------------------------------------------
 
@@ -195,22 +201,22 @@ CREATE TABLE `payments` (
   `payment_date` date DEFAULT NULL,
   `payment_amount` decimal(30,2) DEFAULT NULL,
   `no_moving` varchar(80) DEFAULT NULL,
-  `payment_id` char(36) NOT NULL DEFAULT uuid()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `payment_id` char(36) NOT NULL DEFAULT (UUID())
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `payments`
 --
 
 INSERT INTO `payments` (`nomor_surat_jalan`, `payment_date`, `payment_amount`, `no_moving`, `payment_id`) VALUES
-('H810005212', '2024-08-09', '1997000000.00', '-', '1c89817e-5b95-11ef-b86d-5cbaef99b658'),
-('H810005211', '2024-08-08', '4595400000.00', '-', '3f4a2f42-5b94-11ef-b86d-5cbaef99b658'),
-('1/SJK/NON/08/2024', '2024-08-08', '1400000000.00', '-', '81765f1c-5bbf-11ef-bd84-5cbaef99b658'),
-('2/SJK/NON/08/2024', '2024-08-09', '500000000.00', '-', 'aa07f3d3-5bbf-11ef-bd84-5cbaef99b658'),
-('-', '2024-08-08', '815850000.00', '1/SJP/APA/08/2024', 'ad4e840d-5bcf-11ef-bd84-5cbaef99b658'),
-('-', '2024-08-09', '500000000.00', '2/SJP/APA/08/2024', 'c38d3fc9-5bcf-11ef-bd84-5cbaef99b658'),
-('1/SJT/APA/08/2024', '2024-08-08', '3832275000.00', '-', 'e45da993-5c72-11ef-b5fe-5cbaef99b658'),
-('2/SJT/APA/08/2024', '2024-08-09', '1696300000.00', '-', 'f4992c30-5c72-11ef-b5fe-5cbaef99b658');
+('H810005212', '2024-08-09', 1997000000.00, '-', '1c89817e-5b95-11ef-b86d-5cbaef99b658'),
+('H810005211', '2024-08-08', 4595400000.00, '-', '3f4a2f42-5b94-11ef-b86d-5cbaef99b658'),
+('1/SJK/NON/08/2024', '2024-08-08', 1400000000.00, '-', '81765f1c-5bbf-11ef-bd84-5cbaef99b658'),
+('2/SJK/NON/08/2024', '2024-08-09', 500000000.00, '-', 'aa07f3d3-5bbf-11ef-bd84-5cbaef99b658'),
+('-', '2024-08-08', 815850000.00, '1/SJP/APA/08/2024', 'ad4e840d-5bcf-11ef-bd84-5cbaef99b658'),
+('-', '2024-08-09', 500000000.00, '2/SJP/APA/08/2024', 'c38d3fc9-5bcf-11ef-bd84-5cbaef99b658'),
+('1/SJT/APA/08/2024', '2024-08-08', 3832275000.00, '-', 'e45da993-5c72-11ef-b5fe-5cbaef99b658'),
+('2/SJT/APA/08/2024', '2024-08-09', 1696300000.00, '-', 'f4992c30-5c72-11ef-b5fe-5cbaef99b658');
 
 -- --------------------------------------------------------
 
@@ -222,7 +228,7 @@ DROP TABLE IF EXISTS `products`;
 CREATE TABLE `products` (
   `productCode` varchar(10) NOT NULL,
   `productName` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
@@ -248,7 +254,7 @@ CREATE TABLE `repacks` (
   `no_repack` varchar(80) NOT NULL,
   `repack_date` date DEFAULT NULL,
   `storageCode` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `repacks`
@@ -272,24 +278,24 @@ CREATE TABLE `saldos` (
   `totalPrice` decimal(30,2) DEFAULT NULL,
   `saldoMonth` int(11) DEFAULT NULL,
   `saldoYear` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `saldos`
 --
 
 INSERT INTO `saldos` (`productCode`, `storageCode`, `totalQty`, `totalPrice`, `saldoMonth`, `saldoYear`) VALUES
-('MM-120-A', 'APA', 0, '0.00', 8, 2024),
-('RR-100-A', 'APA', 1000, '485625000.00', 8, 2024),
-('MM-100-A', 'APA', 0, '0.00', 8, 2024),
-('RR-120-A', 'APA', 0, '0.00', 8, 2024),
-('RR-120-A', 'RBL', -10, '0.00', 8, 2024),
-('MM-120-A', 'BBB', 2000, '1210000000.00', 8, 2024),
-('RR-120-A', 'BBB', 1500, '735000000.00', 8, 2024),
-('RR-120-A', 'NON', 4000, '1950000000.00', 8, 2024),
-('MM-120-A', 'NON', 3500, '2100000000.00', 8, 2024),
-('MM-100-A', 'NON', 1500, '873750000.00', 8, 2024),
-('RR-100-A', 'NON', 3000, '1456875000.00', 8, 2024);
+('MM-120-A', 'APA', 0, 0.00, 8, 2024),
+('RR-100-A', 'APA', 1000, 485625000.00, 8, 2024),
+('MM-100-A', 'APA', 0, 0.00, 8, 2024),
+('RR-120-A', 'APA', 0, 0.00, 8, 2024),
+('RR-120-A', 'RBL', -10, 0.00, 8, 2024),
+('MM-120-A', 'BBB', 2000, 1210000000.00, 8, 2024),
+('RR-120-A', 'BBB', 1500, 735000000.00, 8, 2024),
+('RR-120-A', 'NON', 4000, 1950000000.00, 8, 2024),
+('MM-120-A', 'NON', 3500, 2100000000.00, 8, 2024),
+('MM-100-A', 'NON', 1500, 873750000.00, 8, 2024),
+('RR-100-A', 'NON', 3000, 1456875000.00, 8, 2024);
 
 -- --------------------------------------------------------
 
@@ -303,7 +309,7 @@ CREATE TABLE `storages` (
   `storageName` varchar(80) DEFAULT NULL,
   `storageAddress` varchar(120) DEFAULT NULL,
   `storageNPWP` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `storages`
@@ -329,7 +335,7 @@ CREATE TABLE `users` (
   `username` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `userType` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
@@ -351,7 +357,7 @@ CREATE TABLE `vendors` (
   `vendorName` varchar(100) DEFAULT NULL,
   `vendorAddress` varchar(120) DEFAULT NULL,
   `vendorNPWP` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `vendors`
@@ -449,12 +455,6 @@ ALTER TABLE `storages`
   ADD UNIQUE KEY `storageCode` (`storageCode`);
 
 --
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`userID`);
-
---
 -- Indexes for table `vendors`
 --
 ALTER TABLE `vendors`
@@ -464,13 +464,6 @@ ALTER TABLE `vendors`
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `invoices`
---
-ALTER TABLE `invoices`
-  ADD CONSTRAINT `invoices_ibfk_1` FOREIGN KEY (`nomor_surat_jalan`) REFERENCES `orders` (`nomor_surat_jalan`),
-  ADD CONSTRAINT `invoices_ibfk_2` FOREIGN KEY (`no_moving`) REFERENCES `movings` (`no_moving`);
 
 --
 -- Constraints for table `movings`
@@ -486,33 +479,8 @@ ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`storageCode`) REFERENCES `storages` (`storageCode`),
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`vendorCode`) REFERENCES `vendors` (`vendorCode`),
   ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`customerCode`) REFERENCES `customers` (`customerCode`);
-
---
--- Constraints for table `order_products`
---
-ALTER TABLE `order_products`
-  ADD CONSTRAINT `order_products_ibfk_1` FOREIGN KEY (`nomor_surat_jalan`) REFERENCES `orders` (`nomor_surat_jalan`),
-  ADD CONSTRAINT `order_products_ibfk_2` FOREIGN KEY (`moving_no_moving`) REFERENCES `movings` (`no_moving`),
-  ADD CONSTRAINT `order_products_ibfk_3` FOREIGN KEY (`repack_no_repack`) REFERENCES `repacks` (`no_repack`),
-  ADD CONSTRAINT `order_products_ibfk_4` FOREIGN KEY (`productCode`) REFERENCES `products` (`productCode`);
-
---
--- Constraints for table `payments`
---
-ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`nomor_surat_jalan`) REFERENCES `orders` (`nomor_surat_jalan`),
-  ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`no_moving`) REFERENCES `movings` (`no_moving`);
-
---
--- Constraints for table `repacks`
---
-ALTER TABLE `repacks`
-  ADD CONSTRAINT `repacks_ibfk_1` FOREIGN KEY (`storageCode`) REFERENCES `storages` (`storageCode`);
-
---
--- Constraints for table `saldos`
---
-ALTER TABLE `saldos`
-  ADD CONSTRAINT `saldos_ibfk_1` FOREIGN KEY (`productCode`) REFERENCES `products` (`productCode`),
-  ADD CONSTRAINT `saldos_ibfk_2` FOREIGN KEY (`storageCode`) REFERENCES `storages` (`storageCode`);
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
