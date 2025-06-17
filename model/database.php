@@ -1,22 +1,11 @@
 <?php
 
-    if($_SERVER['HTTP_HOST'] == "localhost"){
-        $hostname = "localhost";
-        $dbname = "database_gudang";
-        $uname = "root";
-        $password = "";
-    
-        $dsn = "mysql:host=" . $hostname . ";dbname=" . $dbname;
+    $hostname = "localhost";
+    $dbname = "database_gudang";
+    $uname = "gudang_user";
+    $password = "strong_password";
 
-    }
-    else{
-        $hostname = "sql110.infinityfree.com";
-        $dbname = "if0_37150393_database_gudang";
-        $uname = "if0_37150393";
-        $password = "cDT4lXPPXxsX";
-    
-        $dsn = "mysql:host=" . $hostname . ";dbname=" . $dbname;
-    }
+    $dsn = "mysql:host=" . $hostname . ";dbname=" . $dbname;
 
 
     try {
