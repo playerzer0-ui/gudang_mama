@@ -2,8 +2,12 @@
 
 namespace PhpOffice\PhpSpreadsheet\Reader;
 
+use PhpOffice\PhpSpreadsheet\Cell\IValueBinder;
+use PhpOffice\PhpSpreadsheet\Exception as PhpSpreadsheetException;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use PhpOffice\PhpSpreadsheet\Reader\Security\XmlScanner;
 use PhpOffice\PhpSpreadsheet\Shared\File;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 abstract class BaseReader implements IReader
 {
@@ -11,229 +15,255 @@ abstract class BaseReader implements IReader
      * Read data only?
      * Identifies whether the Reader should only read data values for cells, and ignore any formatting information;
      *        or whether it should read both data and formatting.
-     *
-     * @var bool
      */
-    protected $readDataOnly = false;
+    protected bool $readDataOnly = false;
 
     /**
      * Read empty cells?
-     * Identifies whether the Reader should read data values for cells all cells, or should ignore cells containing
+     * Identifies whether the Reader should read data values for all cells, or should ignore cells containing
      *         null value or empty string.
-     *
-     * @var bool
      */
-    protected $readEmptyCells = true;
+    protected bool $readEmptyCells = true;
 
     /**
      * Read charts that are defined in the workbook?
      * Identifies whether the Reader should read the definitions for any charts that exist in the workbook;.
-     *
-     * @var bool
      */
-    protected $includeCharts = false;
+    protected bool $includeCharts = false;
 
     /**
      * Restrict which sheets should be loaded?
      * This property holds an array of worksheet names to be loaded. If null, then all worksheets will be loaded.
+     * This property is ignored for Csv, Html, and Slk.
      *
-     * @var array of string
+     * @var null|string[]
      */
-    protected $loadSheetsOnly;
+    protected ?array $loadSheetsOnly = null;
+
+    /**
+     * Ignore rows with no cells?
+     * Identifies whether the Reader should ignore rows with no cells.
+     *        Currently implemented only for Xlsx.
+     */
+    protected bool $ignoreRowsWithNoCells = false;
 
     /**
      * IReadFilter instance.
-     *
-     * @var IReadFilter
      */
-    protected $readFilter;
+    protected IReadFilter $readFilter;
 
+    /** @var resource */
     protected $fileHandle;
 
-    /**
-     * @var XmlScanner
-     */
-    protected $securityScanner;
+    protected ?XmlScanner $securityScanner = null;
 
-    /**
-     * Read data only?
-     *        If this is true, then the Reader will only read data values for cells, it will not read any formatting information.
-     *        If false (the default) it will read data and formatting.
-     *
-     * @return bool
-     */
-    public function getReadDataOnly()
+    protected ?IValueBinder $valueBinder = null;
+
+    public function __construct()
+    {
+        $this->readFilter = new DefaultReadFilter();
+    }
+
+    public function getReadDataOnly(): bool
     {
         return $this->readDataOnly;
     }
 
-    /**
-     * Set read data only
-     *        Set to true, to advise the Reader only to read data values for cells, and to ignore any formatting information.
-     *        Set to false (the default) to advise the Reader to read both data and formatting for cells.
-     *
-     * @param bool $pValue
-     *
-     * @return IReader
-     */
-    public function setReadDataOnly($pValue)
+    public function setReadDataOnly(bool $readCellValuesOnly): self
     {
-        $this->readDataOnly = (bool) $pValue;
+        $this->readDataOnly = $readCellValuesOnly;
 
         return $this;
     }
 
-    /**
-     * Read empty cells?
-     *        If this is true (the default), then the Reader will read data values for all cells, irrespective of value.
-     *        If false it will not read data for cells containing a null value or an empty string.
-     *
-     * @return bool
-     */
-    public function getReadEmptyCells()
+    public function getReadEmptyCells(): bool
     {
         return $this->readEmptyCells;
     }
 
-    /**
-     * Set read empty cells
-     *        Set to true (the default) to advise the Reader read data values for all cells, irrespective of value.
-     *        Set to false to advise the Reader to ignore cells containing a null value or an empty string.
-     *
-     * @param bool $pValue
-     *
-     * @return IReader
-     */
-    public function setReadEmptyCells($pValue)
+    public function setReadEmptyCells(bool $readEmptyCells): self
     {
-        $this->readEmptyCells = (bool) $pValue;
+        $this->readEmptyCells = $readEmptyCells;
 
         return $this;
     }
 
-    /**
-     * Read charts in workbook?
-     *        If this is true, then the Reader will include any charts that exist in the workbook.
-     *      Note that a ReadDataOnly value of false overrides, and charts won't be read regardless of the IncludeCharts value.
-     *        If false (the default) it will ignore any charts defined in the workbook file.
-     *
-     * @return bool
-     */
-    public function getIncludeCharts()
+    public function getIgnoreRowsWithNoCells(): bool
+    {
+        return $this->ignoreRowsWithNoCells;
+    }
+
+    public function setIgnoreRowsWithNoCells(bool $ignoreRowsWithNoCells): self
+    {
+        $this->ignoreRowsWithNoCells = $ignoreRowsWithNoCells;
+
+        return $this;
+    }
+
+    public function getIncludeCharts(): bool
     {
         return $this->includeCharts;
     }
 
-    /**
-     * Set read charts in workbook
-     *        Set to true, to advise the Reader to include any charts that exist in the workbook.
-     *      Note that a ReadDataOnly value of false overrides, and charts won't be read regardless of the IncludeCharts value.
-     *        Set to false (the default) to discard charts.
-     *
-     * @param bool $pValue
-     *
-     * @return IReader
-     */
-    public function setIncludeCharts($pValue)
+    public function setIncludeCharts(bool $includeCharts): self
     {
-        $this->includeCharts = (bool) $pValue;
+        $this->includeCharts = $includeCharts;
 
         return $this;
     }
 
-    /**
-     * Get which sheets to load
-     * Returns either an array of worksheet names (the list of worksheets that should be loaded), or a null
-     *        indicating that all worksheets in the workbook should be loaded.
-     *
-     * @return mixed
-     */
-    public function getLoadSheetsOnly()
+    /** @return null|string[] */
+    public function getLoadSheetsOnly(): ?array
     {
         return $this->loadSheetsOnly;
     }
 
-    /**
-     * Set which sheets to load.
-     *
-     * @param mixed $value
-     *        This should be either an array of worksheet names to be loaded, or a string containing a single worksheet name.
-     *        If NULL, then it tells the Reader to read all worksheets in the workbook
-     *
-     * @return IReader
-     */
-    public function setLoadSheetsOnly($value)
+    /** @param null|string|string[] $sheetList */
+    public function setLoadSheetsOnly(string|array|null $sheetList): self
     {
-        if ($value === null) {
+        if ($sheetList === null) {
             return $this->setLoadAllSheets();
         }
 
-        $this->loadSheetsOnly = is_array($value) ? $value : [$value];
+        $this->loadSheetsOnly = is_array($sheetList) ? $sheetList : [$sheetList];
 
         return $this;
     }
 
-    /**
-     * Set all sheets to load
-     *        Tells the Reader to load all worksheets from the workbook.
-     *
-     * @return IReader
-     */
-    public function setLoadAllSheets()
+    public function setLoadAllSheets(): self
     {
         $this->loadSheetsOnly = null;
 
         return $this;
     }
 
-    /**
-     * Read filter.
-     *
-     * @return IReadFilter
-     */
-    public function getReadFilter()
+    public function getReadFilter(): IReadFilter
     {
         return $this->readFilter;
     }
 
-    /**
-     * Set read filter.
-     *
-     * @param IReadFilter $pValue
-     *
-     * @return IReader
-     */
-    public function setReadFilter(IReadFilter $pValue)
+    public function setReadFilter(IReadFilter $readFilter): self
     {
-        $this->readFilter = $pValue;
+        $this->readFilter = $readFilter;
 
         return $this;
     }
 
-    public function getSecuritySCanner()
+    public function getSecurityScanner(): ?XmlScanner
     {
-        if (property_exists($this, 'securityScanner')) {
-            return $this->securityScanner;
+        return $this->securityScanner;
+    }
+
+    public function getSecurityScannerOrThrow(): XmlScanner
+    {
+        if ($this->securityScanner === null) {
+            throw new ReaderException('Security scanner is unexpectedly null');
         }
 
-        return null;
+        return $this->securityScanner;
+    }
+
+    protected function processFlags(int $flags): void
+    {
+        if (((bool) ($flags & self::LOAD_WITH_CHARTS)) === true) {
+            $this->setIncludeCharts(true);
+        }
+        if (((bool) ($flags & self::READ_DATA_ONLY)) === true) {
+            $this->setReadDataOnly(true);
+        }
+        if (((bool) ($flags & self::IGNORE_EMPTY_CELLS)) === true) {
+            $this->setReadEmptyCells(false);
+        }
+        if (((bool) ($flags & self::IGNORE_ROWS_WITH_NO_CELLS)) === true) {
+            $this->setIgnoreRowsWithNoCells(true);
+        }
+    }
+
+    protected function loadSpreadsheetFromFile(string $filename): Spreadsheet
+    {
+        throw new PhpSpreadsheetException('Reader classes must implement their own loadSpreadsheetFromFile() method');
+    }
+
+    /**
+     * Loads Spreadsheet from file.
+     *
+     * @param int $flags the optional second parameter flags may be used to identify specific elements
+     *                       that should be loaded, but which won't be loaded by default, using these values:
+     *                            IReader::LOAD_WITH_CHARTS - Include any charts that are defined in the loaded file
+     */
+    public function load(string $filename, int $flags = 0): Spreadsheet
+    {
+        $this->processFlags($flags);
+
+        try {
+            return $this->loadSpreadsheetFromFile($filename);
+        } catch (ReaderException $e) {
+            throw $e;
+        }
     }
 
     /**
      * Open file for reading.
-     *
-     * @param string $pFilename
-     *
-     * @throws Exception
      */
-    protected function openFile($pFilename)
+    protected function openFile(string $filename): void
     {
-        File::assertFile($pFilename);
+        $fileHandle = false;
+        if ($filename) {
+            File::assertFile($filename);
 
-        // Open file
-        $this->fileHandle = fopen($pFilename, 'r');
-        if ($this->fileHandle === false) {
-            throw new Exception('Could not open file ' . $pFilename . ' for reading.');
+            // Open file
+            $fileHandle = fopen($filename, 'rb');
         }
+        if ($fileHandle === false) {
+            throw new ReaderException('Could not open file ' . $filename . ' for reading.');
+        }
+
+        $this->fileHandle = $fileHandle;
+    }
+
+    /**
+     * Return worksheet info (Name, Last Column Letter, Last Column Index, Total Rows, Total Columns).
+     *
+     * @return array<int, array{worksheetName: string, lastColumnLetter: string, lastColumnIndex: int, totalRows: int, totalColumns: int, sheetState: string}>
+     */
+    public function listWorksheetInfo(string $filename): array
+    {
+        throw new PhpSpreadsheetException('Reader classes must implement their own listWorksheetInfo() method');
+    }
+
+    /**
+     * Returns names of the worksheets from a file,
+     * possibly without parsing the whole file to a Spreadsheet object.
+     * Readers will often have a more efficient method with which
+     * they can override this method.
+     *
+     * @return string[]
+     */
+    public function listWorksheetNames(string $filename): array
+    {
+        $returnArray = [];
+        $info = $this->listWorksheetInfo($filename);
+        foreach ($info as $infoArray) {
+            $returnArray[] = $infoArray['worksheetName'];
+        }
+
+        return $returnArray;
+    }
+
+    public function getValueBinder(): ?IValueBinder
+    {
+        return $this->valueBinder;
+    }
+
+    public function setValueBinder(?IValueBinder $valueBinder): self
+    {
+        $this->valueBinder = $valueBinder;
+
+        return $this;
+    }
+
+    protected function newSpreadsheet(): Spreadsheet
+    {
+        return new Spreadsheet();
     }
 }

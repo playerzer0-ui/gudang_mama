@@ -3,61 +3,96 @@
 namespace PhpOffice\PhpSpreadsheet\Calculation\Token;
 
 use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
+use PhpOffice\PhpSpreadsheet\Calculation\Engine\BranchPruner;
+use PhpOffice\PhpSpreadsheet\Shared\StringHelper;
 
 class Stack
 {
+    private BranchPruner $branchPruner;
+
     /**
      * The parser stack for formulae.
      *
-     * @var mixed[]
+     * @var array<int, array<mixed>>
      */
-    private $stack = [];
+    private array $stack = [];
 
     /**
      * Count of entries in the parser stack.
-     *
-     * @var int
      */
-    private $count = 0;
+    private int $count = 0;
+
+    public function __construct(BranchPruner $branchPruner)
+    {
+        $this->branchPruner = $branchPruner;
+    }
 
     /**
      * Return the number of entries on the stack.
-     *
-     * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->count;
     }
 
     /**
      * Push a new entry onto the stack.
-     *
-     * @param mixed $type
-     * @param mixed $value
-     * @param mixed $reference
      */
-    public function push($type, $value, $reference = null)
+    public function push(string $type, mixed $value, ?string $reference = null): void
     {
-        $this->stack[$this->count++] = [
-            'type' => $type,
-            'value' => $value,
-            'reference' => $reference,
-        ];
-        if ($type == 'Function') {
-            $localeFunction = Calculation::localeFunc($value);
+        $stackItem = $this->getStackItem($type, $value, $reference);
+        $this->stack[$this->count++] = $stackItem;
+
+        if ($type === 'Function') {
+            $localeFunction = Calculation::localeFunc(StringHelper::convertToString($value));
             if ($localeFunction != $value) {
                 $this->stack[($this->count - 1)]['localeValue'] = $localeFunction;
             }
         }
     }
 
+    /** @param array<mixed> $stackItem */
+    public function pushStackItem(array $stackItem): void
+    {
+        $this->stack[$this->count++] = $stackItem;
+    }
+
+    /** @return array<mixed> */
+    public function getStackItem(string $type, mixed $value, ?string $reference = null): array
+    {
+        $stackItem = [
+            'type' => $type,
+            'value' => $value,
+            'reference' => $reference,
+        ];
+
+        // will store the result under this alias
+        $storeKey = $this->branchPruner->currentCondition();
+        if (isset($storeKey) || $reference === 'NULL') {
+            $stackItem['storeKey'] = $storeKey;
+        }
+
+        // will only run computation if the matching store key is true
+        $onlyIf = $this->branchPruner->currentOnlyIf();
+        if (isset($onlyIf) || $reference === 'NULL') {
+            $stackItem['onlyIf'] = $onlyIf;
+        }
+
+        // will only run computation if the matching store key is false
+        $onlyIfNot = $this->branchPruner->currentOnlyIfNot();
+        if (isset($onlyIfNot) || $reference === 'NULL') {
+            $stackItem['onlyIfNot'] = $onlyIfNot;
+        }
+
+        return $stackItem;
+    }
+
     /**
      * Pop the last entry from the stack.
      *
-     * @return mixed
+     * @return null|array<mixed>
      */
-    public function pop()
+    public function pop(): ?array
     {
         if ($this->count > 0) {
             return $this->stack[--$this->count];
@@ -69,11 +104,9 @@ class Stack
     /**
      * Return an entry from the stack without removing it.
      *
-     * @param int $n number indicating how far back in the stack we want to look
-     *
-     * @return mixed
+     * @return null|array<mixed>
      */
-    public function last($n = 1)
+    public function last(int $n = 1): ?array
     {
         if ($this->count - $n < 0) {
             return null;
@@ -85,7 +118,7 @@ class Stack
     /**
      * Clear the stack.
      */
-    public function clear()
+    public function clear(): void
     {
         $this->stack = [];
         $this->count = 0;
