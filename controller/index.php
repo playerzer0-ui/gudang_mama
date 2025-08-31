@@ -83,6 +83,7 @@ switch($action){
         header("Location:../controller/index.php?action=show_login");
         break;
 
+    //show main areas
     case "show_slip":
         if($userID == null){
             header("Location:../controller/index.php?action=show_login");
@@ -164,6 +165,7 @@ switch($action){
         require_once "../view/amends.php";
         break;
 
+    //master data management
     case "master_read":
         $title = "master read";
         $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -401,6 +403,7 @@ switch($action){
         require_once "../view/delete.php";
         break;
 
+    //amend data management
     case "amend_update":
         $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $code = filter_input(INPUT_GET, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -743,7 +746,7 @@ switch($action){
         break;
         
         
-
+    //generate document numbers
     case "generate_LPB":
         $storageCode = filter_input(INPUT_GET, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $month = filter_input(INPUT_GET, "month", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -786,6 +789,7 @@ switch($action){
         echo generateNoInvoice($storageCode, $month, $year);
         break;
     
+    // AJAX handlers
     case 'getProductSuggestions':
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo json_encode(getProductSuggestions($term));
@@ -823,6 +827,7 @@ switch($action){
         echo json_encode(getInvoiceByNoSJ(null, $no_sj));
         break;
 
+    //create data management
     case "create_slip":
         $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $no_LPB = filter_input(INPUT_POST, "no_LPB", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -1024,6 +1029,7 @@ switch($action){
         header("Location:../controller/index.php?action=dashboard&msg=payment_made" . "&state=" . $pageState);
         break;
 
+    // ???
     case "calculateHutang":
         $no_sj = filter_input(INPUT_GET, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $remaining = 0;
@@ -1049,6 +1055,7 @@ switch($action){
         }
         break;
 
+    //wait there is a jump here
     case "create_repack":
         $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $repack_date = filter_input(INPUT_POST, "repack_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -1165,6 +1172,7 @@ switch($action){
         $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         break;
 
+    //exports
     case "create_pdf":
         $pageState = filter_input(INPUT_GET, "pageState", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $payment_id = filter_input(INPUT_GET, "payment_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
