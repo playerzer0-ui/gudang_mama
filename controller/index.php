@@ -745,6 +745,10 @@ switch($action){
         }
         break;
         
+    case "amendDelete":
+        $no_id = filter_input(INPUT_GET, "no_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        break;
         
     //generate document numbers
     case "generate_LPB":
@@ -1029,33 +1033,6 @@ switch($action){
         header("Location:../controller/index.php?action=dashboard&msg=payment_made" . "&state=" . $pageState);
         break;
 
-    // ???
-    case "calculateHutang":
-        $no_sj = filter_input(INPUT_GET, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $remaining = 0;
-
-        if($no_sj != null){
-            $payment_amount = filter_input(INPUT_GET, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $tax = filter_input(INPUT_GET, "tax", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $totalNominal = getTotalNominalByNoSJ($no_sj)["totalNominal"];
-            $totalPayment = getTotalPayment($no_sj)["totalPayment"];
-            
-            $totalNominal = $totalNominal + ($totalNominal * ((double)$tax / 100));
-            if($payment_amount != null){
-                $remaining = $totalNominal - $totalPayment - $payment_amount;
-                echo $remaining;
-            }
-            else{
-                $remaining = $totalNominal - $totalPayment;
-                echo $remaining;
-            }
-        }
-        else{
-            echo $remaining;
-        }
-        break;
-
-    //wait there is a jump here
     case "create_repack":
         $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $repack_date = filter_input(INPUT_POST, "repack_date", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -1116,22 +1093,6 @@ switch($action){
         header("Location:../controller/index.php?action=dashboard&msg=NO_moving:" . $no_moving);
         break;
 
-    case "test":
-        //echo "<pre>" . print_r(json_encode(generateSaldo("APA", 8, 2024)), true) . "</pre>";
-        //echo "<pre>" . print_r(getAllProductsForSaldo("APA", 8, 2024), true) . "</pre>";
-        //create_invoice_moving_pdf("APA", "BB", "FF", "2022-12-12", "2022-12-12", "op", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
-        //create_invoice_in_pdf("APA", "BBB", "ASAS", "TRUK", "123", "222-22-22", "1/LPB?APA?00/231", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111);
-        //create_invoice_out_pdf("RQQ", "APA", "BBB", "ASAS", "ADDRESS", "NPWP", "222-22-22", "no_invoice", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 11111, 11);
-        //create_payment_in_pdf("RQQ", "rorqual", "vendor", "sj1", "truk", "po1", "2202-22-22", "LPB", "saINV", ["rr-120"], ["regulaer"], [3], ["tray"], [123.12], 1200, "12-12-121", 11);
-        echo "<pre>" . print_r(json_encode(getLaporanHutangPiutang("APA", 8, 2024, "hutang")), true) . "</pre>";
-        break;
-
-    case "test2":
-        //echo "<pre>" . print_r(json_encode(generateSaldo("NON", 8, 2024)), true) . "</pre>";
-        //echo "<pre>" . print_r(json_encode(getAllProductsForSaldo("APA", 8, 2024)), true) . "</pre>";
-        //report_stock_excel("APA", "08", "2024");
-        break;
-
     case "getHPP":
         $storageCode = filter_input(INPUT_GET, "storageCode");
         $month = filter_input(INPUT_GET, "month");
@@ -1167,10 +1128,31 @@ switch($action){
         echo json_encode(generateSaldo($storageCode, $month, $year));
         break;
 
-    case "amendDelete":
-        $no_id = filter_input(INPUT_GET, "no_id", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    case "calculateHutang":
+        $no_sj = filter_input(INPUT_GET, "no_sj", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $remaining = 0;
+
+        if($no_sj != null){
+            $payment_amount = filter_input(INPUT_GET, "payment_amount", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $tax = filter_input(INPUT_GET, "tax", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $totalNominal = getTotalNominalByNoSJ($no_sj)["totalNominal"];
+            $totalPayment = getTotalPayment($no_sj)["totalPayment"];
+            
+            $totalNominal = $totalNominal + ($totalNominal * ((double)$tax / 100));
+            if($payment_amount != null){
+                $remaining = $totalNominal - $totalPayment - $payment_amount;
+                echo $remaining;
+            }
+            else{
+                $remaining = $totalNominal - $totalPayment;
+                echo $remaining;
+            }
+        }
+        else{
+            echo $remaining;
+        }
         break;
+
 
     //exports
     case "create_pdf":
