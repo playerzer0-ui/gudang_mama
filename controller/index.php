@@ -36,13 +36,13 @@ if(isset($_SESSION["userID"])){
     $userID = $_SESSION["userID"];
     $username = $_SESSION["username"];
     $userType = $_SESSION["userType"];
-    $state = "logout";
+    $logState = "logout";
 }
 else{
     $userID = null;
     $username = "";
     $userType = 0;
-    $state = "login";
+    $logState = "login";
 }
 
 if (!checkAccess($action, $userType)) {
@@ -144,8 +144,8 @@ switch($action){
             header("Location:../controller/index.php?action=show_login");
         }
         $title = "amends";
-        $s = filter_input(INPUT_GET, "s", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        switch($s){
+        $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        switch($state){
             case "slip":
                 $no_SJs = getAllOrders();
                 break;

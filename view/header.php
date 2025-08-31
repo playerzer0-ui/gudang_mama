@@ -87,12 +87,12 @@
                                 amend
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&s=slip">edit slips</a></li>
+                                <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=slip">edit slips</a></li>
                                 <?php if($userType == 1){ ?>
-                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&s=invoice">edit invoices</a></li>
-                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&s=payment">edit payments</a></li>
-                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&s=repack">edit repacks</a></li>
-                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&s=moving">edit movings</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=invoice">edit invoices</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=payment">edit payments</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=repack">edit repacks</a></li>
+                                    <li><a class="dropdown-item" href="../controller/index.php?action=show_amends&state=moving">edit movings</a></li>
                                 <?php } ?>
                             </ul>
                         </li>
@@ -115,7 +115,7 @@
                             <a class="nav-link" href="../controller/index.php?action=getLogs"><button class="btn btn-info">LOGS</button></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../controller/index.php?action=logout"><button class="btn btn-primary"><?php echo $state; ?></button></a>
+                            <a class="nav-link" href="../controller/index.php?action=logout"><button class="btn btn-primary"><?php echo $logState; ?></button></a>
                         </li>
                     </ul>
                 </div>
