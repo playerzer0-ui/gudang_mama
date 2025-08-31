@@ -143,8 +143,8 @@ switch($action){
             header("Location:../controller/index.php?action=show_login");
         }
         $title = "amends";
-        $state = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        switch($state){
+        $s = filter_input(INPUT_GET, "s", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        switch($s){
             case "slip":
                 $no_SJs = getAllOrders();
                 break;
