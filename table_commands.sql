@@ -479,6 +479,24 @@ ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`storageCode`) REFERENCES `storages` (`storageCode`),
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`vendorCode`) REFERENCES `vendors` (`vendorCode`),
   ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`customerCode`) REFERENCES `customers` (`customerCode`);
+-- Authentication tables (also available separately in scripts/sql/totp.sql).
+-- Authentication tables only: safe to import into an existing Gudang Mama database.
+-- Keep these definitions in sync with the authentication section in table_commands.sql.
+CREATE TABLE IF NOT EXISTS user_two_factor (
+    user_id CHAR(36) PRIMARY KEY,
+    secret TEXT NOT NULL,
+    confirmed_at BIGINT NOT NULL,
+    last_step BIGINT NOT NULL,
+    recovery_hashes TEXT NOT NULL,
+    version INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS auth_attempts (
+    bucket CHAR(64) PRIMARY KEY,
+    attempts INTEGER NOT NULL,
+    reset_at BIGINT NOT NULL
+);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

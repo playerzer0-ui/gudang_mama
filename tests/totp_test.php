@@ -10,7 +10,12 @@ function check(bool $condition, string $message): void {
     $count++;
 }
 $db = new PDO('sqlite::memory:', null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-foreach (TwoFactorService::schema() as $sql) $db->exec($sql);
+$schema = file_get_contents(__DIR__ . '/../scripts/sql/totp.sql');
+$db->exec($schema);
+// Fresh imports and upgrades must define the same authentication tables.
+$dump = str_replace("\r\n", "\n", file_get_contents(__DIR__ . '/../table_commands.sql'));
+check(str_contains($dump, trim(str_replace("\r\n", "\n", $schema))), 'Fresh-install SQL includes the upgrade schema');
+$db->exec($schema); // Reapplying the upgrade must preserve existing tables.
 $db->exec('CREATE TABLE users (userID TEXT PRIMARY KEY, username TEXT, password TEXT, userType INTEGER)');
 $passwordHash = password_hash('test-password', PASSWORD_BCRYPT);
 $db->prepare('INSERT INTO users VALUES (?, ?, ?, ?)')->execute(['test-user', 'worker', $passwordHash, 0]);

@@ -16,17 +16,40 @@ There is no email-verification or email-code step. Google Authenticator works th
 
 ## Install / activate another environment
 
-Requires PHP 8.2+, PDO MySQL, OpenSSL, XMLWriter, and Composer dependencies:
+Requires PHP 8.2+, PDO MySQL, OpenSSL, XMLWriter, and Composer dependencies.
+
+### Fresh installation using phpMyAdmin or MySQL
+
+1. Run `composer install --no-dev --no-interaction` if dependencies are not present.
+2. Import `table_commands.sql` into an empty database. It includes `user_two_factor` and `auth_attempts`; no PHP schema method or separate TOTP table import is needed.
+3. Configure the database connection in `model/database.php`.
+4. Configure the encryption key outside the website document root. `config/totp.local.php` should return its absolute path, for example:
+
+```php
+<?php
+return 'C:/xampp/private/gudang_mama_totp.key';
+```
+
+When moving an existing installation, restore a current database backup (including authentication tables), securely copy the SAME private key, and update its path. The checked-in `table_commands.sql` is an installation snapshot, not a backup of current company data or authenticator enrollments.
+
+### Upgrade an existing database
+
+Import only `scripts/sql/totp.sql` through phpMyAdmin or MySQL. It creates the two authentication tables if they do not already exist. Do not reimport the full installation snapshot over company data.
+
+### Optional command-line setup
+
+The existing helper remains available to create the authentication tables and configure a private key:
 
 ```powershell
-composer install --no-dev --no-interaction
 php scripts/setup_totp.php --print-sql
 php scripts/setup_totp.php --apply --host=localhost --key-file=C:/xampp/private/gudang_mama_totp.key
 ```
 
+It reads `scripts/sql/totp.sql`; SQL is no longer defined inside `TwoFactorService`. The tests check that the full installation snapshot includes exactly the same authentication schema.
+
 Back up the database before applying in a company environment. The host explicitly selects the existing connection in model/database.php: localhost selects its local credentials; other values select its other connection. Check that configuration before running.
 
-The script creates only user_two_factor and auth_attempts. It does not alter users, orders, products, invoices, or payments. It never overwrites an existing key. Re-running it with the same key path is safe.
+The script creates only user_two_factor and auth_attempts. It does not alter users, orders, products, invoices, or payments. It never overwrites an existing key. Re-running it with the same key path is safe. On a fresh installation it can generate a new key; for migrated enrollments, put the original key at that path first.
 
 The generated config/totp.local.php contains only the key-file path and is ignored by Git. The key itself must be outside the document root, readable by PHP and restricted to the app's operating-system account. The helper also supports GUDANG_MAMA_TOTP_KEY (base64, exactly 32 decoded bytes) or GUDANG_MAMA_TOTP_KEY_FILE, which take precedence over local configuration.
 

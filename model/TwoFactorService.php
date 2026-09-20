@@ -22,25 +22,6 @@ final class TwoFactorService
         $this->key = $key;
     }
 
-    public static function schema(): array
-    {
-        return [
-            "CREATE TABLE IF NOT EXISTS user_two_factor (
-                user_id CHAR(36) PRIMARY KEY,
-                secret TEXT NOT NULL,
-                confirmed_at BIGINT NOT NULL,
-                last_step BIGINT NOT NULL,
-                recovery_hashes TEXT NOT NULL,
-                version INTEGER NOT NULL
-            )",
-            "CREATE TABLE IF NOT EXISTS auth_attempts (
-                bucket CHAR(64) PRIMARY KEY,
-                attempts INTEGER NOT NULL,
-                reset_at BIGINT NOT NULL
-            )"
-        ];
-    }
-
     public function state(string $userId): ?array
     {
         $statement = $this->db->prepare('SELECT * FROM user_two_factor WHERE user_id = ?');

@@ -19,7 +19,8 @@ file_put_contents($temp . '/vendor/autoload.php', '<?php require ' . var_export(
 $dbPath = $temp . '/test.sqlite';
 file_put_contents($temp . '/model/database.php', '<?php $db = new PDO(' . var_export('sqlite:' . $dbPath, true) . ', null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);');
 $db = new PDO('sqlite:' . $dbPath, null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-foreach (TwoFactorService::schema() as $sql) $db->exec($sql);
+$schema = file_get_contents(__DIR__ . '/../scripts/sql/totp.sql');
+$db->exec($schema);
 $db->exec('CREATE TABLE users (userID TEXT PRIMARY KEY, username TEXT, password TEXT, userType INTEGER)');
 $password = 'a <real>& password';
 $db->prepare('INSERT INTO users VALUES (?, ?, ?, ?)')->execute(['http-user', 'worker', password_hash($password, PASSWORD_BCRYPT), 0]);

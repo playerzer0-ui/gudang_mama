@@ -1,8 +1,9 @@
 <?php
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
-require_once __DIR__ . '/../model/TwoFactorService.php';
+$schema = file_get_contents(__DIR__ . '/sql/totp.sql');
+if ($schema === false) throw new RuntimeException('Cannot read the TOTP schema SQL file.');
 if (($argv[1] ?? '') === '--print-sql') {
-    echo implode(";\n\n", TwoFactorService::schema()) . ";\n";
+    echo $schema;
     exit;
 }
 $options = getopt('', ['apply', 'host:', 'key-file:']);
@@ -37,7 +38,9 @@ if (file_exists($keyFile)) {
 $_SERVER['HTTP_HOST'] = $options['host'];
 require __DIR__ . '/../model/database.php';
 if (!isset($db) || !$db instanceof PDO) exit(1);
-foreach (TwoFactorService::schema() as $sql) $db->exec($sql);
+foreach (explode(';', $schema) as $sql) {
+    if (trim($sql) !== '') $db->exec($sql);
+}
 $configDirectory = dirname(__DIR__) . '/config';
 if (!is_dir($configDirectory)) mkdir($configDirectory, 0700, true);
 file_put_contents($configDirectory . '/totp.local.php', '<?php return ' . var_export($keyFile, true) . ';' . "\n");
