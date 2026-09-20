@@ -23,6 +23,14 @@ require_once "database.php";
 function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $status) {
     global $db;
 
+    $date = DateTime::createFromFormat('Y-m-d', $order_date);
+    $month = (int)$date->format('m');
+    $year = (int)$date->format('Y');
+    $prefix = ($status == 1) ? 'LPB' : (($status == 2) ? 'SJK' : 'SJT');
+    $monthText = ($month < 10) ? '0' . $month : (string)$month;
+    $sequenceKey = $storageCode . '|' . $monthText . '|' . $year . '|' . $prefix;
+    $generatedNumber = (int)explode('/', $nomor_surat_jalan)[0];
+
     $query = 'INSERT INTO orders
         VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCode, :customerCode, :order_date, :purchase_order, :stat)';
 
@@ -37,21 +45,35 @@ function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendo
     $statement->bindValue(":purchase_order", $purchase_order);
     $statement->bindValue(":stat", $status);
 
+    $db->beginTransaction();
+
     try {
         $statement->execute();
-        $statement->closeCursor();
-        return true;  // Return true if successful
-    } catch(PDOException $ex) {
+        $rowStmt = $db->prepare('SELECT last_number FROM number_sequences WHERE sequence_key = :sequence_key FOR UPDATE');
+        $rowStmt->bindValue(':sequence_key', $sequenceKey);
+        $rowStmt->execute();
+        $currentNumber = (int)$rowStmt->fetchColumn();
+        $rowStmt->closeCursor();
+
+        $nextValue = max($currentNumber, $generatedNumber);
+
+        $upsertStmt = $db->prepare('INSERT INTO number_sequences (sequence_key, last_number) VALUES (:sequence_key, :last_number)
+                                    ON DUPLICATE KEY UPDATE last_number = GREATEST(last_number, VALUES(last_number))');
+        $upsertStmt->bindValue(':sequence_key', $sequenceKey);
+        $upsertStmt->bindValue(':last_number', $nextValue);
+        $upsertStmt->execute();
+        $upsertStmt->closeCursor();
+
+        $db->commit();
+        return true;
+    } catch (PDOException $ex) {
+        $db->rollBack();
         $errorCode = $ex->getCode();
-        // MySQL error code for duplicate entry
         if ($errorCode == 23000) {
-            // This indicates a duplicate entry
-            return false;
-        } else {
-            // Log the error message for debugging (optional)
-            error_log($ex->getMessage());
             return false;
         }
+        error_log($ex->getMessage());
+        return false;
     }
 }
 
@@ -130,34 +152,63 @@ function generateNoLPB($storageCode, $month, $year, $status){
     global $db;
 
     $prefix = ($status == 1) ? "LPB" : "SJK";
-    
-    // Get the count of existing numbers
-    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = :stat AND ' . 
-             ($status == 1 ? 'no_LPB' : 'nomor_surat_jalan') . ' LIKE :storageCode';
-    
-    $statement = $db->prepare($query);
-    $statement->bindValue(":mon", $month);
-    $statement->bindValue(":yea", $year);
-    $statement->bindValue(":stat", $status);
-    $statement->bindValue(":storageCode", "%" . $storageCode . "%");
-    
+    $monthText = ($month < 10) ? "0" . $month : $month;
+    $sequenceKey = $storageCode . "|" . $monthText . "|" . $year . "|" . $prefix;
+
+    $columnName = ($status == 1) ? 'no_LPB' : 'nomor_surat_jalan';
+    $baseQuery = 'SELECT MAX(CAST(SUBSTRING_INDEX(' . $columnName . ', "/", 1) AS UNSIGNED)) AS max_no
+                  FROM orders
+                  WHERE month(order_date) = :mon
+                  AND year(order_date) = :yea
+                  AND status_mode = :stat
+                  AND ' . $columnName . ' LIKE :storageCode';
+
+    $baseStmt = $db->prepare($baseQuery);
+    $baseStmt->bindValue(':mon', $month);
+    $baseStmt->bindValue(':yea', $year);
+    $baseStmt->bindValue(':stat', $status);
+    $baseStmt->bindValue(':storageCode', '%' . $storageCode . '%');
+    $baseStmt->execute();
+    $baseResult = $baseStmt->fetch(PDO::FETCH_ASSOC);
+    $baseStmt->closeCursor();
+
+    $sequenceStmt = $db->prepare('SELECT last_number FROM number_sequences WHERE sequence_key = :sequence_key');
+    $sequenceStmt->bindValue(':sequence_key', $sequenceKey);
+    $sequenceStmt->execute();
+    $sequenceNumber = (int)$sequenceStmt->fetchColumn();
+    $sequenceStmt->closeCursor();
+
+    $maxNumber = (int)($baseResult['max_no'] ?? 0);
+    $nextNumber = max($maxNumber, $sequenceNumber) + 1;
+
+    return $nextNumber . "/" . $prefix . "/" . $storageCode . "/" . $monthText . "/" . $year;
+}
+
+function reserveSequenceNumber($sequenceKey, $issuedNumber){
+    global $db;
+
     try {
-        $statement->execute();
-    }
-    catch(PDOException $ex){
-        $ex->getMessage();
-    }
+        $rowStmt = $db->prepare('SELECT last_number FROM number_sequences WHERE sequence_key = :sequence_key FOR UPDATE');
+        $rowStmt->bindValue(':sequence_key', $sequenceKey);
+        $rowStmt->execute();
+        $currentNumber = (int)$rowStmt->fetchColumn();
+        $rowStmt->closeCursor();
 
-    $result = $statement->fetch(PDO::FETCH_ASSOC);
-    $no = $result["totalIN"] + 1;
-    $statement->closeCursor();
+        $issuedValue = (int)$issuedNumber;
+        $nextValue = max($currentNumber, $issuedValue);
 
-    if($month < 10){
-        $month = "0" . $month;
+        $upsertStmt = $db->prepare('INSERT INTO number_sequences (sequence_key, last_number) VALUES (:sequence_key, :last_number)
+                                    ON DUPLICATE KEY UPDATE last_number = GREATEST(last_number, VALUES(last_number))');
+        $upsertStmt->bindValue(':sequence_key', $sequenceKey);
+        $upsertStmt->bindValue(':last_number', $nextValue);
+        $upsertStmt->execute();
+        $upsertStmt->closeCursor();
+
+        return true;
+    } catch (PDOException $ex) {
+        error_log($ex->getMessage());
+        return false;
     }
-
-    $generatedNo = $no . "/" . $prefix . "/" . $storageCode . "/" . $month . "/" . $year;
-    return $generatedNo;
 }
 
 /**
@@ -176,31 +227,33 @@ function generateNoLPB($storageCode, $month, $year, $status){
 function generateTaxSJ($storageCode, $month, $year){
     global $db;
 
-    // Get the count of existing numbers
-    $query = 'SELECT count(*) AS totalIN FROM orders WHERE month(order_date) = :mon AND year(order_date) = :yea AND status_mode = 3 AND nomor_surat_jalan LIKE "%SJT%" AND nomor_surat_jalan LIKE :storageCode';
-    
-    $statement = $db->prepare($query);
-    $statement->bindValue(":mon", $month);
-    $statement->bindValue(":yea", $year);
-    $statement->bindValue(":storageCode", "%" . $storageCode . "%");
-    
-    try {
-        $statement->execute();
-    }
-    catch(PDOException $ex){
-        $ex->getMessage();
-    }
+    $monthText = ($month < 10) ? "0" . $month : $month;
+    $sequenceKey = $storageCode . "|" . $monthText . "|" . $year . "|SJT";
 
-    $result = $statement->fetch(PDO::FETCH_ASSOC);
-    $no = $result["totalIN"] + 1;
-    $statement->closeCursor();
+    $query = 'SELECT MAX(CAST(SUBSTRING_INDEX(nomor_surat_jalan, "/", 1) AS UNSIGNED)) AS max_no
+              FROM orders
+              WHERE month(order_date) = :mon
+              AND year(order_date) = :yea
+              AND status_mode = 3
+              AND nomor_surat_jalan LIKE "%SJT%"
+              AND nomor_surat_jalan LIKE :storageCode';
 
-    if($month < 10){
-        $month = "0" . $month;
-    }
+    $stmt = $db->prepare($query);
+    $stmt->bindValue(':mon', $month);
+    $stmt->bindValue(':yea', $year);
+    $stmt->bindValue(':storageCode', '%' . $storageCode . '%');
+    $stmt->execute();
+    $maxResult = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
 
-    $generatedNo = $no . "/SJT/" . $storageCode . "/" . $month . "/" . $year;
-    return $generatedNo;
+    $sequenceStmt = $db->prepare('SELECT last_number FROM number_sequences WHERE sequence_key = :sequence_key');
+    $sequenceStmt->bindValue(':sequence_key', $sequenceKey);
+    $sequenceStmt->execute();
+    $sequenceNumber = (int)$sequenceStmt->fetchColumn();
+    $sequenceStmt->closeCursor();
+
+    $nextNumber = max((int)($maxResult['max_no'] ?? 0), $sequenceNumber) + 1;
+    return $nextNumber . "/SJT/" . $storageCode . "/" . $monthText . "/" . $year;
 }
 
 /**

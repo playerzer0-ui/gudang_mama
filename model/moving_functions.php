@@ -16,31 +16,32 @@
      */
     function generate_SJP($storageCode, $month, $year){
         global $db;
-    
-        // Get the count of existing numbers
-        $query = 'SELECT count(*) AS totalIN FROM movings WHERE month(moving_date) = :mon AND year(moving_date) = :yea AND storageCodeSender = :storageCode';
-        $statement = $db->prepare($query);
-        $statement->bindValue(":mon", $month);
-        $statement->bindValue(":yea", $year);
-        $statement->bindValue(":storageCode", $storageCode);
-    
-        try {
-            $statement->execute();
-        }
-        catch(PDOException $ex){
-            $ex->getMessage();
-        }
-    
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        $no = $result["totalIN"] + 1;
-        $statement->closeCursor();
-    
-        if($month < 10){
-            $month = "0" . $month;
-        }
-    
-        $generatedNo = $no . "/SJP/" . $storageCode . "/" . $month . "/" . $year;
-        return $generatedNo;
+
+        $monthText = ($month < 10) ? "0" . $month : $month;
+        $sequenceKey = $storageCode . "|" . $monthText . "|" . $year . "|SJP";
+
+        $query = 'SELECT MAX(CAST(SUBSTRING_INDEX(no_moving, "/", 1) AS UNSIGNED)) AS max_no
+                  FROM movings
+                  WHERE month(moving_date) = :mon
+                  AND year(moving_date) = :yea
+                  AND storageCodeSender = :storageCode';
+
+        $existingStmt = $db->prepare($query);
+        $existingStmt->bindValue(':mon', $month);
+        $existingStmt->bindValue(':yea', $year);
+        $existingStmt->bindValue(':storageCode', $storageCode);
+        $existingStmt->execute();
+        $maxResult = $existingStmt->fetch(PDO::FETCH_ASSOC);
+        $existingStmt->closeCursor();
+
+        $sequenceStmt = $db->prepare('SELECT last_number FROM number_sequences WHERE sequence_key = :sequence_key');
+        $sequenceStmt->bindValue(':sequence_key', $sequenceKey);
+        $sequenceStmt->execute();
+        $sequenceNumber = (int)$sequenceStmt->fetchColumn();
+        $sequenceStmt->closeCursor();
+
+        $nextNumber = max((int)($maxResult['max_no'] ?? 0), $sequenceNumber) + 1;
+        return $nextNumber . "/SJP/" . $storageCode . "/" . $monthText . "/" . $year;
     }    
 
     /**
@@ -111,6 +112,13 @@
     function create_moving($no_moving, $moving_date, $storageCodeSender, $storageCodeReceiver){
         global $db;
 
+        $date = DateTime::createFromFormat('Y-m-d', $moving_date);
+        $month = (int)$date->format('m');
+        $year = (int)$date->format('Y');
+        $monthText = ($month < 10) ? '0' . $month : (string)$month;
+        $sequenceKey = $storageCodeSender . '|' . $monthText . '|' . $year . '|SJP';
+        $generatedNumber = (int)explode('/', $no_moving)[0];
+
         $query = 'INSERT INTO movings VALUES (:no_moving, :moving_date, :storageCodeSender, :storageCodeReceiver)';
         $statement = $db->prepare($query);
         $statement->bindValue(":no_moving", $no_moving);
@@ -118,14 +126,31 @@
         $statement->bindValue(":storageCodeSender", $storageCodeSender);
         $statement->bindValue(":storageCodeReceiver", $storageCodeReceiver);
 
+        $db->beginTransaction();
+
         try {
             $statement->execute();
-        }
-        catch(PDOException $ex){
-            $ex->getMessage();
-        }
+            $rowStmt = $db->prepare('SELECT last_number FROM number_sequences WHERE sequence_key = :sequence_key FOR UPDATE');
+            $rowStmt->bindValue(':sequence_key', $sequenceKey);
+            $rowStmt->execute();
+            $currentNumber = (int)$rowStmt->fetchColumn();
+            $rowStmt->closeCursor();
 
-        $statement->closeCursor();
+            $nextValue = max($currentNumber, $generatedNumber);
+            $upsertStmt = $db->prepare('INSERT INTO number_sequences (sequence_key, last_number) VALUES (:sequence_key, :last_number)
+                                        ON DUPLICATE KEY UPDATE last_number = GREATEST(last_number, VALUES(last_number))');
+            $upsertStmt->bindValue(':sequence_key', $sequenceKey);
+            $upsertStmt->bindValue(':last_number', $nextValue);
+            $upsertStmt->execute();
+            $upsertStmt->closeCursor();
+
+            $db->commit();
+            return true;
+        } catch (PDOException $ex) {
+            $db->rollBack();
+            error_log($ex->getMessage());
+            return false;
+        }
     }
 
     /**

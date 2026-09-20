@@ -267,6 +267,21 @@ INSERT INTO `repacks` (`no_repack`, `repack_date`, `storageCode`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `number_sequences`
+--
+
+DROP TABLE IF EXISTS `number_sequences`;
+CREATE TABLE `number_sequences` (
+  `sequence_key` varchar(80) NOT NULL,
+  `last_number` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `number_sequences`
+  ADD PRIMARY KEY (`sequence_key`);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `saldos`
 --
 
