@@ -128,3 +128,45 @@ td input, td select {
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
 }
+/* Invoice/payment document picker. Other forms retain their existing layout. */
+.main-container.document-layout {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+    padding: 16px;
+}
+.document-layout .document-form {
+    min-width: 0;
+    overflow-x: auto;
+}
+.document-sidebar {
+    position: sticky;
+    top: 16px;
+    padding: 14px;
+    border: 1px solid #d9dee3;
+    border-radius: 6px;
+    background: #f8f9fa;
+}
+.document-sidebar h2 { font-size: 18px; margin: 0 0 8px; }
+.document-sidebar-hint, .document-sidebar-empty { font-size: 13px; color: #59636d; }
+.document-sidebar-list { display: grid; gap: 8px; max-height: 65vh; overflow-y: auto; }
+.document-sidebar-button {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    overflow-wrap: anywhere;
+    border: 1px solid #b7c6d4;
+    border-radius: 4px;
+    background: white;
+    color: #154a75;
+    cursor: pointer;
+}
+.document-sidebar-button:hover { background: #e8f1fa; }
+.document-sidebar-button.is-selected { background: #0d6efd; border-color: #0d6efd; color: white; }
+.document-sidebar-button:focus-visible { outline: 3px solid #77adfa; outline-offset: 2px; }
+@media (max-width: 800px) {
+    .main-container.document-layout { grid-template-columns: minmax(0, 1fr); padding: 10px; }
+    .document-sidebar { position: static; }
+    .document-sidebar-list { max-height: 200px; }
+}

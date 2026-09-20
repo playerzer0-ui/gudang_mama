@@ -1,5 +1,46 @@
 <?php
 // controller/create_controller.php
+
+// Reject empty/incomplete product submissions before creating a document header.
+if (in_array($action, ['create_slip', 'create_repack', 'create_moving'], true)) {
+    $productGroups = $action === 'create_repack'
+        ? [['kd_awal', 'qty_awal', 'uom_awal'], ['kd_akhir', 'qty_akhir', 'uom_akhir']]
+        : [['kd', 'qty', 'uom']];
+    $hasProducts = true;
+
+    foreach ($productGroups as [$codeField, $qtyField, $uomField]) {
+        $codes = $_POST[$codeField] ?? null;
+        $quantities = $_POST[$qtyField] ?? null;
+        $units = $_POST[$uomField] ?? null;
+        if (!is_array($codes) || !$codes || !array_is_list($codes)
+            || !is_array($quantities) || !array_is_list($quantities)
+            || !is_array($units) || !array_is_list($units)
+            || count($codes) !== count($quantities) || count($codes) !== count($units)) {
+            $hasProducts = false;
+            break;
+        }
+        foreach ($codes as $index => $code) {
+            foreach ([$code, $quantities[$index], $units[$index]] as $value) {
+                if (!is_scalar($value) || trim((string)$value) === '') {
+                    $hasProducts = false;
+                    break 3;
+                }
+            }
+        }
+    }
+
+    if (!$hasProducts) {
+        $redirect = ['action' => str_replace('create_', 'show_', $action)];
+        if ($action === 'create_slip') {
+            $state = $_POST['pageState'] ?? 'in';
+            $redirect['state'] = in_array($state, ['in', 'out', 'out_tax'], true) ? $state : 'in';
+        }
+        $redirect['msg'] = 'Error, no product inserted';
+        header('Location: ../controller/index.php?' . http_build_query($redirect));
+        exit;
+    }
+}
+
 switch($action){
     case "create_slip":
         $storageCode = filter_input(INPUT_POST, "storageCode", FILTER_SANITIZE_FULL_SPECIAL_CHARS);

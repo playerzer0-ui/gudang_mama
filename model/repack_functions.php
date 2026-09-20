@@ -39,24 +39,7 @@ function generate_SJR($storageCode, $month, $year){
         $month = "0" . $month;
     }
 
-    // Check for existing number and increment if necessary
-    do {
-        $generatedNo = $no . "/SJR/" . $storageCode . "/" . $month . "/" . $year;
-        $checkQuery = 'SELECT COUNT(*) AS existingCount FROM repacks WHERE no_repack = :generatedNo';
-        
-        $checkStmt = $db->prepare($checkQuery);
-        $checkStmt->bindValue(":generatedNo", $generatedNo);
-        $checkStmt->execute();
-        $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
-        $checkStmt->closeCursor();
-        
-        if($checkResult["existingCount"] > 0){
-            $no++;
-        } else {
-            break;
-        }
-    } while(true);
-
+    $generatedNo = $no . "/SJR/" . $storageCode . "/" . $month . "/" . $year;
     return $generatedNo;
 }    
 

@@ -1,6 +1,9 @@
 <?php include "header.php"; ?>
 
-<main class="main-container">
+<?php $hasDocumentSidebar = in_array($pageState, ['in', 'out', 'out_tax'], true); ?>
+<main class="main-container<?= $hasDocumentSidebar ? ' document-layout' : '' ?>">
+    <?php if ($hasDocumentSidebar) include __DIR__ . '/document_sidebar.php'; ?>
+    <section class="document-form">
     <form id="myForm" action="../controller/index.php?action=create_payment" method="post">
     <h1>PAYMENT <?php echo $pageState; ?></h1>
     <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
@@ -140,8 +143,11 @@
     </table>
     <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>
     </form>
+    </section>
 </main>
 
-<script src="../js/payment.js" async defer></script>
+<script src="../js/document_sidebar.js" defer></script>
+
+<script src="../js/payment.js" defer></script>
 
 <?php include "footer.php"; ?>

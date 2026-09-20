@@ -16,6 +16,8 @@ switch($action){
         }
         $pageState = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $title = "invoice " . $pageState;
+        require_once __DIR__ . "/../model/document_sidebar_functions.php";
+        $sidebarDocuments = getDocumentSidebarNumbers($pageState, "invoice");
         require_once "../view/invoice.php";
         break;
 
@@ -25,6 +27,8 @@ switch($action){
         }
         $pageState = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $title = "payment " . $pageState;
+        require_once __DIR__ . "/../model/document_sidebar_functions.php";
+        $sidebarDocuments = getDocumentSidebarNumbers($pageState, "payment");
         require_once "../view/payment.php";
         break;
 

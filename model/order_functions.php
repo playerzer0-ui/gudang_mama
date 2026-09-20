@@ -156,25 +156,7 @@ function generateNoLPB($storageCode, $month, $year, $status){
         $month = "0" . $month;
     }
 
-    // Check for existing number and increment if necessary
-    do {
-        $generatedNo = $no . "/" . $prefix . "/" . $storageCode . "/" . $month . "/" . $year;
-        $checkQuery = 'SELECT COUNT(*) AS existingCount FROM orders WHERE ' . 
-                      ($status == 1 ? 'no_LPB' : 'nomor_surat_jalan') . ' = :generatedNo';
-        
-        $checkStmt = $db->prepare($checkQuery);
-        $checkStmt->bindValue(":generatedNo", $generatedNo);
-        $checkStmt->execute();
-        $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
-        $checkStmt->closeCursor();
-        
-        if($checkResult["existingCount"] > 0){
-            $no++;
-        } else {
-            break;
-        }
-    } while(true);
-
+    $generatedNo = $no . "/" . $prefix . "/" . $storageCode . "/" . $month . "/" . $year;
     return $generatedNo;
 }
 
@@ -217,24 +199,7 @@ function generateTaxSJ($storageCode, $month, $year){
         $month = "0" . $month;
     }
 
-    // Check for existing number and increment if necessary
-    do {
-        $generatedNo = $no . "/SJT/" . $storageCode . "/" . $month . "/" . $year;
-        $checkQuery = 'SELECT COUNT(*) AS existingCount FROM orders WHERE nomor_surat_jalan = :generatedNo';
-        
-        $checkStmt = $db->prepare($checkQuery);
-        $checkStmt->bindValue(":generatedNo", $generatedNo);
-        $checkStmt->execute();
-        $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
-        $checkStmt->closeCursor();
-        
-        if($checkResult["existingCount"] > 0){
-            $no++;
-        } else {
-            break;
-        }
-    } while(true);
-
+    $generatedNo = $no . "/SJT/" . $storageCode . "/" . $month . "/" . $year;
     return $generatedNo;
 }
 
