@@ -148,63 +148,15 @@ function deleteUser($userID) {
 }
 
 
-/**
- * Authenticates a user by verifying their credentials.
- *
- * This function checks if the provided username exists and if the provided password matches the hashed password
- * in the database. If authentication is successful, it starts a session and stores user information in session variables.
- * Otherwise, it redirects to the login page with an appropriate error message.
- *
- * @param string $username The username of the user trying to log in.
- * @param string $password The password of the user trying to log in.
- *
- * @return void
- * @throws Exception If there is an issue with database interaction.
- */
+// Password verification only. auth_controller completes login after TOTP.
 function login($username, $password){
     global $db;
-
-    $query = "SELECT * FROM users WHERE username = :username";
-
-    $statement = $db->prepare($query);
-    $statement->bindValue(":username", $username);
-
-    try {
-        $statement->execute();
-    }
-    catch(PDOException $ex){
-        $ex->getMessage();
-    }
-
-    $row = $statement->rowCount();
-
-    //no user found
-    if($row == 0){
-        header("Location:../controller/index.php?action=show_login&msg=user not found");
-        exit();
-    }
-
-    $results = $statement->fetch();
-    $dbid = $results["userID"];
-    $dbusername = $results['username'];
-    $dbpassword = $results['password'];
-    $dbuserType = $results['userType'];
-    $statement->closeCursor();
-
-    //if match, enter
-    if(password_verify($password, $dbpassword)){
-        session_start();
-        $_SESSION["userID"] = $dbid;
-        $_SESSION['username'] = $dbusername;
-        $_SESSION['password'] = $password;
-        $_SESSION['userType'] = $dbuserType;
-    }
-    else{
-        header("Location:../controller/index.php?action=show_login&msg=invalid credentials");
-        exit();
-    }
+    if (!is_string($username) || !is_string($password) || strlen($username) > 100 || strlen($password) > 4096) return null;
+    $statement = $db->prepare('SELECT userID, username, password, userType FROM users WHERE username = :username');
+    $statement->execute([':username' => $username]);
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
+    return $user && password_verify($password, $user['password']) ? $user : null;
 }
-
 /**
  * Logs out the current user by destroying the session.
  *
@@ -213,12 +165,17 @@ function login($username, $password){
  * @return void
  */
 function logout(){
-    session_start();
-    session_unset();
+    $_SESSION = [];
+    if (ini_get('session.use_cookies')) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', [
+            'expires' => time() - 42000, 'path' => $params['path'],
+            'domain' => $params['domain'], 'secure' => $params['secure'],
+            'httponly' => true, 'samesite' => 'Lax',
+        ]);
+    }
     session_destroy();
-    header("Location:../controller/index.php?action=index");
 }
-
 /**
  * Checks if a username already exists in the `user` table.
  *

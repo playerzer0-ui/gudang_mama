@@ -2,3 +2,4 @@
 test.txt
 task.md
 vendor/
+/config/totp.local.php

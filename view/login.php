@@ -4,6 +4,7 @@
         <div class="form-container bg-white">
         <form action="../controller/index.php?action=login" method="post">
             <h1>LOGIN</h1>
+            <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(gm_csrf(), ENT_QUOTES, 'UTF-8'); ?>">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">username</label>
                 <input type="text" name="username" class="form-control" id="exampleInputUsername1" aria-describedby="usernameHelp">

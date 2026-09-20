@@ -1,11 +1,25 @@
 <?php
 // index.php - Main controller
+ini_set('session.use_strict_mode', '1');
+session_set_cookie_params([
+    'httponly' => true,
+    'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+    'samesite' => 'Lax',
+]);
 session_start();
+require_once __DIR__ . '/auth_helpers.php';
 require_once "universal_functions.php";
 
 $action = filter_input(INPUT_GET, "action");
 if($action == null){
     $action = "show_login";
+}
+
+// A password-only or pre-upgrade session cannot access warehouse actions.
+try {
+    gm_guard($action);
+} catch (Throwable $error) {
+    gm_auth_error();
 }
 
 // Check user access
@@ -20,6 +34,12 @@ switch($action){
     case "show_login":
     case "login":
     case "logout":
+    case "totp_setup":
+    case "totp_confirm":
+    case "totp_challenge":
+    case "totp_verify":
+    case "totp_recovery_codes":
+    case "totp_acknowledge":
         require_once "auth_controller.php";
         break;
         
