@@ -29,7 +29,8 @@ function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendo
     $prefix = ($status == 1) ? 'LPB' : (($status == 2) ? 'SJK' : 'SJT');
     $monthText = ($month < 10) ? '0' . $month : (string)$month;
     $sequenceKey = $storageCode . '|' . $monthText . '|' . $year . '|' . $prefix;
-    $generatedNumber = (int)explode('/', $nomor_surat_jalan)[0];
+    $issuedDocumentNumber = ($status == 1) ? $no_LPB : $nomor_surat_jalan;
+    $generatedNumber = (int)explode('/', $issuedDocumentNumber)[0];
 
     $query = 'INSERT INTO orders
         VALUES (:nomor_surat_jalan, :storageCode, :no_LPB, :no_truk, :vendorCode, :customerCode, :order_date, :purchase_order, :stat)';
