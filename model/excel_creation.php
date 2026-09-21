@@ -3,6 +3,7 @@
 require_once "../vendor/autoload.php";
 require_once "../model/invoice_functions.php";
 require_once "../model/order_products_functions.php";
+require_once "../model/users_action_excel.php";
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -546,21 +547,25 @@ function getLogs($userType){
         }
     }
 
-    $spreadsheet->setActiveSheetIndex(0);
+    appendUserActionSheets($spreadsheet, $userType);
 
-    $filePath = "../files/logs.xlsx";
+    $filePath = tempnam(sys_get_temp_dir(), 'gm_logs_');
+    if ($filePath === false) throw new RuntimeException('Unable to create the logs file.');
     $writer = new Xlsx($spreadsheet);
+    try {
     $writer->save($filePath);
 
     ob_end_clean();
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
+    header('Content-Disposition: attachment; filename="logs.xlsx"');
     header('Content-Transfer-Encoding: binary');
     header('Cache-Control: must-revalidate');
     header('Pragma: public');
     header('Expires: 0');
     readfile($filePath);
-    unlink($filePath);
+    } finally {
+        if (is_file($filePath)) unlink($filePath);
+    }
 }
 
 

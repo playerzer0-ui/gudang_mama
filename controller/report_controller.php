@@ -1,6 +1,6 @@
 <?php
 // controller/report_controller.php
-require_once __DIR__ . '/../model/users_action_functions.php';
+require_once "../model/users_action_functions.php";
 try {
 switch($action){
     case "getHPP":
