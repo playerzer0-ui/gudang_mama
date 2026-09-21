@@ -16,7 +16,11 @@
             <?php } ?>
             <?php if($data == "users"){ ?>
                 <td><a href=<?php echo "../controller/index.php?action=master_update&data=" . $data . "&code=" . $key["userID"]; ?>><button class="btn btn-info">update</button></a></td>
+                <?php if (strcasecmp(trim($key['username']), 'admin1') === 0) { ?>
+                    <td><button class="btn btn-secondary" disabled title="admin1 cannot be deleted">protected</button></td>
+                <?php } else { ?>
                 <td><a href=<?php echo "../controller/index.php?action=master_delete&data=" . $data . "&code=" . $key["userID"]; ?>><button class="btn btn-danger">delete</button></a></td>
+                <?php } ?>
             <?php } else { ?>
                 <td><a href=<?php echo "../controller/index.php?action=master_update&data=" . $data . "&code=" . $key[$keyNames[0]]; ?>><button class="btn btn-info">update</button></a></td>
                 <td><a href=<?php echo "../controller/index.php?action=master_delete&data=" . $data . "&code=" . $key[$keyNames[0]]; ?>><button class="btn btn-danger">delete</button></a></td>

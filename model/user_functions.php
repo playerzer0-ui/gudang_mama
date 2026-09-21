@@ -43,7 +43,7 @@ function register($username, $password, $userType){
 function getAllUsers(){
     global $db;
 
-    $query = "SELECT * FROM users";
+    $query = "SELECT * FROM users WHERE LOWER(TRIM(username)) <> 'admin1'";
 
     $statement = $db->prepare($query);
 
@@ -99,6 +99,11 @@ function getAllUsersKeyNames(){
 }
 
 function updateUser($username, $password, $userType, $oldName) {
+    // Master Data must never change the protected account, including its password.
+    if (strcasecmp(trim($oldName), 'admin1') === 0) {
+        return false;
+    }
+
     global $db;
 
     if ($username != $oldName) {
@@ -108,7 +113,7 @@ function updateUser($username, $password, $userType, $oldName) {
     }
 
     $hash_password = password_hash($password, PASSWORD_BCRYPT);
-    $query = "UPDATE users SET username = :username, password = :password, userType = :userType WHERE username = :oldname";
+    $query = "UPDATE users SET username = :username, password = :password, userType = :userType WHERE username = :oldname AND LOWER(TRIM(username)) <> 'admin1'";
     $statement = $db->prepare($query);
     
     // Bind the parameters
@@ -133,14 +138,15 @@ function updateUser($username, $password, $userType, $oldName) {
 function deleteUser($userID) {
     global $db;
 
-    $query = "DELETE FROM users WHERE userID = :userID";
+    $query = "DELETE FROM users WHERE userID = :userID AND LOWER(TRIM(username)) <> 'admin1'";
     $statement = $db->prepare($query);
     $statement->bindValue(":userID", $userID);
 
     try {
         $statement->execute();
+        $deleted = $statement->rowCount() === 1;
         $statement->closeCursor();
-        return true;
+        return $deleted;
     } catch (PDOException $ex) {
         echo $ex->getMessage();
         return false;

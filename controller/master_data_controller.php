@@ -126,6 +126,10 @@ switch($action){
                 break;
             case "users":
                 $result = getUserByCode($code);
+                if ($result && strcasecmp(trim($result['username']), 'admin1') === 0) {
+                    header('Location: ../controller/index.php?action=master_read&data=users&msg=' . urlencode('This account cannot be edited through Master Data.'));
+                    exit;
+                }
                 require_once "../view/register.php";
                 exit;
                 break;
@@ -198,6 +202,13 @@ switch($action){
         $data = filter_input(INPUT_GET, "data", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $code = filter_input(INPUT_GET, "code", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
+        if ($data === 'users') {
+            $targetUser = getUserByCode($code);
+            if ($targetUser && strcasecmp(trim($targetUser['username']), 'admin1') === 0) {
+                header('Location: ../controller/index.php?action=master_read&data=users&msg=' . urlencode('admin1 is protected and cannot be deleted.'));
+                exit;
+            }
+        }
         require_once "../view/delete.php";
         break;
 
@@ -218,6 +229,11 @@ switch($action){
                 $flag = deleteStorage($code);
                 break;
             case "users":
+                $targetUser = getUserByCode($code);
+                if ($targetUser && strcasecmp(trim($targetUser['username']), 'admin1') === 0) {
+                    header('Location: ../controller/index.php?action=master_read&data=users&msg=' . urlencode('admin1 is protected and cannot be deleted.'));
+                    exit;
+                }
                 $flag = deleteUser($code);
                 break;
         }
