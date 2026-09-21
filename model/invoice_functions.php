@@ -37,7 +37,7 @@
             $statement->execute();
         }
         catch(PDOException $ex){
-            $ex->getMessage();
+            throw $ex;
         }
     
         $statement->closeCursor();

@@ -124,7 +124,8 @@ function create_repack($storageCode, $repack_date, $no_repack){
     $statement->bindValue(":repack_date", $repack_date);
     $statement->bindValue(":storageCode", $storageCode);
 
-    $db->beginTransaction();
+    $ownsTransaction = !$db->inTransaction();
+    if ($ownsTransaction) $db->beginTransaction();
 
     try {
         $statement->execute();
@@ -142,10 +143,11 @@ function create_repack($storageCode, $repack_date, $no_repack){
         $upsertStmt->execute();
         $upsertStmt->closeCursor();
 
-        $db->commit();
+        if ($ownsTransaction) $db->commit();
         return true;
     } catch (PDOException $ex) {
-        $db->rollBack();
+        if (!$ownsTransaction) throw $ex;
+        if ($db->inTransaction()) $db->rollBack();
         error_log($ex->getMessage());
         return false;
     }

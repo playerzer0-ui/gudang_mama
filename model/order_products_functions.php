@@ -67,7 +67,7 @@ function addOrderProducts($no_id, $productCode, $qty, $UOM, $price_per_UOM, $not
         $statement->execute();
     }
     catch(PDOException $ex){
-        $ex->getMessage();
+        throw $ex;
     }
 
     $statement->closeCursor();

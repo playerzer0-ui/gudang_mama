@@ -46,7 +46,8 @@ function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendo
     $statement->bindValue(":purchase_order", $purchase_order);
     $statement->bindValue(":stat", $status);
 
-    $db->beginTransaction();
+    $ownsTransaction = !$db->inTransaction();
+    if ($ownsTransaction) $db->beginTransaction();
 
     try {
         $statement->execute();
@@ -65,10 +66,11 @@ function create_slip($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendo
         $upsertStmt->execute();
         $upsertStmt->closeCursor();
 
-        $db->commit();
+        if ($ownsTransaction) $db->commit();
         return true;
     } catch (PDOException $ex) {
-        $db->rollBack();
+        if (!$ownsTransaction) throw $ex;
+        if ($db->inTransaction()) $db->rollBack();
         $errorCode = $ex->getCode();
         if ($errorCode == 23000) {
             return false;

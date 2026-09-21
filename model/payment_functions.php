@@ -13,15 +13,17 @@
      * @param float $payment_amount The amount of the payment.
      * @param string $no_moving The moving number associated with the payment.
      *
-     * @return void
+     * @return string The inserted payment UUID.
      */
     function create_payment($nomor_surat_jalan, $payment_date, $payment_amount, $no_moving){
         global $db;
     
-        $query = 'INSERT INTO payments
-            VALUES (:nomor_surat_jalan, :payment_date, :payment_amount, :no_moving, UUID())';
+        $paymentId = $db->query('SELECT UUID()')->fetchColumn();
+        $query = 'INSERT INTO payments (nomor_surat_jalan, payment_date, payment_amount, no_moving, payment_id)
+            VALUES (:nomor_surat_jalan, :payment_date, :payment_amount, :no_moving, :payment_id)';
     
         $statement = $db->prepare($query);
+        $statement->bindValue(":payment_id", $paymentId);
         $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
         $statement->bindValue(":payment_date", $payment_date);
         $statement->bindValue(":payment_amount", $payment_amount);
@@ -31,10 +33,11 @@
             $statement->execute();
         }
         catch(PDOException $ex){
-            $ex->getMessage();
+            throw $ex;
         }
     
         $statement->closeCursor();
+        return $paymentId;
     }
 
     /**

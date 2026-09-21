@@ -49,10 +49,21 @@ function handleFormSubmit(event) {
         fetch('../controller/index.php?action=create_payment', {
             method: 'POST',
             body: formData
-        }).then(response => response.blob())
+        }).then(response => {
+            if (response.redirected) {
+                if (pdfWindow) pdfWindow.close();
+                window.location.href = response.url;
+                return null;
+            }
+            if (!response.ok || !(response.headers.get('Content-Type') || '').includes('application/pdf')) {
+                throw new Error('Unexpected save response. Check the document list before submitting again.');
+            }
+            return response.blob();
+        })
         .then(blob => {
+            if (!blob) return;
             var url = URL.createObjectURL(blob);
-            pdfWindow.location.href = url; // Load the PDF in the new tab
+            if (pdfWindow) pdfWindow.location.href = url; // Load the PDF in the new tab
     
             // Redirect to the dashboard after a short delay
             setTimeout(() => {
@@ -60,6 +71,8 @@ function handleFormSubmit(event) {
             }, 2000); // Adjust the delay as needed
         }).catch(error => {
             console.error('Error:', error);
+            if (pdfWindow) pdfWindow.close();
+            alert('Unable to display the result. Check the document list before submitting again.');
         });
     }
 }

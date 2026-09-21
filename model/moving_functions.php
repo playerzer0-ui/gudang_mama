@@ -126,7 +126,8 @@
         $statement->bindValue(":storageCodeSender", $storageCodeSender);
         $statement->bindValue(":storageCodeReceiver", $storageCodeReceiver);
 
-        $db->beginTransaction();
+        $ownsTransaction = !$db->inTransaction();
+        if ($ownsTransaction) $db->beginTransaction();
 
         try {
             $statement->execute();
@@ -144,10 +145,11 @@
             $upsertStmt->execute();
             $upsertStmt->closeCursor();
 
-            $db->commit();
+            if ($ownsTransaction) $db->commit();
             return true;
         } catch (PDOException $ex) {
-            $db->rollBack();
+            if (!$ownsTransaction) throw $ex;
+            if ($db->inTransaction()) $db->rollBack();
             error_log($ex->getMessage());
             return false;
         }
