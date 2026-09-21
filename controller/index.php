@@ -28,6 +28,19 @@ if (!checkAccess($action, $userType)) {
     exit;
 }
 
+// These authenticated page visits are separate from generating filtered results.
+$viewPages = ['dashboard' => 'storage', 'show_hutang' => 'debts', 'show_piutang' => 'receivables'];
+if (isset($viewPages[$action])) {
+    require_once "../model/users_action_functions.php";
+    try {
+        recordReportView($viewPages[$action], $action);
+    } catch (Throwable $error) {
+        error_log('VIEW logging: ' . $error->getMessage());
+        http_response_code(500);
+        exit('Unable to record this visit. Please try again.');
+    }
+}
+
 // Route to appropriate controller
 switch($action){
     case "dashboard":

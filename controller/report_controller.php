@@ -1,5 +1,7 @@
 <?php
 // controller/report_controller.php
+require_once __DIR__ . '/../model/users_action_functions.php';
+try {
 switch($action){
     case "getHPP":
         $storageCode = filter_input(INPUT_GET, "storageCode");
@@ -20,20 +22,26 @@ switch($action){
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
         $storageCode = filter_input(INPUT_GET, "storageCode");
-        echo json_encode(getLaporanHutangPiutang($month, $year, $storageCode, "hutang"));
+        $reportJson = json_encode(getLaporanHutangPiutang($month, $year, $storageCode, "hutang"), JSON_THROW_ON_ERROR);
+        recordReportView('debts', $action, ['month' => $month, 'year' => $year, 'storageCode' => $storageCode], 'report_generated');
+        echo $reportJson;
         break;
 
     case "getLaporanPiutang":
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
-        echo json_encode(getLaporanHutangPiutang($month, $year, "NON", "piutang"));
+        $reportJson = json_encode(getLaporanHutangPiutang($month, $year, "NON", "piutang"), JSON_THROW_ON_ERROR);
+        recordReportView('receivables', $action, ['month' => $month, 'year' => $year], 'report_generated');
+        echo $reportJson;
         break;
 
     case "getReportStock":
         $month = filter_input(INPUT_GET, "month");
         $year = filter_input(INPUT_GET, "year");
         $storageCode = filter_input(INPUT_GET, "storageCode");
-        echo json_encode(generateSaldo($storageCode, $month, $year));
+        $reportJson = json_encode(generateSaldo($storageCode, $month, $year), JSON_THROW_ON_ERROR);
+        recordReportView('storage', $action, ['month' => $month, 'year' => $year, 'storageCode' => $storageCode], 'report_generated');
+        echo $reportJson;
         break;
 
     case "calculateHutang":
@@ -60,5 +68,10 @@ switch($action){
             echo $remaining;
         }
         break;
+}
+} catch (Throwable $error) {
+    error_log('Report request (' . $action . '): ' . $error->getMessage());
+    http_response_code(500);
+    echo 'Unable to load the report. Please try again.';
 }
 ?>

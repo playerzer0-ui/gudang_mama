@@ -215,10 +215,11 @@
      * @return bool|string Returns `true` if the deletion is successful, `false` if an error occurs,
      *                     or a string ('foreign_key') if a foreign key constraint violation is encountered.
      */
-    function deleteMultiPayment($nomor_surat_jalan){
+    function deleteMultiPayment($nomor_surat_jalan, bool $isMoving = false){
         global $db;
     
-        $query = "DELETE FROM payments WHERE nomor_surat_jalan = :nomor_surat_jalan";
+        $column = $isMoving ? 'no_moving' : 'nomor_surat_jalan';
+        $query = "DELETE FROM payments WHERE $column = :nomor_surat_jalan";
         $statement = $db->prepare($query);
         $statement->bindValue(":nomor_surat_jalan", $nomor_surat_jalan);
     

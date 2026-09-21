@@ -60,7 +60,9 @@ function createUserAction(
         throw new InvalidArgumentException('Unsupported user action.');
     }
     $map = usersActionDocumentMap();
-    if (!isset($map[$documentType]['references'][$referenceType])) {
+    $isReportView = $action === 'VIEW' && $referenceType === 'page'
+        && in_array($documentType, ['storage', 'debts', 'receivables'], true);
+    if (!$isReportView && !isset($map[$documentType]['references'][$referenceType])) {
         throw new InvalidArgumentException('Unsupported document type or reference type.');
     }
     if (trim($referenceValue) === '' || $referenceValue === '-' || mb_strlen($referenceValue) > 100) {
@@ -327,4 +329,14 @@ function getUserActionById(string $actionId): ?array
     }
     $rows = usersActionFetchRows('SELECT * FROM users_action WHERE action_id = ?', [$actionId]);
     return $rows ? decodeUserAction($rows[0]) : null;
+}
+
+/** Log a page opening or generated report, without copying the entire report. */
+function recordReportView(string $type, string $route, array $filters = [], string $event = 'page_open'): string
+{
+    return createUserAction('VIEW', $type, 'page', $route, null, [
+        'schema_version' => 1,
+        'event' => $event,
+        'filters' => $filters,
+    ]);
 }

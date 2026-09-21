@@ -284,9 +284,10 @@ function generateTaxSJ($storageCode, $month, $year){
 function updateOrderWithDependencies($nomor_surat_jalan, $storageCode, $no_LPB, $no_truk, $vendorCode, $customerCode, $order_date, $purchase_order, $old_surat_jalan) {
     global $db;
 
+    $ownsTransaction = !$db->inTransaction();
     try {
         // Begin transaction
-        $db->beginTransaction();
+        if ($ownsTransaction) $db->beginTransaction();
 
         // Disable foreign key checks
         $db->exec('SET FOREIGN_KEY_CHECKS=0');
@@ -323,15 +324,16 @@ function updateOrderWithDependencies($nomor_surat_jalan, $storageCode, $no_LPB, 
         $db->exec('SET FOREIGN_KEY_CHECKS=1');
 
         // Commit transaction
-        $db->commit();
+        if ($ownsTransaction) $db->commit();
 
         return true;
     } catch (PDOException $ex) {
         // Roll back transaction if any update fails
-        $db->rollBack();
+        if ($ownsTransaction && $db->inTransaction()) $db->rollBack();
 
         // Enable foreign key checks in case of error
         $db->exec("SET FOREIGN_KEY_CHECKS=1");
+        if (!$ownsTransaction) throw $ex;
 
         $errorCode = $ex->getCode();
         if ($errorCode == 23000) {
