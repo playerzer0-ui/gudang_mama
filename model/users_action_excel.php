@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/users_action_functions.php';
+require_once "../model/users_action_functions.php";
 
 /** Append readable history to the existing current-record export. */
 function appendUserActionSheets(\PhpOffice\PhpSpreadsheet\Spreadsheet $workbook, $userType): void
@@ -10,7 +10,8 @@ function appendUserActionSheets(\PhpOffice\PhpSpreadsheet\Spreadsheet $workbook,
     $columns = [];
     $nextRows = [];
     $labels = [
-        'user_id' => 'User ID', 'username' => 'Username', 'no_LPB' => 'No LPB',
+        'user_id' => 'User ID', 'userID' => 'Account ID', 'username' => 'Account Username',
+        'userType' => 'Account Role', 'password_changed' => 'Password Changed', 'logo_uploaded' => 'Logo Uploaded', 'no_LPB' => 'No LPB',
         'nomor_surat_jalan' => 'No SJ', 'no_sj' => 'No SJ', 'no_invoice' => 'No Invoice',
         'no_faktur' => 'No Faktur', 'no_moving' => 'No Moving', 'no_repack' => 'No Repack',
         'payment_id' => 'Payment ID', 'storageCode' => 'Storage Code',
@@ -43,7 +44,7 @@ function appendUserActionSheets(\PhpOffice\PhpSpreadsheet\Spreadsheet $workbook,
                 $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($index);
                 $columns[$name][$heading] = $column;
                 $sheet->setCellValueExplicit($column . '1', $heading, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->getColumnDimension($column)->setWidth(in_array($heading, ['Time', 'Reference', 'User ID', 'Payment ID'], true) ? 30 : 22);
+                $sheet->getColumnDimension($column)->setWidth(in_array($heading, ['Time', 'Reference', 'Performed By ID', 'Account ID', 'Payment ID'], true) ? 30 : 22);
             }
             $cell = $columns[$name][$heading] . $number;
             $sheet->setCellValueExplicit($cell, (string)($value ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -56,8 +57,9 @@ function appendUserActionSheets(\PhpOffice\PhpSpreadsheet\Spreadsheet $workbook,
     $append('History Guide', ['Topic' => 'Products and related records', 'Explanation' => 'Product History contains product rows. Related History retains linked records and says whether they were removed or only captured as context.']);
     $append('History Guide', ['Topic' => 'Amounts', 'Explanation' => 'Amounts are exported as exact text to preserve database precision. Before/After history is not a financial total; do not sum it as a balance.']);
     $append('History Guide', ['Topic' => 'Views', 'Explanation' => 'Page opened and Report generated are separate events. Filters are shown as ordinary columns.']);
+    $append('History Guide', ['Topic' => 'Master Data', 'Explanation' => 'Vendor, Customer, Master Product, Storage and User Account History contain CREATE, UPDATE and DELETE snapshots. Master Changes lists changed fields side by side. Performed By identifies the employee; Account Username identifies the affected account. Password values are never exported.']);
     $append('History Guide', ['Topic' => 'Coverage', 'Explanation' => 'History starts when logging was enabled. Earlier actions cannot be reconstructed from current records.']);
-    $append('User Actions', ['Action ID' => '', 'Time' => '', 'User ID' => '', 'Username' => '', 'Action' => '', 'Document Type' => '', 'Reference Type' => '', 'Reference' => '', 'Event' => '', 'Month' => '', 'Year' => '', 'Storage Code' => '']);
+    $append('User Actions', ['Action ID' => '', 'Time' => '', 'Performed By ID' => '', 'Performed By' => '', 'Action' => '', 'Document Type' => '', 'Reference Type' => '', 'Reference' => '', 'Event' => '', 'Month' => '', 'Year' => '', 'Storage Code' => '']);
     // Leave a headers-only overview when there are no actions.
     $sheets['User Actions']->removeRow(2);
     $nextRows['User Actions'] = 2;
@@ -69,11 +71,20 @@ function appendUserActionSheets(\PhpOffice\PhpSpreadsheet\Spreadsheet $workbook,
         $events = usersActionFetchRows('SELECT * FROM users_action WHERE action_id > ? AND action_id <= ? ORDER BY action_id LIMIT 500', [$lastId, $maximum]);
         foreach ($events as $raw) {
             $lastId = $raw['action_id'];
-            if (!$admin && !in_array($raw['document_type'], ['slip_in', 'slip_out', 'slip_tax', 'repack', 'moving', 'storage'], true)) continue;
+            if (!$admin && !in_array($raw['document_type'], ['slip_in', 'slip_out', 'slip_tax', 'repack', 'moving', 'storage', 'master_vendor', 'master_customer', 'master_product', 'master_storage'], true)) continue;
             $event = decodeUserAction($raw);
+            if ($event['document_type'] === 'master_user') {
+                foreach (['before_data', 'after_data'] as $phaseKey) {
+                    if (isset($event[$phaseKey]['header'])) {
+                        $event[$phaseKey]['header'] = array_intersect_key($event[$phaseKey]['header'], array_flip([
+                            'userID', 'username', 'userType', 'password_changed'
+                        ]));
+                    }
+                }
+            }
             $context = [
                 'Action ID' => $event['action_id'], 'Time' => $event['performed_at'],
-                'User ID' => $event['user_id'], 'Username' => $event['username'],
+                'Performed By ID' => $event['user_id'], 'Performed By' => $event['username'],
                 'Action' => $event['action'], 'Document Type' => $event['document_type'],
                 'Reference Type' => $label($event['reference_type']), 'Reference' => $event['reference_value'],
             ];
@@ -83,11 +94,35 @@ function appendUserActionSheets(\PhpOffice\PhpSpreadsheet\Spreadsheet $workbook,
                 'Event' => ['page_open' => 'Page opened', 'report_generated' => 'Report generated'][$view['event'] ?? ''] ?? '',
                 'Month' => $filters['month'] ?? '', 'Year' => $filters['year'] ?? '', 'Storage Code' => $filters['storageCode'] ?? '',
             ]);
+            if (str_starts_with($event['document_type'], 'master_')) {
+                $oldHeader = $event['before_data']['header'] ?? [];
+                $newHeader = $event['after_data']['header'] ?? [];
+                $changed = false;
+                foreach (array_unique(array_merge(array_keys($oldHeader), array_keys($newHeader))) as $key) {
+                    $hasOld = array_key_exists($key, $oldHeader);
+                    $hasNew = array_key_exists($key, $newHeader);
+                    $oldValue = $oldHeader[$key] ?? null;
+                    $newValue = $newHeader[$key] ?? null;
+                    if ($event['action'] === 'UPDATE' && $hasOld === $hasNew && $oldValue === $newValue) continue;
+                    $append('Master Changes', $context + [
+                        'Field' => $label($key),
+                        'Before' => !$hasOld ? '(not present)' : ($oldValue === null ? '(null)' : $oldValue),
+                        'After' => !$hasNew ? '(not present)' : ($newValue === null ? '(null)' : $newValue),
+                    ]);
+                    $changed = true;
+                }
+                if (!$changed) {
+                    $append('Master Changes', $context + ['Field' => '(no recorded field changes)', 'Before' => '', 'After' => '']);
+                }
+            }
             foreach (['before_data' => 'Before', 'after_data' => 'After'] as $field => $phase) {
                 $snapshot = $event[$field] ?? null;
                 if (!is_array($snapshot) || !isset($snapshot['header'])) continue;
                 $base = $context + ['Snapshot' => $phase];
                 $sheetName = [
+                    'master_vendor' => 'Vendor History', 'master_customer' => 'Customer History',
+                    'master_product' => 'Master Product History', 'master_storage' => 'Storage History',
+                    'master_user' => 'User Account History',
                     'slip_in' => 'Slip History', 'slip_out' => 'Slip History', 'slip_tax' => 'Slip History',
                     'invoice' => 'Invoice History', 'payment' => 'Payment History',
                     'repack' => 'Repack History', 'moving' => 'Moving History',

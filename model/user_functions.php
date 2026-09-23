@@ -33,7 +33,7 @@ function register($username, $password, $userType){
         $statement->execute();
     }
     catch(PDOException $ex){
-        $ex->getMessage();
+        return false;
     }
 
     $statement->closeCursor();
@@ -129,7 +129,7 @@ function updateUser($username, $password, $userType, $oldName) {
         return true;
     } catch (PDOException $ex) {
         // Handle the error
-        echo $ex->getMessage();
+        // The controller handles the failure without exposing credential-related SQL.
         return false;
     }
 }
@@ -148,7 +148,7 @@ function deleteUser($userID) {
         $statement->closeCursor();
         return $deleted;
     } catch (PDOException $ex) {
-        echo $ex->getMessage();
+        // Let the controller report failure without sending output before its redirect.
         return false;
     }
 }

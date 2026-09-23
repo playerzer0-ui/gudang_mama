@@ -10,6 +10,11 @@ require_once __DIR__ . '/database.php';
 function usersActionDocumentMap(): array
 {
     return [
+        'master_vendor' => ['table' => 'vendors', 'references' => ['vendorCode' => 'vendorCode'], 'master' => true],
+        'master_customer' => ['table' => 'customers', 'references' => ['customerCode' => 'customerCode'], 'master' => true],
+        'master_product' => ['table' => 'products', 'references' => ['productCode' => 'productCode'], 'master' => true],
+        'master_storage' => ['table' => 'storages', 'references' => ['storageCode' => 'storageCode'], 'master' => true],
+        'master_user' => ['table' => 'users', 'references' => ['userID' => 'userID'], 'master' => true],
         'slip_in' => ['table' => 'orders', 'references' => ['no_LPB' => 'no_LPB', 'no_sj' => 'nomor_surat_jalan'], 'mode' => 1],
         'slip_out' => ['table' => 'orders', 'references' => ['no_sj' => 'nomor_surat_jalan'], 'mode' => 2],
         'slip_tax' => ['table' => 'orders', 'references' => ['no_sj' => 'nomor_surat_jalan'], 'mode' => 3],
@@ -159,7 +164,8 @@ function getUserActionSnapshot(string $documentType, array $references, bool $fo
         $values[] = $definition['mode'];
     }
     $rows = usersActionFetchRows(
-        'SELECT * FROM ' . $definition['table'] . ' WHERE ' . implode(' AND ', $where),
+        'SELECT ' . ($documentType === 'master_user' ? 'userID, username, userType' : '*')
+        . ' FROM ' . $definition['table'] . ' WHERE ' . implode(' AND ', $where),
         $values, $forUpdate
     );
     if (!$rows) return null;
@@ -180,6 +186,8 @@ function getUserActionSnapshot(string $documentType, array $references, bool $fo
             $snapshot['references'][$type] = $header[$column];
         }
     }
+
+    if (!empty($definition['master'])) return $snapshot;
 
     if ($documentType === 'repack') {
         $productColumn = 'repack_no_repack';
