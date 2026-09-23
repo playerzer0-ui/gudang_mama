@@ -8,27 +8,29 @@ for (let year = startYear; year <= endYear; year++) {
     const option = document.createElement('option');
     option.value = year;
     option.textContent = year;
+    option.selected = year === currentYear;
     yearSelect.appendChild(option);
 }
 
-function generateReport() { 
-    let yearValue = document.getElementById("year").value;
-    let monthValue = document.getElementById("month").value;
-
+function generateReport() {
+    const params = {
+        month: document.getElementById("month").value,
+        year: document.getElementById("year").value
+    };
+    gmReportUI.start();
     $.ajax({
         type: "get",
         url: "../controller/index.php",
-        data: {
-            action: "getLaporanPiutang",
-            month: monthValue,
-            year: yearValue
-        },
+        data: { action: "getLaporanPiutang", ...params },
         success: function (response) {
-            let data = JSON.parse(response);
-            console.log(response);
-            populateTable(data);
-            document.getElementById("excel").innerHTML = `<a href="../controller/index.php?action=excel_piutang&month=${monthValue}&year=${yearValue}" target="_blank"><button class="btn btn-success">excel</button></a>`;
-        }
+            try {
+                const data = typeof response === "string" ? JSON.parse(response) : response;
+                populateTable(data);
+                gmReportUI.export("../controller/index.php?" + new URLSearchParams({ action: "excel_piutang", ...params }));
+                gmReportUI.finish(data.length);
+            } catch (error) { gmReportUI.error(); }
+        },
+        error: function () { gmReportUI.error(); }
     });
 }
 
@@ -78,6 +80,7 @@ function populateTable(data) {
 
         for (let i = 0; i < rowCount; i++) {
             const tr = document.createElement('tr');
+            tr.className = (index % 2 ? 'gm-invoice-alt ' : '') + (firstRow ? 'gm-invoice-start' : '');
 
             if (firstRow) {
                 tr.innerHTML += `<td rowspan="${rowCount}">${rowNumber}</td>`;
@@ -105,11 +108,12 @@ function populateTable(data) {
                 const payment = invoice.payments[i];
                 tr.innerHTML += `<td>${payment.payment_date}</td>`;
                 tr.innerHTML += `<td>${formatNumber(payment.payment_amount)}</td>`;
-                if (firstRow) {
-                    tr.innerHTML += `<td rowspan="${rowCount}"${invoiceRemaining > 0 ? ' class="not-paid"' : ''}>${formatNumber(invoiceRemaining)}</td>`;
-                }
             } else {
                 tr.innerHTML += `<td colspan="2"></td>`;
+            }
+
+            if (firstRow) {
+                tr.innerHTML += `<td rowspan="${rowCount}"${invoiceRemaining > 0 ? ' class="not-paid"' : ''}>${formatNumber(invoiceRemaining)}</td>`;
             }
 
             tbody.appendChild(tr);
@@ -124,6 +128,7 @@ function populateTable(data) {
     });
 
     const totalRow = document.createElement('tr');
+    totalRow.className = 'gm-report-total';
     totalRow.innerHTML = `
         <td colspan="5">Total</td>
         <td>${formatNumber(totalQty)}</td>

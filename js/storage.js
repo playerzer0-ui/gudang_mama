@@ -8,33 +8,31 @@ for (let year = startYear; year <= endYear; year++) {
     const option = document.createElement('option');
     option.value = year;
     option.textContent = year;
+    option.selected = year === currentYear;
     yearSelect.appendChild(option);
 }
 
 function generateReport() {
-    // Fetch selected values
-    const storageCodeEl = document.getElementById('storageCode').value;
-    const monthEl = document.getElementById('month').value;
-    const yearEl = document.getElementById('year').value;
-
+    const params = {
+        month: document.getElementById("month").value,
+        year: document.getElementById("year").value
+    };
+    params.storageCode = document.getElementById("storageCode").value;
+    gmReportUI.start();
     $.ajax({
         type: "get",
         url: "../controller/index.php",
-        data: {
-            action: "getReportStock",
-            month: monthEl,
-            year: yearEl,
-            storageCode: storageCodeEl
-
-        },
+        data: { action: "getReportStock", ...params },
         success: function (response) {
-            //console.log(response);
-            let data = JSON.parse(response);
-            populateReportTable(data);
-        }
+            try {
+                const data = typeof response === "string" ? JSON.parse(response) : response;
+                populateReportTable(data);
+                gmReportUI.export("../controller/index.php?" + new URLSearchParams({ action: "excel_stock", ...params }));
+                gmReportUI.finish(Object.keys(data).filter(key => key !== '0').length);
+            } catch (error) { gmReportUI.error(); }
+        },
+        error: function () { gmReportUI.error(); }
     });
-
-    // Populate the report table
 }
 
 function populateReportTable(data) {
@@ -54,17 +52,10 @@ function populateReportTable(data) {
     let totalSaldoAkhirRupiah = 0;
 
     let item;
-    let storageCode;
-    let month;
-    let year;
 
     let count = 0;
     for (let key in data) {
         if (key === "0"){
-            item = data[key];
-            storageCode = item.storageCode;
-            month = item.month;
-            year = item.year;
             continue;
         }
 
@@ -190,8 +181,6 @@ function populateReportTable(data) {
         tbody.appendChild(row);
 
     }
-    // Optionally, you can add a row for totals if needed, based on userType
-    document.getElementById("excel").innerHTML = `<a href="../controller/index.php?action=excel_stock&storageCode=${storageCode}&month=${month}&year=${year}" target="_blank"><button class="btn btn-success">excel</button></a>`;
 
 }
 
