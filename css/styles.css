@@ -170,3 +170,79 @@ td input, td select {
     .document-sidebar { position: static; }
     .document-sidebar-list { max-height: 200px; }
 }
+
+/* Header refresh: keep the original In / Out / Edit / Amend structure. */
+.gm-header {
+    --gm-orange: #DB9558;
+    --gm-cream: #FCF9EA;
+    --gm-sage: #97A87A;
+    --gm-soft-sage: #A8BBA3;
+    --gm-ink: #304032;
+    min-height: 72px;
+    padding: 0;
+    background: var(--gm-cream);
+    border-bottom: 1px solid #d8decf;
+    box-shadow: 0 2px 8px rgba(48, 64, 50, .06);
+}
+.gm-header .container-fluid { gap: 13px; padding: 12px 24px; }
+.gm-header .gm-brand { display: inline-flex; align-items: center; gap: 10px; margin-right: 0; color: var(--gm-ink); font-size: 17px; font-weight: 750; letter-spacing: -.02em; white-space: nowrap; }
+.gm-header .gm-brand:hover { color: var(--gm-ink); }
+.gm-brand-mark { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 10px; background: var(--gm-orange); color: #382b20; font-size: 12px; font-weight: 800; letter-spacing: .02em; }
+.gm-user-label { display: inline-flex; align-items: center; min-height: 29px; margin-right: 8px; padding: 4px 10px; border: 1px solid #d5ddcc; border-radius: 999px; color: #44573e; font-size: 12px; font-weight: 650; white-space: nowrap; }
+.gm-user-admin { background: var(--gm-soft-sage); border-color: var(--gm-soft-sage); color: #263528; }
+.gm-header .navbar-nav { align-items: center; gap: 2px; }
+.gm-header .nav-item:not(.dropdown) > .nav-link { padding: 0; }
+.gm-header .nav-item:not(.dropdown) > .nav-link > .btn,
+.gm-header .nav-item.dropdown > .nav-link {
+    display: block;
+    width: auto;
+    padding: 9px 11px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: none;
+    color: var(--gm-ink);
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.35;
+    white-space: nowrap;
+    text-decoration: none;
+}
+.gm-header .nav-item.dropdown.btn { padding: 0; border: 0; border-radius: 8px; background: transparent; box-shadow: none; }
+.gm-header .nav-item:not(.dropdown) > .nav-link:hover > .btn,
+.gm-header .nav-item:not(.dropdown) > .nav-link:focus-visible > .btn,
+.gm-header .nav-item.dropdown > .nav-link:hover,
+.gm-header .nav-item.dropdown > .nav-link:focus-visible,
+.gm-header .nav-item.dropdown > .nav-link.show { background: var(--gm-soft-sage); color: #253528; }
+.gm-header .nav-item.dropdown > .nav-link:focus-visible,
+.gm-header .nav-item:not(.dropdown) > .nav-link:focus-visible { outline: 2px solid var(--gm-orange); outline-offset: 2px; }
+.gm-header .nav-item.dropdown > .nav-link::after { margin-left: 6px; }
+.gm-header .dropdown-menu { padding: 7px; border: 1px solid #d4ddca; border-radius: 10px; background: #fffdf5; box-shadow: 0 14px 32px rgba(48, 64, 50, .14); }
+.gm-header .dropdown-item { padding: 8px 11px; border-radius: 6px; color: var(--gm-ink); font-size: 13px; }
+.gm-header .dropdown-item:hover, .gm-header .dropdown-item:focus { background: #e6ecdf; color: #263528; }
+.gm-header .navbar-toggler { border-color: #cad5c2; }
+.gm-header .navbar-toggler:focus { box-shadow: 0 0 0 3px rgba(151, 168, 122, .25); }
+.gm-header .offcanvas { background: var(--gm-cream); }
+.gm-header .offcanvas-header { border-bottom: 1px solid #d8decf; color: var(--gm-ink); }
+@media (max-width: 1199.98px) {
+    .gm-header .container-fluid { padding: 10px 16px; }
+    .gm-header .offcanvas { width: min(360px, 92vw); }
+    .gm-header .offcanvas-body { overflow-y: auto; }
+    .gm-header .navbar-nav { align-items: stretch; gap: 3px; padding-right: 0 !important; }
+    .gm-header .nav-item:not(.dropdown) > .nav-link > .btn,
+    .gm-header .nav-item.dropdown > .nav-link { width: 100%; text-align: left; }
+    .gm-header .dropdown-menu { position: static; margin: 3px 0 9px 12px; box-shadow: none; }
+}
+
+.gm-header .gm-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.gm-header .gm-identity .gm-user-label { margin-right: 0; }
+@media (max-width: 1199.98px) {
+    .gm-header .gm-identity { max-width: calc(100% - 58px); }
+    .gm-header .navbar-toggler { margin-left: auto; }
+}
+@media (max-width: 420px) {
+    .gm-header .gm-identity { gap: 7px; }
+    .gm-header .gm-brand { gap: 7px; font-size: 15px; }
+    .gm-header .gm-brand-mark { width: 32px; height: 32px; flex: 0 0 32px; }
+    .gm-header .gm-user-label { padding: 3px 7px; font-size: 11px; }
+}

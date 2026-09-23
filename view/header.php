@@ -14,19 +14,21 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <nav class="navbar navbar-expand-xl gm-header">
             <div class="container-fluid">
-                <a class="navbar-brand" href="../controller/index.php">gudang</a>
+                <div class="gm-identity">
+                <a class="navbar-brand gm-brand" href="../controller/index.php"><span class="gm-brand-mark" aria-hidden="true">GM</span><span>Gudang Mama</span></a>
                 <?php if($userType == 1){ ?>
-                    <a class="disabled yellow-text" aria-disabled="true"><?php echo $username; ?></a>
+                    <span class="gm-user-label gm-user-admin"><?php echo htmlspecialchars((string) $username, ENT_QUOTES, 'UTF-8'); ?></span>
                 <?php }else{ ?>
-                    <a class="disabled" aria-disabled="true"><?php echo $username; ?></a>
+                    <span class="gm-user-label"><?php echo htmlspecialchars((string) $username, ENT_QUOTES, 'UTF-8'); ?></span>
                 <?php } ?>
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                <div class="offcanvas-header">
+                <div class="offcanvas-header"><h2 class="offcanvas-title h5">Menu</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
