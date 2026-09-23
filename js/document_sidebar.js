@@ -21,4 +21,21 @@
     });
     input.addEventListener('input', updateSelection);
     updateSelection();
+    const search = document.getElementById('invoiceDocumentSearch');
+    if (search) {
+        const filterDocuments = () => {
+            const query = search.value.trim().toLowerCase();
+            let visible = 0;
+            buttons.forEach(button => {
+                button.hidden = !button.dataset.documentNumber.toLowerCase().includes(query);
+                if (!button.hidden) visible++;
+            });
+            document.getElementById('invoiceDocumentCount').textContent = visible + ' of ' + buttons.length + ' documents';
+            const empty = document.getElementById('invoiceDocumentEmpty');
+            empty.hidden = visible > 0;
+            empty.textContent = buttons.length ? 'No matching documents.' : 'Belum ada dokumen tersedia.';
+        };
+        search.addEventListener('input', filterDocuments);
+        filterDocuments();
+    }
 })();

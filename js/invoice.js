@@ -2,9 +2,11 @@ var pageState = document.getElementById("pageState").value;
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('myForm');
+    syncInvoiceRows();
+    calculateTotalNominal();
 
     form.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && event.target.tagName === 'INPUT') {
             event.preventDefault();
             return false;
         }
@@ -232,6 +234,21 @@ function getDetailsFromSJ(){
     getOrderProducts(no_sjEl, "in");
 }
 
+function syncInvoiceRows() {
+    const rows = document.querySelectorAll('#productTable tbody tr');
+    document.getElementById('invoiceRowCount').textContent = rows.length + (rows.length === 1 ? ' row' : ' rows');
+    document.getElementById('invoiceEmptyState').hidden = rows.length > 0;
+    const labels = {kd:'Product code', material_display:'Material', qty:'Quantity', uom:'Unit', price_per_uom:'Price per unit', nominal:'Amount'};
+    rows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+        row.querySelectorAll('input:not([type="hidden"])').forEach(input => input.setAttribute('aria-label', labels[input.name.replace('[]', '')] + ', row ' + (index + 1)));
+    });
+}
+
+function escapeInvoiceValue(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[character]));
+}
+
 function getOrderProducts(no_id, status){
     $.ajax({
         type: "get",
@@ -252,15 +269,17 @@ function getOrderProducts(no_id, status){
                 newRow = table.insertRow();
                 newRow.innerHTML = `
                     <td>${rowCount}</td>
-                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
-                    <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
-                    <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
-                    <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
+                    <td><input type="text" name="kd[]" value="${escapeInvoiceValue(item.productCode)}" class="productCode" readonly></td>
+                    <td><input value="${escapeInvoiceValue(item.productName)}" type="text" name="material_display[]" readonly><input type="hidden" value="${escapeInvoiceValue(item.productName)}" name="material[]"></td>
+                    <td><input type="number" value="${escapeInvoiceValue(item.qty)}" name="qty[]" readonly></td>
+                    <td><input type="text" value="${escapeInvoiceValue(item.uom)}" name="uom[]" readonly></td>
                     <td><input type="number" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" required></td>
                     <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
                 `;
             });
 
+            syncInvoiceRows();
+            calculateTotalNominal();
             if(pageState.includes("moving")){
                 updateCOGSAndNominals();
             }

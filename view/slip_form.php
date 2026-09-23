@@ -80,22 +80,22 @@ $slipValue = static fn($key, $fallback = '') => $slipData[$key] ?? $fallback;
                     <?php if ($slipIncoming): ?>
                     <div class="gm-slip-field">
                         <label for="no_sj">No. SJ *</label>
-                        <input name="no_sj" id="no_sj" type="text" value="<?php echo $slipEscape($slipValue('nomor_surat_jalan')); ?>" placeholder="Enter delivery note number" required>
+                        <input name="no_sj" id="no_sj" type="text" value="<?php echo $slipEscape($slipValue('nomor_surat_jalan')); ?>" placeholder="di isi" required>
                     </div>
                     <?php else: ?>
                     <div class="gm-slip-field">
                         <label for="no_truk">No. Truk *</label>
-                        <input name="no_truk" id="no_truk" type="text" value="<?php echo $slipEscape($slipValue('no_truk')); ?>" placeholder="Enter truck number" required>
+                        <input name="no_truk" id="no_truk" type="text" value="<?php echo $slipEscape($slipValue('no_truk')); ?>" placeholder="di isi" required>
                     </div>
                     <?php endif; ?>
                     <div class="gm-slip-field">
                         <label for="purchase_order">No. PO *</label>
-                        <input name="purchase_order" id="purchase_order" type="text" value="<?php echo $slipEscape($slipValue('purchase_order')); ?>" placeholder="Enter purchase order number" required>
+                        <input name="purchase_order" id="purchase_order" type="text" value="<?php echo $slipEscape($slipValue('purchase_order')); ?>" placeholder="di isi" required>
                     </div>
                     <?php if ($slipIncoming): ?>
                     <div class="gm-slip-field">
                         <label for="no_truk">No. Truk *</label>
-                        <input name="no_truk" id="no_truk" type="text" value="<?php echo $slipEscape($slipValue('no_truk')); ?>" placeholder="Enter truck number" required>
+                        <input name="no_truk" id="no_truk" type="text" value="<?php echo $slipEscape($slipValue('no_truk')); ?>" placeholder="di isi" required>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -113,7 +113,7 @@ $slipValue = static fn($key, $fallback = '') => $slipData[$key] ?? $fallback;
                             <?php $slipRowNumber = 0; foreach ($slipProducts as $product): ?>
                             <tr>
                                 <td><?php echo ++$slipRowNumber; ?></td>
-                                <td><input type="text" name="kd[]" class="productCode" oninput="applyAutocomplete(this)" value="<?php echo $slipEscape($product['productCode']); ?>" placeholder="Product code" required></td>
+                                <td><input type="text" name="kd[]" class="productCode" oninput="applyAutocomplete(this)" value="<?php echo $slipEscape($product['productCode']); ?>" placeholder="Kode Produk" required></td>
                                 <td><input type="text" name="material_display[]" value="<?php echo $slipEscape($product['productName']); ?>" readonly><input type="hidden" name="material[]" value="<?php echo $slipEscape($product['productName']); ?>"></td>
                                 <td><input type="number" name="qty[]" value="<?php echo $slipEscape($product['qty']); ?>" placeholder="0" required></td>
                                 <td><input type="text" name="uom[]" value="<?php echo $slipEscape($product['uom']); ?>" placeholder="UOM" required></td>

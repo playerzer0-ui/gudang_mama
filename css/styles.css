@@ -365,3 +365,55 @@ body:has(.gm-slip-page) { background:#FCF9EA; }
     .gm-slip-submit { width:100%; }
     .gm-slip-actions { align-items:stretch; }
 }
+
+/* Invoice pages share the slip form's palette, fields, and cards. */
+.gm-invoice-inner { max-width:1560px; margin:auto; display:grid; grid-template-columns:minmax(0,1fr); gap:24px; align-items:start; }
+.gm-invoice-inner:has(.gm-invoice-sidebar) { grid-template-columns:240px minmax(0,1fr); }
+.gm-invoice-page .document-form { min-width:0; }
+.gm-invoice-page .gm-invoice-sidebar { top:20px; padding:20px 16px; background:#fffef8; border:1px solid #d7dfd1; border-radius:12px; }
+.gm-invoice-sidebar h2 { margin:8px 0; color:#304032; font-size:19px; font-weight:700; }
+.gm-invoice-sidebar label { color:#50634e; font-size:12px; font-weight:600; margin-bottom:7px; }
+.gm-invoice-sidebar .document-sidebar-hint { color:#61715d; line-height:1.5; }
+.gm-invoice-document-count { color:#61715d; font-size:12px; margin:14px 0 10px; }
+.gm-invoice-sidebar .document-sidebar-list { max-height:52vh; gap:7px; scrollbar-color:#97A87A #edf1e7; }
+.gm-invoice-sidebar .document-sidebar-button { color:#111; background:#FCF9EA; border:1px solid #d7dfd1; border-radius:7px; padding:12px; font-size:13px; }
+.gm-invoice-sidebar .document-sidebar-button:hover { background:#edf1e7; }
+.gm-invoice-sidebar .document-sidebar-button.is-selected { color:#111; background:#dbe5d4; border-color:#97A87A; box-shadow:inset 3px 0 #97A87A; font-weight:650; }
+.gm-invoice-sidebar .document-sidebar-button:focus-visible { outline:2px solid #97A87A; outline-offset:-2px; }
+.gm-invoice-sidebar [hidden] { display:none; }
+.gm-invoice-page #productTable { min-width:1050px; }
+.gm-invoice-page #productTable th:nth-child(2) { width:130px; }
+.gm-invoice-page #productTable th:nth-child(3) { width:25%; }
+.gm-invoice-page #productTable th:nth-child(5) { width:85px; }
+.gm-invoice-page #productTable th:nth-child(6), .gm-invoice-page #productTable th:nth-child(7) { width:170px; }
+.gm-invoice-page input[name="price_per_uom[]"], .gm-invoice-page input[name="nominal[]"] { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-invoice-page input:disabled { color:#111; -webkit-text-fill-color:#111; opacity:1; background:#edf1e7; border-color:#d7dfd1; }
+.gm-invoice-summary { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:40px; padding:20px; }
+.gm-invoice-totals { display:grid; gap:12px; }
+.gm-invoice-total-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(100px,1fr); gap:14px; align-items:center; }
+.gm-invoice-total-row label { font-size:13px; color:#50634e; }
+.gm-invoice-total-row input { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-invoice-total-row:last-child { border-top:1px solid #d7dfd1; padding-top:14px; }
+.gm-invoice-total-row:last-child label { font-weight:700; color:#304032; }
+.gm-invoice-total-row:last-child input { background:#dbe5d4; font-weight:700; }
+.gm-invoice-buttons { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.gm-invoice-pdf { color:#3e563b; border:1px solid #a9bca2; padding:11px 18px; border-radius:8px; font-size:14px; text-decoration:none; }
+.gm-invoice-pdf:hover { color:#304032; background:#e6ecdf; }
+@media(max-width:1000px) {
+    .gm-invoice-inner:has(.gm-invoice-sidebar) { grid-template-columns:minmax(0,1fr); }
+    .gm-invoice-page .gm-invoice-sidebar { position:static; }
+    .gm-invoice-sidebar .document-sidebar-list { grid-template-columns:repeat(2,minmax(0,1fr)); max-height:180px; }
+}
+@media(max-width:650px) {
+    .gm-invoice-summary { grid-template-columns:minmax(0,1fr); gap:24px; padding:16px; }
+    .gm-invoice-buttons { width:100%; }
+    .gm-invoice-pdf { width:100%; text-align:center; }
+}
+
+/* Payment entry uses the same document layout as invoices. */
+.gm-payment-entry { display:grid; gap:18px; align-content:start; }
+.gm-payment-remaining { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:16px; border:1px solid #d7dfd1; border-radius:8px; background:#dbe5d4; color:#111; }
+.gm-payment-remaining span { font-size:13px; }
+.gm-payment-remaining strong { font-size:18px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.gm-payment-page #payment_amount { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-payment-page .gm-invoice-totals { align-content:start; }

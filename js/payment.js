@@ -8,9 +8,11 @@ $(document).ready(function () {
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('myForm');
+    syncPaymentRows();
+    calculateTotalNominal();
 
     form.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && event.target.tagName === 'INPUT') {
             event.preventDefault();
             return false;
         }
@@ -245,6 +247,20 @@ function getDetailsFromSJ(){
 
 }
 
+function syncPaymentRows() {
+    const rows = document.querySelectorAll('#productTable tbody tr');
+    document.getElementById('paymentRowCount').textContent = rows.length + (rows.length === 1 ? ' row' : ' rows');
+    document.getElementById('paymentEmptyState').hidden = rows.length > 0;
+    const labels = {kd:'Product code', material_display:'Material', qty:'Quantity', uom:'Unit', price_per_uom:'Price per unit', nominal:'Amount'};
+    rows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+        row.querySelectorAll('input:not([type="hidden"])').forEach(input => input.setAttribute('aria-label', labels[input.name.replace('[]', '')] + ', row ' + (index + 1)));
+    });
+}
+function escapePaymentValue(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[character]));
+}
+
 function getOrderProducts(no_id, status){
     $.ajax({
         type: "get",
@@ -265,16 +281,18 @@ function getOrderProducts(no_id, status){
                 newRow = table.insertRow();
                 newRow.innerHTML = `
                     <td>${rowCount}</td>
-                    <td><input type="text" name="kd[]" value="${item.productCode}" class="productCode" readonly></td>
-                    <td><input style="width: 300px;" value="${item.productName}" type="text" name="material_display[]" readonly><input type="hidden" value="${item.productName}" name="material[]"></td>
-                    <td><input type="number" value="${item.qty}" name="qty[]" readonly></td>
-                    <td><input type="text" value="${item.uom}" name="uom[]" readonly></td>
-                    <td><input type="number" value="${item.price_per_UOM}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" readonly></td>
+                    <td><input type="text" name="kd[]" value="${escapePaymentValue(item.productCode)}" class="productCode" readonly></td>
+                    <td><input value="${escapePaymentValue(item.productName)}" type="text" name="material_display[]" readonly><input type="hidden" value="${escapePaymentValue(item.productName)}" name="material[]"></td>
+                    <td><input type="number" value="${escapePaymentValue(item.qty)}" name="qty[]" readonly></td>
+                    <td><input type="text" value="${escapePaymentValue(item.uom)}" name="uom[]" readonly></td>
+                    <td><input type="number" value="${escapePaymentValue(item.price_per_UOM)}" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" readonly></td>
                     <td><input type="text" value="${item.price_per_UOM * item.qty}" name="nominal[]" placeholder="otomatis dari sistem" readonly></td>
                 `;
             });
 
+            syncPaymentRows();
             calculateTotalNominal();
+            calculateHutang();
         }
     });
 }

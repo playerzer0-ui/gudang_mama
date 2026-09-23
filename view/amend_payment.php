@@ -1,172 +1,133 @@
 <?php include "header.php"; ?>
 
-<main class="main-container">
-    <form id="myForm" action="../controller/index.php?action=amend_update_data&data=payment" method="post">
-    <h1>PAYMENT <?php echo $pageState; ?></h1>
-    <input type="hidden" id="pageState" name="pageState" value=<?php echo $pageState; ?>>
-    <input name="payment_id" type="hidden" id="payment_id" value="<?php echo $payment["payment_id"]; ?>">
+<main class="gm-slip-page gm-invoice-page gm-payment-page"><div class="gm-invoice-inner">
+    <section class="document-form"><form id="myForm" action="../controller/index.php?action=amend_update_data&data=payment" method="post">
+    <header class="gm-slip-heading"><span class="gm-slip-eyebrow">Amend record</span><div class="gm-slip-title-row"><h1>Amend payment</h1><span class="gm-slip-mode"><?php echo htmlspecialchars(str_replace(['amend_payment_', '_'], ['', ' '], $pageState), ENT_QUOTES, 'UTF-8'); ?></span></div><p>Update the payment date and amount for this record.</p></header>
+    <input type="hidden" id="pageState" name="pageState" value="<?php echo htmlspecialchars($pageState, ENT_QUOTES, 'UTF-8'); ?>">
+    <input name="payment_id" type="hidden" id="payment_id" value="<?php echo htmlspecialchars((string) $payment["payment_id"], ENT_QUOTES, 'UTF-8'); ?>">
     <?php if($pageState != "amend_payment_moving"){ ?>
-        <input name="old_sj" type="hidden" id="old_sj" value="<?php echo $result["nomor_surat_jalan"]; ?>">
+        <input name="old_sj" type="hidden" id="old_sj" value="<?php echo htmlspecialchars((string) $result["nomor_surat_jalan"], ENT_QUOTES, 'UTF-8'); ?>">
     <?php } ?>
-    <table>
-        <tr class="form-header">
-            <?php if($pageState == "amend_payment_moving"){ ?>
-                <td>PT Pengirim</td>
-                <td>:</td>
-                <td><input type="text" name="storageCodeSender" id="storageCodeSender" placeholder="otomatis" value="<?php echo $result["storageCodeSender"]; ?>" readonly></td>
-                <td>PT Penerima</td>
-                <td>:</td>
-                <td><input type="text" name="storageCodeReceiver" id="storageCodeReceiver" placeholder="otomatis" value="<?php echo $result["storageCodeReceiver"]; ?>" readonly></td>
-            <?php } else { ?>
-                <td>PT</td>
-                <td>:</td>
-                <td colspan="2"><input name="storageCode" type="text" id="storageCode" placeholder="Otomatis dari sistem" value="<?php echo $result["storageCode"]; ?>" readonly></td>
-                <?php if ($pageState == "amend_payment_in") { ?>
-                    <td>Name Vendor</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="vendorCode" type="text" id="vendorCode" placeholder="Otomatis dari sistem" value="<?php echo $result["vendorCode"]; ?>" readonly></td>
-                <?php } else { ?>
-                    <td>Name Customer</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="customerCode" type="text" id="customerCode" placeholder="Otomatis dari sistem" value="<?php echo $result["customerCode"]; ?>" readonly></td>
-                <?php } ?>
-            <?php } ?>
-        </tr>
-        <tr>
-            <?php if($pageState == "amend_payment_moving"){ ?>
-                <td>NO. moving</td>
-                <td>:</td>
-                <td><input name="no_moving" id="no_moving" type="text" value="<?php echo $result["no_moving"]; ?>" readonly></td>
-                <td>Tgl. moving</td>
-                <td>:</td>
-                <td><input name="moving_date" id="moving_date" type="date" value="<?php echo $result["moving_date"]; ?>" readonly></td>
-            <?php } else { ?>
-                <?php if ($pageState == "amend_payment_in") { ?>
-                    <td>NO. LPB</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="no_LPB" type="text" id="no_LPB" placeholder="Otomatis dari sistem" value="<?php echo $result["no_LPB"]; ?>" readonly></td>
-                    <td>No PO</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="purchase_order" type="text" id="purchase_order" placeholder="Otomatis dari sistem" value="<?php echo $result["purchase_order"]; ?>" readonly></td>
-                <?php } else { ?>
-                    <td>No SJ</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" value="<?php echo $result["nomor_surat_jalan"]; ?>" readonly></td>
-                    <td>Alamat</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="customerAddress" type="text" id="customerAddress" placeholder="Otomatis dari sistem" value="<?php echo $result["customerAddress"]; ?>" readonly></td>
-                <?php } ?>
-            <?php } ?>
-        </tr>
-        <tr class="highlight">
-            <?php if($pageState == "amend_payment_moving"){ ?>
-                <td>No Invoice</td>
-                <td>:</td>
-                <td><input name="no_invoice" type="text" id="no_invoice" placeholder="otomatis dari sistem" value="<?php echo $invoice["no_invoice"]; ?>" readonly></td>
-                <td>Tgl invoice</td>
-                <td>:</td>
-                <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
-            <?php } else { ?>
-                <?php if ($pageState == "amend_payment_in") { ?>
-                    <td>No SJ</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="no_sj" type="text" id="no_sj" placeholder="di isi" value="<?php echo $result["nomor_surat_jalan"]; ?>" readonly></td>
-                    <td>Tgl invoice</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
-                <?php } else { ?>
-                    <td>No Invoice</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="Otomatis dari sistem" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
-                    <td>NPWP</td>
-                    <td>:</td>
-                    <td colspan="2"><input name="npwp" type="text" id="npwp" placeholder="Otomatis dari sistem" value="<?php echo $result["customerNPWP"]; ?>" readonly></td>
-                <?php } ?>
-            <?php } ?>
-        </tr>
-        <?php if($pageState != "amend_payment_moving"){ ?>
-        <tr>
-            <?php if ($pageState == "amend_payment_in") { ?>
-                <td>No Truk</td>
-                <td>:</td>
-                <td colspan="2"><input name="no_truk" type="text" id="no_truk" placeholder="Otomatis dari sistem" value="<?php echo $result["no_truk"]; ?>" readonly></td>
-                <td>No Invoice</td>
-                <td>:</td>
-                <td colspan="2"><input name="no_invoice" type="text" id="no_invoice" placeholder="Otomatis dari sistem" value="<?php echo $invoice["no_invoice"]; ?>" readonly></td>
-            <?php } else { ?>
-                <td>Tgl invoice</td>
-                <td>:</td>
-                <td colspan="2"><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" value="<?php echo $invoice["invoice_date"]; ?>" readonly></td>
-                <td colspan="4"></td>
-            <?php } ?>
-        </tr>
-        <?php } ?>
-    </table>
+<section class="gm-slip-section">
+<div class="gm-slip-section-heading"><div><h2>Document details</h2><p>Invoice information from the selected document.</p></div></div>
+<div class="gm-slip-fields">
 
-    <table id="productTable">
+            <?php if($pageState == "amend_payment_moving"){ ?>
+                <div class="gm-slip-field"><label for="storageCodeSender">PT Pengirim</label><input type="text" name="storageCodeSender" id="storageCodeSender" placeholder="otomatis" value="<?php echo htmlspecialchars((string) $result["storageCodeSender"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <div class="gm-slip-field"><label for="storageCodeReceiver">PT Penerima</label><input type="text" name="storageCodeReceiver" id="storageCodeReceiver" placeholder="otomatis" value="<?php echo htmlspecialchars((string) $result["storageCodeReceiver"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+            <?php } else { ?>
+                <div class="gm-slip-field"><label for="storageCode">PT</label><input name="storageCode" type="text" id="storageCode" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $result["storageCode"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <?php if ($pageState == "amend_payment_in") { ?>
+                    <div class="gm-slip-field"><label for="vendorCode">Name Vendor</label><input name="vendorCode" type="text" id="vendorCode" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $result["vendorCode"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <?php } else { ?>
+                    <div class="gm-slip-field"><label for="customerCode">Name Customer</label><input name="customerCode" type="text" id="customerCode" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $result["customerCode"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <?php } ?>
+            <?php } ?>
+
+            <?php if($pageState == "amend_payment_moving"){ ?>
+                <div class="gm-slip-field"><label for="no_moving">NO. moving</label><input name="no_moving" id="no_moving" type="text" value="<?php echo htmlspecialchars((string) $result["no_moving"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <div class="gm-slip-field"><label for="moving_date">Tgl. moving</label><input name="moving_date" id="moving_date" type="date" value="<?php echo htmlspecialchars((string) $result["moving_date"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+            <?php } else { ?>
+                <?php if ($pageState == "amend_payment_in") { ?>
+                    <div class="gm-slip-field"><label for="no_LPB">NO. LPB</label><input name="no_LPB" type="text" id="no_LPB" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $result["no_LPB"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                    <div class="gm-slip-field"><label for="purchase_order">No PO</label><input name="purchase_order" type="text" id="purchase_order" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $result["purchase_order"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <?php } else { ?>
+                    <div class="gm-slip-field"><label for="no_sj">No SJ</label><input name="no_sj" type="text" id="no_sj" placeholder="di isi" value="<?php echo htmlspecialchars((string) $result["nomor_surat_jalan"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                    <div class="gm-slip-field"><label for="customerAddress">Alamat</label><input name="customerAddress" type="text" id="customerAddress" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $result["customerAddress"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <?php } ?>
+            <?php } ?>
+
+            <?php if($pageState == "amend_payment_moving"){ ?>
+                <div class="gm-slip-field"><label for="no_invoice">No Invoice</label><input name="no_invoice" type="text" id="no_invoice" placeholder="otomatis dari sistem" value="<?php echo htmlspecialchars((string) $invoice["no_invoice"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <div class="gm-slip-field"><label for="invoice_date">Tgl invoice</label><input name="invoice_date" type="date" id="invoice_date" placeholder="di isi" value="<?php echo htmlspecialchars((string) $invoice["invoice_date"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+            <?php } else { ?>
+                <?php if ($pageState == "amend_payment_in") { ?>
+                    <div class="gm-slip-field"><label for="no_sj">No SJ</label><input name="no_sj" type="text" id="no_sj" placeholder="di isi" value="<?php echo htmlspecialchars((string) $result["nomor_surat_jalan"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                    <div class="gm-slip-field"><label for="invoice_date">Tgl invoice</label><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $invoice["invoice_date"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <?php } else { ?>
+                    <div class="gm-slip-field"><label for="no_invoice">No Invoice</label><input name="no_invoice" type="text" id="no_invoice" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $invoice["no_invoice"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                    <div class="gm-slip-field"><label for="npwp">NPWP</label><input name="npwp" type="text" id="npwp" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $result["customerNPWP"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <?php } ?>
+            <?php } ?>
+
+        <?php if($pageState != "amend_payment_moving"){ ?>
+
+            <?php if ($pageState == "amend_payment_in") { ?>
+                <div class="gm-slip-field"><label for="no_truk">No Truk</label><input name="no_truk" type="text" id="no_truk" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $result["no_truk"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+                <div class="gm-slip-field"><label for="no_invoice">No Invoice</label><input name="no_invoice" type="text" id="no_invoice" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $invoice["no_invoice"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+            <?php } else { ?>
+                <div class="gm-slip-field"><label for="invoice_date">Tgl invoice</label><input name="invoice_date" type="date" id="invoice_date" placeholder="Otomatis dari sistem" value="<?php echo htmlspecialchars((string) $invoice["invoice_date"], ENT_QUOTES, 'UTF-8'); ?>" readonly></div>
+
+            <?php } ?>
+
+        <?php } ?>
+    </div></section>
+
+    <section class="gm-slip-section">
+<div class="gm-slip-section-heading"><div><h2>Materials <span id="paymentRowCount" class="gm-slip-row-count"></span></h2><p>Quantities and prices from the invoice.</p></div></div>
+<div class="gm-slip-table-scroll"><table id="productTable">
         <thead>
             <tr>
-                <th>No</th>
-                <th>KD</th>
-                <th>Material</th>
-                <th>QTY</th>
-                <th>UOM</th>
-                <th>price/UOM</th>
-                <th>nominal</th>
+                <th scope="col">No</th>
+                <th scope="col">KD</th>
+                <th scope="col">Material</th>
+                <th scope="col">QTY</th>
+                <th scope="col">UOM</th>
+                <th scope="col">Price / UOM</th>
+                <th scope="col">Nominal</th>
             </tr>
         </thead>
         <tbody>
             <!-- Rows will be added here dynamically -->
-            <?php 
+            <?php
             $count = 1;
             $totalNominal = 0;
             foreach($products as $key){ ?>
             <tr>
                 <td><?php echo $count++; ?></td>
-                <td><input type="text" name="kd[]" value="<?php echo $key["productCode"]; ?>" class="productCode" readonly></td>
-                <td><input style="width: 300px;" value="<?php echo $key["productName"]; ?>" type="text" name="material_display[]" readonly><input type="hidden" value="<?php echo $key["productName"]; ?>" name="material[]"></td>
-                <td><input type="number" value="<?php echo $key["qty"]; ?>" name="qty[]" readonly></td>
-                <td><input type="text" value="<?php echo $key["uom"]; ?>" name="uom[]" readonly></td>
-                <td><input type="number" value="<?php echo $key["price_per_UOM"]; ?>" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" readonly></td>
+                <td><input type="text" name="kd[]" value="<?php echo htmlspecialchars((string) $key["productCode"], ENT_QUOTES, 'UTF-8'); ?>" class="productCode" readonly></td>
+                <td><input value="<?php echo htmlspecialchars((string) $key["productName"], ENT_QUOTES, 'UTF-8'); ?>" type="text" name="material_display[]" readonly><input type="hidden" value="<?php echo htmlspecialchars((string) $key["productName"], ENT_QUOTES, 'UTF-8'); ?>" name="material[]"></td>
+                <td><input type="number" value="<?php echo htmlspecialchars((string) $key["qty"], ENT_QUOTES, 'UTF-8'); ?>" name="qty[]" readonly></td>
+                <td><input type="text" value="<?php echo htmlspecialchars((string) $key["uom"], ENT_QUOTES, 'UTF-8'); ?>" name="uom[]" readonly></td>
+                <td><input type="number" value="<?php echo htmlspecialchars((string) $key["price_per_UOM"], ENT_QUOTES, 'UTF-8'); ?>" inputmode="numeric" name="price_per_uom[]" placeholder="di isi" oninput="calculateNominal(this)" readonly></td>
                 <td><input type="text" name="nominal[]" placeholder="otomatis dari sistem" value="<?php echo (int)$key["qty"] * (double)$key["price_per_UOM"]; ?>" readonly></td>
-            <?php 
+            </tr>
+            <?php
                 $totalNominal += (int)$key["qty"] * (double)$key["price_per_UOM"];
             } ?>
-            </tr>
         </tbody>
-    </table>
+    </table></div>
+<p id="paymentEmptyState" class="gm-slip-empty" hidden>Select a document to load its invoice materials.</p>
+<p class="gm-slip-table-hint">Scroll horizontally to see prices and amounts.</p>
+</section>
 
-    <table id="accountTable">
-        <tr>
-            <th>tanggal payment: </th>
-            <td><input type="date" name="payment_date" id="payment_date" placeholder="di isi" value="<?php echo $payment["payment_date"]; ?>" required></td>
-            <th>total nilai barang: </th>
-            <th><input type="number" inputmode="numeric" name="totalNominal" id="totalNominal" value="<?php echo $totalNominal; ?>" disabled></th>
-        </tr>
-        <tr>
-            <td>nilai payment: </td>
-            <td>
-                <input type="number" inputmode="numeric" name="payment_amount" id="payment_amount" oninput="calculateHutang()" value="<?php echo $payment["payment_amount"]; ?>" required>
-            </td>
-            <td>PPN(%): <input type="number" name="tax" id="tax" value="<?php echo $invoice["tax"]; ?>" oninput="calculateTotalNominal()" readonly></td>
-            <td><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" value="<?php echo ($totalNominal * ($invoice["tax"] / 100)); ?>" disabled></td>
-        </tr>
-        <tr>
-            <td>sisa hutang: </td>
-            <td><span id="remaining">0</span></td>
-            <td>nilai dibayar: </td>
-            <td><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" value="<?php echo (($totalNominal * ($invoice["tax"] / 100)) + $totalNominal); ?>" disabled></td>
-        </tr>
-    </table>
-    <button type="submit" class="btn btn-outline-success" onclick="handleFormSubmit(event)">Submit</button>
+    <section id="accountTable" class="gm-slip-section">
+    <div class="gm-slip-section-heading"><div><h2>Payment details</h2><p>Fields marked * are required.</p></div></div>
+    <div class="gm-invoice-summary">
+        <div class="gm-payment-entry">
+            <div class="gm-slip-field"><label for="payment_date">Tanggal payment *</label><input type="date" name="payment_date" id="payment_date" placeholder="di isi" value="<?php echo htmlspecialchars((string) $payment["payment_date"], ENT_QUOTES, 'UTF-8'); ?>" required></div>
+            <div class="gm-slip-field"><label for="payment_amount">Nilai payment *</label><input type="number" inputmode="numeric" name="payment_amount" id="payment_amount" oninput="calculateHutang()" value="<?php echo htmlspecialchars((string) $payment["payment_amount"], ENT_QUOTES, 'UTF-8'); ?>" required></div>
+            <div class="gm-payment-remaining"><span>Sisa hutang</span><strong id="remaining" aria-live="polite">0</strong></div>
+        </div>
+        <div class="gm-invoice-totals">
+            <div class="gm-invoice-total-row"><label for="totalNominal">Total Nilai Barang</label><input type="number" inputmode="numeric" name="totalNominal" id="totalNominal" value="<?php echo $totalNominal; ?>" disabled></div>
+            <div class="gm-invoice-total-row"><label for="tax">PPN (%)</label><input type="number" name="tax" id="tax" value="<?php echo htmlspecialchars((string) $invoice["tax"], ENT_QUOTES, 'UTF-8'); ?>" oninput="calculateTotalNominal()" readonly></div>
+            <div class="gm-invoice-total-row"><label for="taxPPN">Nilai PPN</label><input type="number" inputmode="numeric" name="taxPPN" id="taxPPN" value="<?php echo ($totalNominal * ($invoice["tax"] / 100)); ?>" disabled></div>
+            <div class="gm-invoice-total-row"><label for="amount_paid">Total invoice</label><input type="number" inputmode="numeric" name="amount_paid" id="amount_paid" value="<?php echo (($totalNominal * ($invoice["tax"] / 100)) + $totalNominal); ?>" disabled></div>
+        </div>
+    </div>
+</section>
+<div class="gm-slip-actions"><p>Review the payment date and amount before saving.</p><div class="gm-invoice-buttons">
+    <button type="submit" class="gm-slip-submit" onclick="handleFormSubmit(event)">Save changes</button>
     <?php if($pageState == "amend_payment_moving"){ ?>
-        <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_moving=" . $result["no_moving"] . "&payment_id=" . $payment["payment_id"]; ?>" target="_blank">create PDF</a>
+        <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_moving=" . $result["no_moving"] . "&payment_id=" . $payment["payment_id"]; ?>" target="_blank" class="gm-invoice-pdf">Create PDF</a>
     <?php } else { ?>
-        <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_sj=" . $result["nomor_surat_jalan"] . "&payment_id=" . $payment["payment_id"]; ?>" target="_blank">create PDF</a>
+        <a href="<?php echo "../controller/index.php?action=create_pdf&pageState=" . $pageState . "&no_sj=" . $result["nomor_surat_jalan"] . "&payment_id=" . $payment["payment_id"]; ?>" target="_blank" class="gm-invoice-pdf">Create PDF</a>
     <?php } ?>
-    </form>
-</main>
+    </div></div>
+</form>
+</section></div></main>
 
-<script src="../js/payment.js" async defer></script>
+<script src="../js/payment.js" defer></script>
 
 <?php include "footer.php"; ?>
