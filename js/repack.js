@@ -2,9 +2,11 @@ let pageState = document.getElementById("pageState").value;
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('myForm');
+    syncRepackRows('materialAwalTable');
+    syncRepackRows('materialBaruTable');
 
     form.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && event.target.tagName === 'INPUT') {
             event.preventDefault();
             return false;
         }
@@ -27,52 +29,42 @@ if (!pageState.includes("amend")){
     
         // Set the value of the date input to today's date
         invoice_dateEl.value = formattedDate;
+        getRepackNO();
+    });
+}
+
+function syncRepackRows(tableId) {
+    const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+    const group = tableId === 'materialAwalTable' ? 'Material Awal' : 'Material Baru';
+    document.getElementById(tableId + 'Count').textContent = rows.length + (rows.length === 1 ? ' row' : ' rows');
+    document.getElementById(tableId + 'Empty').hidden = rows.length > 0;
+    const labels = ['Product code', 'Material', 'Quantity', 'Unit', 'Note'];
+    rows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+        row.querySelectorAll('input').forEach((input, column) => input.setAttribute('aria-label', group + ', ' + labels[column] + ', row ' + (index + 1)));
+        row.querySelector('button').setAttribute('aria-label', 'Remove ' + group + ', row ' + (index + 1));
     });
 }
 
 function addRow(tableId) {
-    var table = document.getElementById(tableId);
-    var rowCount = table.rows.length;
-    var row = table.insertRow(rowCount);
-
-    if (tableId === "materialAwalTable") {
-        row.innerHTML = `<td>${rowCount}</td>
-        <td><input name="kd_awal[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
-        <td><input name="material_awal[]" type="text" placeholder="Otomatis" readonly/></td>
-        <td><input name="qty_awal[]" type="text" placeholder="di isi" required/></td>
-        <td><input name="uom_awal[]" type="text" placeholder="di isi" required/></td>
-        <td><input name="note_awal[]" type="text" /></td>
-        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>`;
-    } else {
-        row.innerHTML = `<td>${rowCount}</td>
-        <td><input name="kd_akhir[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
-        <td><input name="material_akhir[]" type="text" placeholder="Otomatis" readonly/></td>
-        <td><input name="qty_akhir[]" type="text" placeholder="di isi" required/></td>
-        <td><input name="uom_akhir[]" type="text" placeholder="di isi" required/></td>
-        <td><input name="note_akhir[]" type="text" /></td>
-        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>`;
-    }
-
+    const suffix = tableId === 'materialAwalTable' ? 'awal' : 'akhir';
+    const row = document.querySelector('#' + tableId + ' tbody').insertRow();
+    row.innerHTML = `<td></td>
+        <td><input name="kd_${suffix}[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="Product code" required></td>
+        <td><input name="material_${suffix}[]" type="text" placeholder="Terisi otomatis" readonly></td>
+        <td><input name="qty_${suffix}[]" type="text" placeholder="0" required></td>
+        <td><input name="uom_${suffix}[]" type="text" placeholder="UOM" required></td>
+        <td><input name="note_${suffix}[]" type="text" placeholder="Optional"></td>
+        <td><button type="button" class="gm-slip-remove" onclick="removeRow(this)">Remove</button></td>`;
+    syncRepackRows(tableId);
     applyAutocomplete(row.querySelector('.productCode'));
+    row.querySelector('.productCode').focus();
 }
 
 function removeRow(button) {
-    // Get the row to be removed
-    var row = button.parentNode.parentNode;
-    // Get the table body
-    var tableBody = row.parentNode;
-    // Remove the row
-    tableBody.removeChild(row);
-
-    // Re-number the rows
-    reNumberRows(tableBody);
-}
-
-function reNumberRows(tableBody) {
-    var rows = tableBody.rows;
-    for (var i = 0; i < rows.length; i++) {
-        rows[i].cells[0].innerText = i + 1;
-    }
+    const tableId = button.closest('table').id;
+    button.closest('tr').remove();
+    syncRepackRows(tableId);
 }
 
 function applyAutocomplete(input) {
@@ -168,7 +160,3 @@ function getRepackNO() {
         }
     });
 }
-
-window.onload = function() {
-    getRepackNO();
-};

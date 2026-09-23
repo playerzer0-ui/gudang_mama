@@ -9,9 +9,10 @@ window.onload = function() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('myForm');
+    syncMovingRows();
 
     form.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && event.target.tagName === 'INPUT') {
             event.preventDefault();
             return false;
         }
@@ -44,7 +45,7 @@ if (!pageState.includes("amend")){
 function addRow(tableId) {
     var table = document.getElementById(tableId);
     var rowCount = table.rows.length;
-    var row = table.insertRow(rowCount);
+    var row = table.querySelector('tbody').insertRow();
 
     row.innerHTML = `<td>${rowCount}</td>
         <td><input name="kd[]" class="productCode" oninput="applyAutocomplete(this)" type="text" placeholder="di isi" required/></td>
@@ -53,23 +54,30 @@ function addRow(tableId) {
         <td><input name="uom[]" type="text" placeholder="di isi" required/></td>
         <td><input name="price_per_uom[]" type="text" placeholder="otomatis" readonly/></td>
         <td><input type="number" inputmode="numeric" name="nominal[]" placeholder="Otomatis" readonly></td>
-        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>`;
+        <td><button type="button" class="gm-slip-remove" onclick="removeRow(this)">Remove</button></td>`;
 
+    syncMovingRows();
     applyAutocomplete(row.querySelector('.productCode'));
+    row.querySelector('.productCode').focus();
 }
 
 function removeRow(button) {
     var row = button.parentNode.parentNode;
     var tableBody = row.parentNode;
     tableBody.removeChild(row);
-    reNumberRows(tableBody);
+    syncMovingRows();
 }
 
-function reNumberRows(tableBody) {
-    var rows = tableBody.rows;
-    for (var i = 0; i < rows.length; i++) {
-        rows[i].cells[0].innerText = i + 1;
-    }
+function syncMovingRows() {
+    const rows = document.querySelectorAll('#materialTable tbody tr');
+    document.getElementById('movingRowCount').textContent = rows.length + (rows.length === 1 ? ' row' : ' rows');
+    document.getElementById('movingEmptyState').hidden = rows.length > 0;
+    const labels = ['Product code', 'Material', 'Quantity', 'Unit', 'Price per unit', 'Amount'];
+    rows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+        row.querySelectorAll('input').forEach((input, column) => input.setAttribute('aria-label', labels[column] + ', row ' + (index + 1)));
+        row.querySelector('button').setAttribute('aria-label', 'Remove row ' + (index + 1));
+    });
 }
 
 function applyAutocomplete(input) {

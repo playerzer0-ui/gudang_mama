@@ -417,3 +417,38 @@ body:has(.gm-slip-page) { background:#FCF9EA; }
 .gm-payment-remaining strong { font-size:18px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
 .gm-payment-page #payment_amount { text-align:right; font-variant-numeric:tabular-nums; }
 .gm-payment-page .gm-invoice-totals { align-content:start; }
+
+/* Repack uses separate original and resulting material tables. */
+.gm-repack-page .gm-repack-table { min-width:1000px; width:100%; border:0; border-collapse:separate; border-spacing:0; table-layout:fixed; }
+.gm-repack-page .gm-repack-table th, .gm-repack-page .gm-repack-table td { border:0; border-bottom:1px solid #e1e7dc; padding:11px 12px; color:#111; vertical-align:middle; font-size:13px; }
+.gm-repack-page .gm-repack-table th { background:#dbe5d4; color:#304032; font-weight:700; }
+.gm-repack-page .gm-repack-table th:nth-child(1) { width:50px; }
+.gm-repack-page .gm-repack-table th:nth-child(2) { width:150px; }
+.gm-repack-page .gm-repack-table th:nth-child(3) { width:28%; }
+.gm-repack-page .gm-repack-table th:nth-child(4) { width:100px; }
+.gm-repack-page .gm-repack-table th:nth-child(5) { width:100px; }
+.gm-repack-page .gm-repack-table th:nth-child(7) { width:105px; }
+.gm-repack-page .gm-repack-table tbody tr:nth-child(even) { background:#f3f6ed; }
+.gm-repack-page .gm-repack-table input[name^="qty_"] { text-align:right; font-variant-numeric:tabular-nums; }
+
+/* Moving documents: transfer details and automatic material costs. */
+.gm-moving-page .gm-moving-table { min-width:1000px; width:100%; border:0; border-collapse:separate; border-spacing:0; table-layout:fixed; }
+.gm-moving-page .gm-moving-table th, .gm-moving-page .gm-moving-table td { border:0; border-bottom:1px solid #e1e7dc; padding:11px 12px; color:#111; vertical-align:middle; font-size:13px; }
+.gm-moving-page .gm-moving-table th { background:#dbe5d4; color:#304032; font-weight:700; }
+.gm-moving-page .gm-moving-table th:nth-child(1) { width:50px; }
+.gm-moving-page .gm-moving-table th:nth-child(2) { width:150px; }
+.gm-moving-page .gm-moving-table th:nth-child(3) { width:28%; }
+.gm-moving-page .gm-moving-table th:nth-child(4) { width:100px; }
+.gm-moving-page .gm-moving-table th:nth-child(5) { width:100px; }
+.gm-moving-page .gm-moving-table th:nth-child(7) { width:105px; }
+.gm-moving-page .gm-moving-table tbody tr:nth-child(even) { background:#f3f6ed; }
+.gm-moving-page .gm-moving-table input[name="qty[]"] { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-moving-page .gm-moving-table { min-width:1200px; }
+.gm-moving-page .gm-moving-table th:nth-child(3) { width:24%; }
+.gm-moving-page .gm-moving-table th:nth-child(5) { width:85px; }
+.gm-moving-page .gm-moving-table th:nth-child(6), .gm-moving-page .gm-moving-table th:nth-child(7) { width:155px; }
+.gm-moving-page .gm-moving-table th:nth-child(8) { width:105px; }
+.gm-moving-page input[name="price_per_uom[]"], .gm-moving-page input[name="nominal[]"] { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-moving-party { padding:14px; border:1px solid #d7dfd1; border-radius:9px; background:#f3f6ed; }
+.gm-moving-party:nth-child(2) { background:#FCF9EA; }
+@media(max-width:1255px) { .gm-moving-page .gm-slip-table-hint { display:block; } }
