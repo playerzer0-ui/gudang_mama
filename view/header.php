@@ -111,11 +111,11 @@
                                     <li><a class="dropdown-item" href="../controller/index.php?action=master_read&data=users">users</a></li>
                                 </ul>
                             </li>
-                        <?php } ?>
-
+                            
                         <li class="nav-item">
                             <a class="nav-link" href="../controller/index.php?action=getLogs"><button class="btn btn-info">LOGS</button></a>
                         </li>
+                        <?php } ?>
                         <li class="nav-item">
                             <a class="nav-link" href="../controller/index.php?action=logout"><button class="btn btn-primary"><?php echo $logState; ?></button></a>
                         </li>

@@ -515,8 +515,7 @@ function getLogs($userType){
         $datas = [getAllOrdersAndProducts_slip(), getAllOrdersAndProductsRepack_slip(), getAllOrdersAndProductsMoving_slip(), getAllOrdersAndProducts_invoice(), getAllOrdersAndProductsMoving_invoice(), getAllOrdersAndProducts_payment(), getAllOrdersAndProductsMoving_payment()];
     }
     else{
-        $array = ["slip", "slip_repack", "slip_moving"];
-        $datas = [getAllOrdersAndProducts_slip(), getAllOrdersAndProductsRepack_slip(), getAllOrdersAndProductsMoving_slip()];
+        return 0;
     }
 
     $spreadsheet = new Spreadsheet();
