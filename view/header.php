@@ -4,16 +4,16 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title><?php echo $title; ?></title>
+        <title><?php echo htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8'); ?></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/themes/smoothness/jquery-ui.css">
-        <link rel="stylesheet" href="../css/base.css?v=20260927">
-        <link rel="stylesheet" href="../css/header.css?v=20260927">
-        <link rel="stylesheet" href="../css/reports.css?v=20260927">
-        <link rel="stylesheet" href="../css/forms.css?v=20260927">
-        <link rel="stylesheet" href="../css/master.css?v=20260927">
+        <link rel="stylesheet" href="../css/base.css">
+        <link rel="stylesheet" href="../css/header.css">
+        <link rel="stylesheet" href="../css/reports.css">
+        <link rel="stylesheet" href="../css/forms.css">
+        <link rel="stylesheet" href="../css/master.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
     </head>
@@ -38,14 +38,14 @@
                 <div class="offcanvas-body">
                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="../controller/index.php?action=dashboard"><button class="btn btn-info">storage</button></a>
+                            <a class="nav-link" href="../controller/index.php?action=dashboard">storage</a>
                         </li>
                         <?php if($userType == 1){ ?>
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="../controller/index.php?action=show_hutang"><button class="btn btn-info">report hutang</button></a>
+                                <a class="nav-link" href="../controller/index.php?action=show_hutang">report hutang</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="../controller/index.php?action=show_piutang"><button class="btn btn-info">report piutang</button></a>
+                                <a class="nav-link" href="../controller/index.php?action=show_piutang">report piutang</a>
                             </li>
                         <?php } ?>
                         <li class="nav-item dropdown btn btn-outline-primary">
@@ -117,11 +117,11 @@
                             </li>
                             
                         <li class="nav-item">
-                            <a class="nav-link" href="../controller/index.php?action=getLogs"><button class="btn btn-info">LOGS</button></a>
+                            <a class="nav-link" href="../controller/index.php?action=getLogs">LOGS</a>
                         </li>
                         <?php } ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="../controller/index.php?action=logout"><button class="btn btn-primary"><?php echo $logState; ?></button></a>
+                            <a class="nav-link" href="../controller/index.php?action=logout"><?php echo $logState; ?></a>
                         </li>
                     </ul>
                 </div>
@@ -129,5 +129,5 @@
             </div>
         </nav>
         <div class="msg">
-            <p><?php echo $msg; ?></p>
+            <p><?php echo htmlspecialchars((string) $msg, ENT_QUOTES, 'UTF-8'); ?></p>
         </div>
