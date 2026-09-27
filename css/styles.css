@@ -452,3 +452,29 @@ body:has(.gm-slip-page) { background:#FCF9EA; }
 .gm-moving-party { padding:14px; border:1px solid #d7dfd1; border-radius:9px; background:#f3f6ed; }
 .gm-moving-party:nth-child(2) { background:#FCF9EA; }
 @media(max-width:1255px) { .gm-moving-page .gm-slip-table-hint { display:block; } }
+
+/* Master data lists and forms. */
+.gm-master-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:18px; margin-bottom:20px; }
+.gm-master-heading p { margin-bottom:0; }
+.gm-master-link { display:inline-block; text-decoration:none; }
+.gm-master-link:hover { color:#332719; }
+.gm-master-search { width:320px; max-width:100%; }
+.gm-master-search label { font-size:12px; color:#50634e; margin-bottom:6px; }
+.gm-master-table { min-width:650px; border:0; border-collapse:separate; border-spacing:0; }
+.gm-master-table th, .gm-master-table td { border:0; border-bottom:1px solid #e1e7dc; padding:15px 18px; font-size:14px; color:#111; vertical-align:middle; }
+.gm-master-table th { background:#dbe5d4; color:#304032; font-size:13px; font-weight:700; white-space:nowrap; }
+.gm-master-table tbody tr:nth-child(even) { background:#f3f6ed; }
+.gm-master-table tbody tr:hover { background:#edf1e7; }
+.gm-master-table td:first-child { font-weight:600; }
+.gm-master-table td { max-width:380px; overflow-wrap:anywhere; }
+.gm-master-table th:last-child { width:160px; }
+.gm-master-row-actions { display:flex; gap:8px; align-items:center; white-space:nowrap; }
+.gm-master-edit { display:inline-block; padding:8px 12px; border:1px solid #a9bca2; border-radius:7px; color:#3e563b; background:#fffef8; font-size:13px; text-decoration:none; }
+.gm-master-edit:hover { background:#e6ecdf; color:#304032; }
+.gm-master-page [hidden] { display:none; }
+.gm-master-form-inner { max-width:980px; margin:auto; }
+.gm-master-wide { grid-column:1/-1; }
+.gm-master-page input[type="file"] { height:auto; }
+.gm-master-help { color:#61715d; font-size:12px; margin:0; }
+.gm-master-delete-copy { padding:20px; color:#111; }
+@media(max-width:650px) { .gm-master-search { width:100%; } .gm-master-heading > .gm-slip-submit { width:100%; text-align:center; } }
