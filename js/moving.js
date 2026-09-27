@@ -54,7 +54,7 @@ function addRow(tableId) {
         <td><input name="uom[]" type="text" placeholder="di isi" required/></td>
         <td><input name="price_per_uom[]" type="text" placeholder="otomatis" readonly/></td>
         <td><input type="number" inputmode="numeric" name="nominal[]" placeholder="Otomatis" readonly></td>
-        <td><button type="button" class="gm-slip-remove" onclick="removeRow(this)">Remove</button></td>`;
+        <td><button type="button" class="gm-form-remove" onclick="removeRow(this)">Remove</button></td>`;
 
     syncMovingRows();
     applyAutocomplete(row.querySelector('.productCode'));

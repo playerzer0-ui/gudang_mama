@@ -1,5 +1,5 @@
 <aside class="document-sidebar gm-invoice-sidebar" aria-labelledby="document-sidebar-title">
-    <span class="gm-slip-eyebrow">Source document</span>
+    <span class="gm-form-eyebrow">Source document</span>
     <h2 id="document-sidebar-title">Select a slip</h2>
     <p class="document-sidebar-hint">Klik No. SJ untuk mengisi detail payment.</p>
     <label for="invoiceDocumentSearch">Search No. SJ</label>

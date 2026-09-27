@@ -55,7 +55,7 @@ function addRow(tableId) {
         <td><input name="qty_${suffix}[]" type="text" placeholder="0" required></td>
         <td><input name="uom_${suffix}[]" type="text" placeholder="UOM" required></td>
         <td><input name="note_${suffix}[]" type="text" placeholder="Optional"></td>
-        <td><button type="button" class="gm-slip-remove" onclick="removeRow(this)">Remove</button></td>`;
+        <td><button type="button" class="gm-form-remove" onclick="removeRow(this)">Remove</button></td>`;
     syncRepackRows(tableId);
     applyAutocomplete(row.querySelector('.productCode'));
     row.querySelector('.productCode').focus();

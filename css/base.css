@@ -1,0 +1,139 @@
+/* Design tokens, resets and legacy global rules. */
+:root {
+    --gm-orange: #DB9558;
+    --gm-cream: #FCF9EA;
+    --gm-sage: #97A87A;
+    --gm-soft-sage: #A8BBA3;
+    --gm-ink: #304032;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.main-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.msg {
+    display: flex;
+    justify-content: center;
+}
+
+.msg p {
+    background-color: red;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    color: white;
+    font-weight: bold;
+}
+
+.bg-white {
+    background-color: white;
+}
+
+.yellow-text {
+    background-color: yellow;
+}
+
+.form-container {
+    width: 50%;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.table-container {
+    overflow-x: auto;
+    overflow-y: hidden; /* Optional: to hide vertical scroll if unnecessary */
+    width: 100%; /* or specify a fixed width if needed */
+    white-space: nowrap; /* Ensures table cells don't wrap */
+}
+
+#reporttable {
+    width: 100%; /* This will take full width of the container */
+    border-collapse: collapse;
+}
+
+#reporttable th, #reporttable td {
+    padding: 8px 12px; /* Adjust as necessary */
+    border: 1px solid #ddd; /* Example border styling */
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table, th, td {
+    border: 1px solid black;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+td input, td select {
+    margin: 4px 0;
+}
+
+.header-table td {
+    border: none;
+    text-align: left;
+    padding: 4px;
+}
+.header-table {
+    margin-bottom: 20px;
+}
+.add-row {
+    cursor: pointer;
+    color: blue;
+}
+.form-header {
+    background-color: #dff0d8;
+}
+.highlight {
+    background-color: #ffff99;
+}
+
+.not-paid {
+    color: red;
+    font-weight: bold;
+}
+
+/* amends */
+.amend-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.amend-item:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.input-group.focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    border-radius: 0.25rem;
+}
+
+#searchInput:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}

@@ -70,7 +70,7 @@ function addRow() {
         <td><input type="number" name="qty[]" placeholder="0" required></td>
         <td><input type="text" name="uom[]" placeholder="UOM" required></td>
         <td><input type="text" name="note[]" placeholder="Optional"></td>
-        <td><button type="button" class="gm-slip-remove" onclick="deleteRow(this)">Remove</button></td>
+        <td><button type="button" class="gm-form-remove" onclick="deleteRow(this)">Remove</button></td>
     `;
     syncSlipRows();
     newRow.querySelector('.productCode').focus();

@@ -10,7 +10,6 @@ $reportMonthNames = [
         <header class="gm-report-heading">
             <span class="gm-report-eyebrow">Reports</span>
             <h1><?php echo htmlspecialchars($reportTitle, ENT_QUOTES, 'UTF-8'); ?></h1>
-            <p><?php echo htmlspecialchars($reportDescription, ENT_QUOTES, 'UTF-8'); ?></p>
         </header>
 
         <section class="gm-report-filters" aria-label="Report filters">

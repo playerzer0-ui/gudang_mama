@@ -1,6 +1,6 @@
 <?php include "header.php"; ?>
 
- <?php $reportKind = 'storage'; $reportTitle = 'Storage report'; $reportDescription = 'Inventory balances and movement by period.'; $reportResultTitle = 'Inventory movement'; include 'report_top.php'; ?>
+ <?php $reportKind = 'storage'; $reportTitle = 'Storage report'; $reportResultTitle = 'Inventory movement'; include 'report_top.php'; ?>
 
         <?php if($userType == 1){ ?>
             <table id="reporttable" class="gm-report-table">

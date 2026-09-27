@@ -1,0 +1,188 @@
+/* Invoice/payment document picker. Other forms retain their existing layout. */
+.main-container.document-layout {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+    padding: 16px;
+}
+.document-layout .document-form {
+    min-width: 0;
+    overflow-x: auto;
+}
+.document-sidebar {
+    position: sticky;
+    top: 16px;
+    padding: 14px;
+    border: 1px solid #d9dee3;
+    border-radius: 6px;
+    background: #f8f9fa;
+}
+.document-sidebar h2 { font-size: 18px; margin: 0 0 8px; }
+.document-sidebar-hint, .document-sidebar-empty { font-size: 13px; color: #59636d; }
+.document-sidebar-list { display: grid; gap: 8px; max-height: 65vh; overflow-y: auto; }
+.document-sidebar-button {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    overflow-wrap: anywhere;
+    border: 1px solid #b7c6d4;
+    border-radius: 4px;
+    background: white;
+    color: #154a75;
+    cursor: pointer;
+}
+.document-sidebar-button:hover { background: #e8f1fa; }
+.document-sidebar-button.is-selected { background: #0d6efd; border-color: #0d6efd; color: white; }
+.document-sidebar-button:focus-visible { outline: 3px solid #77adfa; outline-offset: 2px; }
+@media (max-width: 800px) {
+    .main-container.document-layout { grid-template-columns: minmax(0, 1fr); padding: 10px; }
+    .document-sidebar { position: static; }
+    .document-sidebar-list { max-height: 200px; }
+}
+
+
+/* Slip creation and amendment */
+body:has(.gm-form-page) { background:var(--gm-cream); }
+.gm-form-page { --form-ink:var(--gm-ink); --form-line:#d7dfd1; --form-paper:#fffef8; background:var(--gm-cream); color:var(--form-ink); padding:28px 28px 40px; min-height:calc(100vh - 72px); }
+.gm-form-inner { max-width:1320px; margin:auto; }
+.gm-form-eyebrow { font-size:11px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; color:#61715d; }
+.gm-form-title-row { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin:6px 0; }
+.gm-form-heading h1 { font-size:28px; font-weight:700; margin:0; }
+.gm-form-heading p { color:#61715d; font-size:14px; margin:0 0 20px; }
+.gm-form-mode { border-radius:99px; padding:5px 11px; background:#dfe8d6; color:#344b32; font-size:12px; font-weight:600; }
+.gm-form-heading .gm-form-reference { display:inline-block; border-left:3px solid var(--gm-orange); padding:7px 12px; background:#fff5e8; color:#4b4b36; overflow-wrap:anywhere; max-width:100%; }
+.gm-form-section { background:var(--form-paper); border:1px solid var(--form-line); border-radius:12px; margin-bottom:20px; overflow:hidden; }
+.gm-form-section-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; padding:18px 20px; border-bottom:1px solid var(--form-line); }
+.gm-form-section-heading h2 { margin:0; font-size:17px; font-weight:700; }
+.gm-form-section-heading p { margin:5px 0 0; font-size:12px; color:#61715d; }
+.gm-form-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px 26px; padding:20px; }
+.gm-form-field { display:flex; flex-direction:column; min-width:0; gap:7px; }
+.gm-form-field label { display:flex; align-items:center; gap:8px; color:#50634e; font-size:13px; font-weight:650; }
+.gm-form-auto { color:#61715d; font-size:11px; font-weight:400; }
+.gm-form-page input:not([type="hidden"]), .gm-form-page select { width:100%; min-width:0; height:42px; margin:0; padding:9px 12px; border:1px solid #bdcbb8; border-radius:7px; background:var(--form-paper); color:#111; font-size:14px; }
+.gm-form-page input[readonly] { background:#edf1e7; border-color:#d7dfd1; color:#111; }
+.gm-form-page input::placeholder { color:#707a6b; opacity:1; }
+.gm-form-page input:focus, .gm-form-page select:focus { outline:2px solid var(--gm-sage); outline-offset:1px; }
+.gm-form-table-scroll { overflow-x:auto; scrollbar-color:var(--gm-sage) #edf1e7; }
+.gm-form-page #productTable { min-width:1000px; width:100%; border:0; border-collapse:separate; border-spacing:0; table-layout:fixed; }
+.gm-form-page #productTable th, .gm-form-page #productTable td { border:0; border-bottom:1px solid #e1e7dc; padding:11px 12px; color:#111; vertical-align:middle; font-size:13px; }
+.gm-form-page #productTable th { background:#dbe5d4; color:var(--gm-ink); font-weight:700; }
+.gm-form-page #productTable th:nth-child(1) { width:50px; }
+.gm-form-page #productTable th:nth-child(2) { width:150px; }
+.gm-form-page #productTable th:nth-child(3) { width:28%; }
+.gm-form-page #productTable th:nth-child(4) { width:100px; }
+.gm-form-page #productTable th:nth-child(5) { width:100px; }
+.gm-form-page #productTable th:nth-child(7) { width:105px; }
+.gm-form-page #productTable tbody tr:nth-child(even) { background:#f3f6ed; }
+.gm-form-page #productTable input[name="qty[]"] { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-form-add { border:1px solid #a9bca2; border-radius:7px; min-height:40px; padding:9px 14px; color:#3e563b; background:var(--form-paper); font-size:13px; font-weight:650; }
+.gm-form-add:hover { background:#e6ecdf; }
+.gm-form-remove { border:1px solid #e3c5b8; border-radius:7px; padding:8px 10px; background:#fff8f3; color:#853d27; font-size:12px; }
+.gm-form-remove:hover { background:#f7e4d9; }
+.gm-form-empty { padding:24px 20px; text-align:center; color:#61715d; font-size:14px; margin:0; }
+.gm-form-empty[hidden] { display:none; }
+.gm-form-row-count { display:inline-block; margin-left:6px; padding:3px 8px; border-radius:99px; font-size:11px; color:#536a4b; background:#e8efdf; font-weight:500; }
+.gm-form-table-hint { margin:0; padding:10px 20px; border-top:1px solid var(--form-line); color:#61715d; font-size:12px; display:none; }
+.gm-form-actions { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; padding:0 2px; }
+.gm-form-actions p { color:#61715d; font-size:13px; margin:0; }
+.gm-form-submit { min-height:44px; border:0; border-radius:8px; padding:11px 23px; background:var(--gm-orange); color:#332719; font-size:14px; font-weight:700; }
+.gm-form-submit:hover { background:#ce874c; }
+@media(max-width:1100px) { .gm-form-table-hint { display:block; } }
+@media(max-width:650px) {
+    .gm-form-page { padding:20px 12px 28px; }
+    .gm-form-heading h1 { font-size:24px; }
+    .gm-form-fields { grid-template-columns:minmax(0,1fr); gap:16px; padding:16px; }
+    .gm-form-section-heading { padding:16px; }
+    .gm-form-page input:not([type="hidden"]), .gm-form-page select { font-size:16px; }
+    .gm-form-submit { width:100%; }
+    .gm-form-actions { align-items:stretch; }
+}
+
+/* Invoice pages share the slip form's palette, fields, and cards. */
+.gm-invoice-inner { max-width:1560px; margin:auto; display:grid; grid-template-columns:minmax(0,1fr); gap:24px; align-items:start; }
+.gm-invoice-inner:has(.gm-invoice-sidebar) { grid-template-columns:240px minmax(0,1fr); }
+.gm-invoice-page .document-form { min-width:0; }
+.gm-invoice-page .gm-invoice-sidebar { top:20px; padding:20px 16px; background:#fffef8; border:1px solid #d7dfd1; border-radius:12px; }
+.gm-invoice-sidebar h2 { margin:8px 0; color:var(--gm-ink); font-size:19px; font-weight:700; }
+.gm-invoice-sidebar label { color:#50634e; font-size:12px; font-weight:600; margin-bottom:7px; }
+.gm-invoice-sidebar .document-sidebar-hint { color:#61715d; line-height:1.5; }
+.gm-invoice-document-count { color:#61715d; font-size:12px; margin:14px 0 10px; }
+.gm-invoice-sidebar .document-sidebar-list { max-height:52vh; gap:7px; scrollbar-color:var(--gm-sage) #edf1e7; }
+.gm-invoice-sidebar .document-sidebar-button { color:#111; background:var(--gm-cream); border:1px solid #d7dfd1; border-radius:7px; padding:12px; font-size:13px; }
+.gm-invoice-sidebar .document-sidebar-button:hover { background:#edf1e7; }
+.gm-invoice-sidebar .document-sidebar-button.is-selected { color:#111; background:#dbe5d4; border-color:var(--gm-sage); box-shadow:inset 3px 0 var(--gm-sage); font-weight:650; }
+.gm-invoice-sidebar .document-sidebar-button:focus-visible { outline:2px solid var(--gm-sage); outline-offset:-2px; }
+.gm-invoice-sidebar [hidden] { display:none; }
+.gm-invoice-page #productTable { min-width:1050px; }
+.gm-invoice-page #productTable th:nth-child(2) { width:130px; }
+.gm-invoice-page #productTable th:nth-child(3) { width:25%; }
+.gm-invoice-page #productTable th:nth-child(5) { width:85px; }
+.gm-invoice-page #productTable th:nth-child(6), .gm-invoice-page #productTable th:nth-child(7) { width:170px; }
+.gm-invoice-page input[name="price_per_uom[]"], .gm-invoice-page input[name="nominal[]"] { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-invoice-page input:disabled { color:#111; -webkit-text-fill-color:#111; opacity:1; background:#edf1e7; border-color:#d7dfd1; }
+.gm-invoice-summary { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:40px; padding:20px; }
+.gm-invoice-totals { display:grid; gap:12px; }
+.gm-invoice-total-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(100px,1fr); gap:14px; align-items:center; }
+.gm-invoice-total-row label { font-size:13px; color:#50634e; }
+.gm-invoice-total-row input { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-invoice-total-row:last-child { border-top:1px solid #d7dfd1; padding-top:14px; }
+.gm-invoice-total-row:last-child label { font-weight:700; color:var(--gm-ink); }
+.gm-invoice-total-row:last-child input { background:#dbe5d4; font-weight:700; }
+.gm-invoice-buttons { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.gm-invoice-pdf { color:#3e563b; border:1px solid #a9bca2; padding:11px 18px; border-radius:8px; font-size:14px; text-decoration:none; }
+.gm-invoice-pdf:hover { color:var(--gm-ink); background:#e6ecdf; }
+@media(max-width:1000px) {
+    .gm-invoice-inner:has(.gm-invoice-sidebar) { grid-template-columns:minmax(0,1fr); }
+    .gm-invoice-page .gm-invoice-sidebar { position:static; }
+    .gm-invoice-sidebar .document-sidebar-list { grid-template-columns:repeat(2,minmax(0,1fr)); max-height:180px; }
+}
+@media(max-width:650px) {
+    .gm-invoice-summary { grid-template-columns:minmax(0,1fr); gap:24px; padding:16px; }
+    .gm-invoice-buttons { width:100%; }
+    .gm-invoice-pdf { width:100%; text-align:center; }
+}
+
+/* Payment entry uses the same document layout as invoices. */
+.gm-payment-entry { display:grid; gap:18px; align-content:start; }
+.gm-payment-remaining { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:16px; border:1px solid #d7dfd1; border-radius:8px; background:#dbe5d4; color:#111; }
+.gm-payment-remaining span { font-size:13px; }
+.gm-payment-remaining strong { font-size:18px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.gm-payment-page #payment_amount { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-payment-page .gm-invoice-totals { align-content:start; }
+
+/* Repack uses separate original and resulting material tables. */
+.gm-repack-page .gm-repack-table { min-width:1000px; width:100%; border:0; border-collapse:separate; border-spacing:0; table-layout:fixed; }
+.gm-repack-page .gm-repack-table th, .gm-repack-page .gm-repack-table td { border:0; border-bottom:1px solid #e1e7dc; padding:11px 12px; color:#111; vertical-align:middle; font-size:13px; }
+.gm-repack-page .gm-repack-table th { background:#dbe5d4; color:var(--gm-ink); font-weight:700; }
+.gm-repack-page .gm-repack-table th:nth-child(1) { width:50px; }
+.gm-repack-page .gm-repack-table th:nth-child(2) { width:150px; }
+.gm-repack-page .gm-repack-table th:nth-child(3) { width:28%; }
+.gm-repack-page .gm-repack-table th:nth-child(4) { width:100px; }
+.gm-repack-page .gm-repack-table th:nth-child(5) { width:100px; }
+.gm-repack-page .gm-repack-table th:nth-child(7) { width:105px; }
+.gm-repack-page .gm-repack-table tbody tr:nth-child(even) { background:#f3f6ed; }
+.gm-repack-page .gm-repack-table input[name^="qty_"] { text-align:right; font-variant-numeric:tabular-nums; }
+
+/* Moving documents: transfer details and automatic material costs. */
+.gm-moving-page .gm-moving-table { min-width:1000px; width:100%; border:0; border-collapse:separate; border-spacing:0; table-layout:fixed; }
+.gm-moving-page .gm-moving-table th, .gm-moving-page .gm-moving-table td { border:0; border-bottom:1px solid #e1e7dc; padding:11px 12px; color:#111; vertical-align:middle; font-size:13px; }
+.gm-moving-page .gm-moving-table th { background:#dbe5d4; color:var(--gm-ink); font-weight:700; }
+.gm-moving-page .gm-moving-table th:nth-child(1) { width:50px; }
+.gm-moving-page .gm-moving-table th:nth-child(2) { width:150px; }
+.gm-moving-page .gm-moving-table th:nth-child(3) { width:28%; }
+.gm-moving-page .gm-moving-table th:nth-child(4) { width:100px; }
+.gm-moving-page .gm-moving-table th:nth-child(5) { width:100px; }
+.gm-moving-page .gm-moving-table th:nth-child(7) { width:105px; }
+.gm-moving-page .gm-moving-table tbody tr:nth-child(even) { background:#f3f6ed; }
+.gm-moving-page .gm-moving-table input[name="qty[]"] { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-moving-page .gm-moving-table { min-width:1200px; }
+.gm-moving-page .gm-moving-table th:nth-child(3) { width:24%; }
+.gm-moving-page .gm-moving-table th:nth-child(5) { width:85px; }
+.gm-moving-page .gm-moving-table th:nth-child(6), .gm-moving-page .gm-moving-table th:nth-child(7) { width:155px; }
+.gm-moving-page .gm-moving-table th:nth-child(8) { width:105px; }
+.gm-moving-page input[name="price_per_uom[]"], .gm-moving-page input[name="nominal[]"] { text-align:right; font-variant-numeric:tabular-nums; }
+.gm-moving-party { padding:14px; border:1px solid #d7dfd1; border-radius:9px; background:#f3f6ed; }
+.gm-moving-party:nth-child(2) { background:var(--gm-cream); }
+@media(max-width:1255px) { .gm-moving-page .gm-form-table-hint { display:block; } }
+

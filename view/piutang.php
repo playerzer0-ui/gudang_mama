@@ -1,6 +1,6 @@
 <?php include "header.php"; ?>
 
-<?php $reportKind = 'piutang'; $reportTitle = 'Piutang report'; $reportDescription = 'Amounts customers owe for the selected period.'; $reportResultTitle = 'Customer invoices'; include 'report_top.php'; ?>
+<?php $reportKind = 'piutang'; $reportTitle = 'Piutang report'; $reportResultTitle = 'Customer invoices'; include 'report_top.php'; ?>
 
         <table id="reporttable" class="gm-report-table">
             <!-- JavaScript will populate this table -->
