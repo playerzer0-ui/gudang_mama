@@ -26,7 +26,7 @@ switch($action){
                     $pageState = "amend_slip_out_tax";
                 }
                 $products = getOrderProductsFromNoID($code, "in");
-                require_once "../view/amend_slip.php";
+                require_once "../view/slip_form.php";
                 break;
             case "invoice":
                 $title = "amend invoice";
@@ -52,7 +52,7 @@ switch($action){
     
                     $products = getOrderProductsFromNoID($code, "moving");
                 }
-                require_once "../view/amend_invoice.php";
+                require_once "../view/invoice_form.php";
                 break;
             case "payment":
                 $title = "amend payment";
@@ -80,21 +80,21 @@ switch($action){
 
                     $products = getOrderProductsFromNoID($code, "moving");
                 }
-                require_once "../view/amend_payment.php";
+                require_once "../view/payment_form.php";
                 break;
             case "repack":
                 $title = "amend repack";
                 $pageState = "amend_repack";
                 $result = getRepackByCode($code);
                 $products = getOrderProductsFromNoID($code, "repack");
-                require_once "../view/amend_repack.php";
+                require_once "../view/repack_form.php";
                 break;
             case "moving":
                 $title = "amend moving";
                 $pageState = "amend_moving";
                 $result = getMovingByCode($code);
                 $products = getOrderProductsFromNoID($code, "moving");
-                require_once "../view/amend_moving.php";
+                require_once "../view/moving_form.php";
                 break;
         }
         break;

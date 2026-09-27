@@ -1,4 +1,8 @@
 <?php
+// Create and amend repack. $pageState is repack or amend_repack.
+$repackAmend = $pageState === 'amend_repack';
+$repackFormAction = $repackAmend ? '../controller/index.php?action=amend_update_data&data=repack' : '../controller/index.php?action=create_repack';
+include "header.php";
 $repackEscape = static fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 $repackData = $repackAmend ? $result : [];
 $repackValue = static fn($key, $fallback = '') => $repackData[$key] ?? $fallback;
@@ -68,3 +72,5 @@ $repackValue = static fn($key, $fallback = '') => $repackData[$key] ?? $fallback
     </div>
 </main>
 <script src="../js/repack.js" defer></script>
+
+<?php include "footer.php"; ?>

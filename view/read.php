@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/header.php'; include __DIR__ . '/master_helpers.php'; ?>
+<?php include "header.php"; include "master_helpers.php"; ?>
 <main class="gm-form-page gm-master-page"><div class="gm-form-inner">
     <header class="gm-form-heading gm-master-heading">
         <div><span class="gm-form-eyebrow">Master data</span><div class="gm-form-title-row"><h1><?= $masterTitle ?></h1></div></div>
@@ -33,4 +33,4 @@
     </section>
 </div></main>
 <script src="../js/master_ui.js" defer></script>
-<?php include __DIR__ . '/footer.php'; ?>
+<?php include "footer.php"; ?>

@@ -1,5 +1,8 @@
 <?php
-// Both entry points use this layout, while retaining their own submit action.
+// Create and amend slip. $pageState is in / out / out_tax, or amend_slip_<direction>.
+$slipAmend = strpos($pageState, 'amend_slip_') === 0;
+$slipFormAction = $slipAmend ? '../controller/index.php?action=amend_update_data&data=slip' : '../controller/index.php?action=create_slip';
+include "header.php";
 $slipDirection = $slipAmend ? substr($pageState, strlen('amend_slip_')) : $pageState;
 $slipIncoming = $slipDirection === 'in';
 $slipLabel = ['in' => 'Slip in', 'out' => 'Slip out', 'out_tax' => 'Slip tax out'][$slipDirection];
@@ -134,3 +137,5 @@ $slipValue = static fn($key, $fallback = '') => $slipData[$key] ?? $fallback;
     </div>
 </main>
 <script src="../js/index.js" defer></script>
+
+<?php include "footer.php"; ?>

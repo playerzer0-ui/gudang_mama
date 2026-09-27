@@ -1,7 +1,8 @@
+<?php // Source document picker for new invoices and payments. Set $sidebarPurpose to "invoice" or "payment". ?>
 <aside class="document-sidebar gm-invoice-sidebar" aria-labelledby="document-sidebar-title">
     <span class="gm-form-eyebrow">Source document</span>
     <h2 id="document-sidebar-title">Select a slip</h2>
-    <p class="document-sidebar-hint">Klik No. SJ untuk mengisi detail invoice.</p>
+    <p class="document-sidebar-hint">Klik No. SJ untuk mengisi detail <?= $sidebarPurpose ?>.</p>
     <label for="invoiceDocumentSearch">Search No. SJ</label>
     <input type="search" id="invoiceDocumentSearch" placeholder="Search document number" autocomplete="off">
     <p id="invoiceDocumentCount" class="gm-invoice-document-count" aria-live="polite"></p>

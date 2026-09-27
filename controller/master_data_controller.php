@@ -55,7 +55,8 @@ switch($action){
                 break;
         }
 
-        require_once "../view/create.php";
+        $masterEdit = false;
+        require_once "../view/master_form.php";
         break;
 
     case "master_create_data":
@@ -172,7 +173,8 @@ switch($action){
                 break;
         }
 
-        require_once "../view/update.php";
+        $masterEdit = true;
+        require_once "../view/master_form.php";
         break;
 
     case "master_update_data":

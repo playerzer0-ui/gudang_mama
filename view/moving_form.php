@@ -1,4 +1,8 @@
 <?php
+// Create and amend moving. $pageState is moving or amend_moving.
+$movingAmend = $pageState === 'amend_moving';
+$movingFormAction = $movingAmend ? '../controller/index.php?action=amend_update_data&data=moving' : '../controller/index.php?action=create_moving';
+include "header.php";
 $movingEscape = static fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 $movingData = $movingAmend ? $result : [];
 $movingValue = static fn($key, $fallback = '') => $movingData[$key] ?? $fallback;
@@ -68,3 +72,5 @@ $movingStorages = getAllStorages();
     </div>
 </main>
 <script src="../js/moving.js" defer></script>
+
+<?php include "footer.php"; ?>

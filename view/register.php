@@ -1,7 +1,7 @@
 <?php
-include __DIR__ . '/header.php';
+include "header.php";
 $data = 'users';
-include __DIR__ . '/master_helpers.php';
+include "master_helpers.php";
 $masterEdit = $action !== 'master_create';
 $accountName = $masterEdit ? $result['username'] : '';
 ?>
@@ -18,4 +18,4 @@ $accountName = $masterEdit ? $result['username'] : '';
         <div class="gm-form-actions"><a class="gm-master-edit" href="<?= $masterEscape($masterUrl('master_read')) ?>">Back to users</a><button type="submit" class="gm-form-submit"><?= $masterEdit ? 'Save changes' : 'Create user' ?></button></div>
     </form>
 </div></main>
-<?php include __DIR__ . '/footer.php'; ?>
+<?php include "footer.php"; ?>

@@ -7,7 +7,7 @@ switch($action){
         }
         $pageState = filter_input(INPUT_GET, "state", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $title = "slip " . $pageState;
-        require_once "../view/slip.php";
+        require_once "../view/slip_form.php";
         break;
 
     case "show_invoice":
@@ -18,7 +18,7 @@ switch($action){
         $title = "invoice " . $pageState;
         require_once __DIR__ . "/../model/document_sidebar_functions.php";
         $sidebarDocuments = getDocumentSidebarNumbers($pageState, "invoice");
-        require_once "../view/invoice.php";
+        require_once "../view/invoice_form.php";
         break;
 
     case "show_payment":
@@ -29,7 +29,7 @@ switch($action){
         $title = "payment " . $pageState;
         require_once __DIR__ . "/../model/document_sidebar_functions.php";
         $sidebarDocuments = getDocumentSidebarNumbers($pageState, "payment");
-        require_once "../view/payment.php";
+        require_once "../view/payment_form.php";
         break;
 
     case "show_repack":
@@ -38,7 +38,7 @@ switch($action){
         }
         $title = "repack";
         $pageState = "repack";
-        require_once "../view/repack.php";
+        require_once "../view/repack_form.php";
         break;
 
     case "show_moving":
@@ -47,7 +47,7 @@ switch($action){
         }
         $title = "moving";
         $pageState = "moving";
-        require_once "../view/moving.php";
+        require_once "../view/moving_form.php";
         break;
 
     case "show_hutang":

@@ -2,7 +2,7 @@
 
 <?php $masterDelete = in_array($data, ['vendor', 'customer', 'product', 'storage', 'users'], true); ?>
 <main<?= $masterDelete ? ' class="gm-form-page gm-master-page"' : '' ?>>
-    <?php if ($masterDelete): include __DIR__ . '/master_helpers.php'; ?>
+    <?php if ($masterDelete): include "master_helpers.php"; ?>
         <div class="gm-master-form-inner">
             <header class="gm-form-heading"><span class="gm-form-eyebrow">Master data · <?= $masterTitle ?></span>
                 <div class="gm-form-title-row">
